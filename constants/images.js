@@ -7,16 +7,16 @@ export const IMAGES = {
     primary: 'https://images.unsplash.com/photo-1489515098258-60c0ad468fc6?auto=format&fit=crop&w=1920&q=80',
     secondary: 'https://images.unsplash.com/photo-1612442857712-dd586c66a3f1?auto=format&fit=crop&w=1920&q=80',
   },
-  
+
   // Driver Page - Happy drivers, winter driving
   driver: {
     hero: 'https://images.unsplash.com/photo-1543871856-53e1c32f3a3a?auto=format&fit=crop&w=1920&q=80',
     secondary: 'https://images.unsplash.com/photo-1639837693939-efeafc326500?auto=format&fit=crop&w=1920&q=80',
   },
-  
+
   // Rider Page - Phone in car, night rides
   rider: {
-    hero: 'https://images.unsplash.com/photo-1600320254374-ce2d293c324e?auto=format&fit=crop&w=1920&q=80',
+    hero: '/images/happy_student_rider.png',
     secondary: 'https://images.unsplash.com/photo-1698069466499-2b908e76ca87?auto=format&fit=crop&w=1920&q=80',
   },
 

@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { IMAGES } from '@/constants/images'
+import { QRCodeSVG } from 'qrcode.react'
 
 export default function DrivePageClient({ structuredData }) {
   const [trips, setTrips] = useState([40])
@@ -322,14 +323,39 @@ export default function DrivePageClient({ structuredData }) {
 
 
 
-      {/* CTA Section */}
-      <section className="py-16 bg-primary">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-primary-foreground mb-4">Ready to Keep 100% of Your Earnings?</h2>
-          <p className="text-red-100 mb-8">Join Spinr today. First 6 months free, 0% commission forever.</p>
-          <Button size="lg" className="bg-gray-900 hover:bg-gray-800 text-white text-lg px-8">
-            Apply to Drive Now <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
+      {/* Download App Section */}
+      <section className="py-20 bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Ready to Keep 100% of Net Fare?
+            </h2>
+            <p className="text-red-100 max-w-2xl mx-auto text-lg">
+              Join Spinr today. Scan to apply and start driving.
+            </p>
+          </div>
+
+          <div className="flex justify-center max-w-sm mx-auto">
+            {/* Driver App QR */}
+            <Link href="https://play.google.com/store/apps/details?id=com.spinr.driver" target="_blank" className="w-full bg-white text-gray-900 p-6 rounded-2xl flex items-center gap-6 hover:bg-gray-50 transition-colors group shadow-lg">
+              <div className="bg-gray-100 p-2 rounded-xl shrink-0">
+                <QRCodeSVG
+                  value="https://play.google.com/store/apps/details?id=com.spinr.driver"
+                  size={80}
+                  level="H"
+                  fgColor="#000000"
+                  bgColor="#ffffff"
+                />
+              </div>
+              <div className="text-left">
+                <h4 className="font-bold text-xl mb-1">Driver App</h4>
+                <div className="flex items-center text-gray-500 gap-2 text-sm group-hover:text-primary transition-colors font-medium">
+                  {/* Changed text as requested "Apply to drive" */}
+                  <span>Apply to Drive</span> <ArrowRight className="w-4 h-4" />
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
       </section>
 
