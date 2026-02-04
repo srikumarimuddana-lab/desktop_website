@@ -8,7 +8,7 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 export async function generateMetadata({ params }) {
   const { slug } = params
   const legalPath = `/legal/${slug}`
-  
+
   // Try to fetch from SEO pages table
   if (isSupabaseConfigured()) {
     try {
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }) {
         .select('title, description, keywords, og_image, canonical')
         .eq('path', legalPath)
         .single()
-      
+
       if (seoData) {
         return {
           title: seoData.title,
@@ -37,16 +37,16 @@ export async function generateMetadata({ params }) {
       console.log('Failed to fetch SEO metadata, using defaults')
     }
   }
-  
+
   // Fallback metadata
   const titles = {
     'terms': 'Terms of Service',
     'privacy': 'Privacy Policy',
     'driver-agreement': 'Driver Agreement'
   }
-  
+
   const title = titles[slug] || 'Legal'
-  
+
   return {
     title: `${title} | Spinr`,
     description: `Read Spinr's ${title}. Fair, transparent policies for Saskatchewan's rideshare platform.`,
@@ -83,7 +83,7 @@ const defaultContent = {
       <p>We may update these Terms from time to time. Continued use of Spinr constitutes acceptance of any changes.</p>
       
       <h2>7. Contact</h2>
-      <p>For questions about these Terms, contact us at legal@spinr.ca</p>
+      <p>For questions about these Terms, contact us at <a href="mailto:support@spinr.ca" className="text-primary hover:underline">support@spinr.ca</a></p>
     `
   },
   'privacy': {
@@ -124,7 +124,7 @@ const defaultContent = {
       </ul>
       
       <h2>6. Contact</h2>
-      <p>For privacy questions, contact privacy@spinr.ca</p>
+      <p>For privacy questions, contact <a href="mailto:support@spinr.ca" className="text-primary hover:underline">support@spinr.ca</a></p>
     `
   },
   'driver-agreement': {
@@ -166,7 +166,7 @@ const defaultContent = {
       <p>Either party may terminate this agreement at any time. Spinr reserves the right to deactivate drivers who violate these terms or receive consistently poor ratings.</p>
       
       <h2>8. Contact</h2>
-      <p>For driver-related questions, contact drivers@spinr.ca</p>
+      <p>For driver-related questions, contact <a href="mailto:support@spinr.ca" className="text-primary hover:underline">support@spinr.ca</a></p>
     `
   }
 }
@@ -183,7 +183,7 @@ async function getLegalContent(slug) {
         .select('structured_data')
         .eq('path', legalPath)
         .single()
-      
+
       if (seoData && seoData.structured_data) {
         structuredData = seoData.structured_data
       }
@@ -198,7 +198,7 @@ async function getLegalContent(slug) {
     const response = await fetch(`${baseUrl}/api/legal/${slug}`, {
       cache: 'no-store'
     })
-    
+
     if (response.ok) {
       const data = await response.json()
       if (data && data.content_html) {
@@ -208,13 +208,13 @@ async function getLegalContent(slug) {
   } catch (error) {
     console.log('Using default content for:', slug)
   }
-  
+
   // Fall back to default content
   const content = defaultContent[slug]
   if (!content) {
     return null
   }
-  
+
   return {
     title: content.title,
     content_html: content.content,
@@ -234,7 +234,7 @@ export default async function LegalPage({ params }) {
   return (
     <main className="min-h-screen bg-slate-950">
       <Header />
-      
+
       {/* Inject JSON-LD Structured Data */}
       {legalDoc.structuredData && (
         <JsonLdInjector data={legalDoc.structuredData} />
@@ -251,8 +251,8 @@ export default async function LegalPage({ params }) {
                 day: 'numeric'
               })}
             </p>
-            
-            <div 
+
+            <div
               className="prose prose-lg prose-invert max-w-none
                 prose-headings:text-white prose-headings:font-semibold
                 prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4

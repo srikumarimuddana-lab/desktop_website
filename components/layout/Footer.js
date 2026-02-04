@@ -45,7 +45,7 @@ export default function Footer() {
         <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Regina & Saskatoon, SK</span>
-            <span className="flex items-center gap-2"><Mail className="w-4 h-4" /> hello@spinr.ca</span>
+            <span className="flex items-center gap-2"><Mail className="w-4 h-4" /> <a href="mailto:support@spinr.ca" className="hover:text-primary">support@spinr.ca</a></span>
           </div>
           <p>© {new Date().getFullYear()} Spinr. All rights reserved.</p>
         </div>
