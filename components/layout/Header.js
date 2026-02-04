@@ -20,7 +20,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/logo.webp"
+              src="/logo.png"
               alt="Spinr Rideshare Logo"
               width={160}
               height={53}
