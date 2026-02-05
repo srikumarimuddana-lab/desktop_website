@@ -1,4 +1,5 @@
 'use client'
+import { RegisterPayload } from "@/src/types/driver-api"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -44,7 +45,7 @@ export function StepBasicInfo() {
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        await submitBasicInfo(values)
+        await submitBasicInfo(values as RegisterPayload)
     }
 
     return (
