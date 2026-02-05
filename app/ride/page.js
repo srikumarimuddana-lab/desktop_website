@@ -4,12 +4,12 @@ import { ArrowRight, DollarSign, Shield, Clock, MapPin, Smartphone, CreditCard, 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import SmartDownloadButton from '@/components/ui/SmartDownloadButton'
+import SmartAppLink from '@/components/ui/SmartAppLink'
 import FareCalculator from './FareCalculator'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import JsonLdInjector from '@/components/seo/JsonLdInjector'
 import { IMAGES } from '@/constants/images'
-import { QRCodeSVG } from 'qrcode.react'
 import PhoneMockupUI from '@/components/home/PhoneMockupUI'
 import { getSeoMetadata, getStructuredData } from '@/lib/seo'
 
@@ -272,42 +272,10 @@ export default async function RidePage() {
 
           <div className="flex flex-col md:flex-row justify-center gap-6 max-w-4xl mx-auto">
             {/* Rider App QR */}
-            <Link href="https://apps.apple.com/ca/app/spinr/id123456789" target="_blank" className="flex-1 bg-white text-gray-900 p-6 rounded-2xl flex items-center gap-6 hover:bg-gray-50 transition-colors group shadow-lg">
-              <div className="bg-gray-100 p-2 rounded-xl shrink-0">
-                <QRCodeSVG
-                  value="https://apps.apple.com/ca/app/spinr/id123456789"
-                  size={80}
-                  level="H"
-                  fgColor="#000000"
-                  bgColor="#ffffff"
-                />
-              </div>
-              <div className="text-left">
-                <h4 className="font-bold text-xl mb-1">Rider App</h4>
-                <div className="flex items-center text-gray-500 gap-2 text-sm group-hover:text-primary transition-colors font-medium">
-                  <span>Download Now</span> <ArrowRight className="w-4 h-4" />
-                </div>
-              </div>
-            </Link>
+            <SmartAppLink appType="rider" title="Rider App" qrSize={80} className="flex-1 shadow-lg" />
 
             {/* Driver App QR */}
-            <Link href="https://play.google.com/store/apps/details?id=com.spinr.driver" target="_blank" className="flex-1 bg-white text-gray-900 p-6 rounded-2xl flex items-center gap-6 hover:bg-gray-50 transition-colors group shadow-lg">
-              <div className="bg-gray-100 p-2 rounded-xl shrink-0">
-                <QRCodeSVG
-                  value="https://play.google.com/store/apps/details?id=com.spinr.driver"
-                  size={80}
-                  level="H"
-                  fgColor="#000000"
-                  bgColor="#ffffff"
-                />
-              </div>
-              <div className="text-left">
-                <h4 className="font-bold text-xl mb-1">Driver App</h4>
-                <div className="flex items-center text-gray-500 gap-2 text-sm group-hover:text-primary transition-colors font-medium">
-                  <span>Download Now</span> <ArrowRight className="w-4 h-4" />
-                </div>
-              </div>
-            </Link>
+            <SmartAppLink appType="driver" title="Driver App" qrSize={80} className="flex-1 shadow-lg" />
           </div>
         </div>
       </section>

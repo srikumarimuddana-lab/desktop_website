@@ -1,15 +1,15 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { QRCodeSVG } from 'qrcode.react'
 import { ArrowRight, DollarSign, Shield, Clock, Users, Percent, CreditCard, Car, CheckCircle, Ticket, Heart, Smartphone, ShieldCheck, Wallet, MousePointerClick } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import JsonLdInjector from '@/components/seo/JsonLdInjector'
-import HeroMockUI from '@/components/home/HeroMockUI'
+// HeroMockUI removed
 import RiderImageUI from '@/components/home/RiderImageUI'
 import PhoneMockupUI from '@/components/home/PhoneMockupUI'
+import SmartAppLink from '@/components/ui/SmartAppLink'
 import { IMAGES } from '@/constants/images'
 import { getSeoMetadata, getStructuredData } from '@/lib/seo'
 
@@ -45,20 +45,31 @@ export default async function Home() {
       {structuredData && <JsonLdInjector data={structuredData} />}
 
       {/* Hero Section with 2-Column Layout */}
-      <section className="relative pt-32 pb-20 min-h-[90vh] flex items-center overflow-hidden bg-background">
+      <section className="relative pt-32 pb-20 min-h-[90vh] flex items-center overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/saskatchewan_hero.png"
+            alt="Saskatchewan Skyline"
+            fill
+            className="object-cover opacity-30"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent" />
+        </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
             {/* Left Column: Text Content */}
             <div className="relative z-10 max-w-2xl">
-              <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-2 mb-8">
+              <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-2 mb-8 shadow-sm bg-white/80 backdrop-blur-sm">
                 <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                <span className="text-primary text-sm font-medium">Now serving Regina & Saskatoon</span>
+                <span className="text-primary text-sm font-medium">100% Sask Owned | Serving Regina & Saskatoon</span>
               </div>
 
               <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-foreground mb-8 leading-[1.1] tracking-tight">
-                Move freely.<br />
-                <span className="text-primary">Earn on your terms.</span>
+                Saskatchewan's<br />
+                <span className="text-primary">Own Ride.</span>
               </h1>
 
               <p className="text-xl sm:text-2xl text-muted-foreground mb-10 leading-relaxed max-w-lg">
@@ -102,7 +113,15 @@ export default async function Home() {
             <div className="relative z-10 hidden lg:block">
               {/* Blur Blob Background */}
               <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-red-100/50 to-blue-50/50 blur-3xl opacity-70 -z-10 rounded-full" />
-              <HeroMockUI />
+              <div className="relative w-full aspect-square max-w-[500px] mx-auto">
+                <Image
+                  src="/sask_collage_foreground.png"
+                  alt="Happy riders and drivers in Saskatchewan"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
             </div>
 
           </div>
@@ -158,6 +177,8 @@ export default async function Home() {
         </div>
       </section>
 
+
+
       {/* NEW: Exclusive Rider Benefits Section */}
       <section className="py-24 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -196,16 +217,25 @@ export default async function Home() {
                 </ul>
               </div>
 
-              {/* Right Card */}
+              {/* Right Card - Collage */}
               <div className="flex justify-center">
-                <div className="bg-white border-2 border-dashed border-red-200 rounded-3xl p-8 w-full max-w-sm text-center shadow-sm">
-                  <div className="w-16 h-16 bg-red-50 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <Heart className="w-8 h-8 fill-current" />
+                <div className="grid grid-cols-2 gap-4 w-full max-w-md">
+                  <div className="space-y-4 pt-8">
+                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
+                      <Image src="/collage_friends.png" alt="Happy Riders" fill className="object-cover" />
+                    </div>
+                    <div className="relative aspect-square rounded-2xl overflow-hidden shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
+                      <Image src="/collage_city.png" alt="Saskatchewan Cityscape" fill className="object-cover" />
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Prairie Rewards</h3>
-                  <p className="text-gray-500 text-sm">
-                    Earn points on every trip across Saskatchewan and redeem for local discounts.
-                  </p>
+                  <div className="space-y-4">
+                    <div className="relative aspect-square rounded-2xl overflow-hidden shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
+                      <Image src="/collage_driver.png" alt="Spinr Driver" fill className="object-cover" />
+                    </div>
+                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
+                      <Image src="/collage_app_user.png" alt="Using Spinr App" fill className="object-cover" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -262,7 +292,57 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      {/* Game Day Ready Section */}
+      <section className="py-24 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
+            {/* Left Content */}
+            <div>
+              <span className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm font-semibold mb-6">
+                <Users className="w-4 h-4" /> Go Riders!
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                Game Day Ready
+              </h2>
+              <p className="text-lg text-gray-600 mb-10 leading-relaxed max-w-lg">
+                Mosaic Stadium Express. Skip the parking headache on game day. We offer designated drop-off zones closer to the gates and pre-scheduled pickups for when the clock hits zero.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Feature Card 1 */}
+                <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+                  <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-4">
+                    <DollarSign className="w-5 h-5 text-primary" />
+                  </div>
+                  <h4 className="font-bold text-gray-900 mb-1">Surge-Free Rides</h4>
+                  <p className="text-sm text-gray-500">Same low price, rain or shine</p>
+                </div>
+
+                {/* Feature Card 2 */}
+                <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+                  <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-4">
+                    <Clock className="w-5 h-5 text-primary" />
+                  </div>
+                  <h4 className="font-bold text-gray-900 mb-1">Pre-booking</h4>
+                  <p className="text-sm text-gray-500">Reserve your ride 7 days out</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Image */}
+            <div className="relative w-full aspect-square max-w-[500px] mx-auto rounded-[48px] overflow-hidden shadow-xl">
+              <Image
+                src="/game_day_stadium.png"
+                alt="Riders fans at Mosaic Stadium"
+                fill
+                className="object-cover"
+              />
+            </div>
+
+          </div>
+        </div>
+      </section>
       {/* NEW: Get the App CTA Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -284,42 +364,10 @@ export default async function Home() {
 
                 <div className="flex flex-col sm:flex-row gap-6">
                   {/* QR Card 1: Rider App */}
-                  <Link href="https://apps.apple.com/ca/app/spinr/id123456789" target="_blank" className="bg-white p-6 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer min-w-[320px] group border border-gray-100">
-                    <div className="bg-white p-2 rounded-xl border border-gray-100 shrink-0">
-                      <QRCodeSVG
-                        value="https://apps.apple.com/ca/app/spinr/id123456789"
-                        size={128}
-                        level="H"
-                        fgColor="#000000"
-                        bgColor="#ffffff"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-gray-900 text-xl mb-2">Rider App</h4>
-                      <div className="flex items-center text-gray-500 gap-1 group-hover:text-primary transition-colors font-medium">
-                        Scan to download <ArrowRight className="w-4 h-4 ml-1" />
-                      </div>
-                    </div>
-                  </Link>
+                  <SmartAppLink appType="rider" title="Rider App" />
 
                   {/* QR Card 2: Driver App */}
-                  <Link href="https://play.google.com/store/apps/details?id=com.spinr.driver" target="_blank" className="bg-white p-6 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer min-w-[320px] group border border-gray-100">
-                    <div className="bg-white p-2 rounded-xl border border-gray-100 shrink-0">
-                      <QRCodeSVG
-                        value="https://play.google.com/store/apps/details?id=com.spinr.driver"
-                        size={128}
-                        level="H"
-                        fgColor="#000000"
-                        bgColor="#ffffff"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-gray-900 text-xl mb-2">Driver App</h4>
-                      <div className="flex items-center text-gray-500 gap-1 group-hover:text-primary transition-colors font-medium">
-                        Scan to download <ArrowRight className="w-4 h-4 ml-1" />
-                      </div>
-                    </div>
-                  </Link>
+                  <SmartAppLink appType="driver" title="Driver App" />
                 </div>
               </div>
 
