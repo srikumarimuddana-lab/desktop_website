@@ -1,7 +1,13 @@
 const nextConfig = {
   output: 'standalone',
   images: {
-    unoptimized: true,
+    // unoptimized: true, // Commented out to enable Image Optimization
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
   },
   experimental: {
     // Remove if not using Server Components

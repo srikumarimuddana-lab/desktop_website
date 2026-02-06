@@ -17,20 +17,40 @@ const RichTextEditor = dynamic(() => import('@/components/RichTextEditor'), {
 })
 
 const defaultPolicies = {
-  'rider-terms': { 
-    slug: 'rider-terms', 
-    title: 'Rider Terms of Service', 
-    content_html: '<h2>1. Introduction</h2><p>Welcome to Spinr. These Terms govern your use as a rider.</p><h2>2. Pricing</h2><p>You pay the driver\'s rate plus a flat $1 platform fee. No surge pricing.</p><h2>3. Safety</h2><p>All drivers are background checked and verified Saskatchewan locals.</p>' 
+  'rider-terms': {
+    slug: 'rider-terms',
+    title: 'Rider Terms of Service',
+    content_html: '<h2>1. Introduction</h2><p>Welcome to Spinr. These Terms govern your use as a rider.</p>'
   },
-  'driver-agreement': { 
-    slug: 'driver-agreement', 
-    title: 'Driver Agreement', 
-    content_html: '<h2>1. Independent Contractor</h2><p>Drivers are independent contractors, not employees of Spinr.</p><h2>2. Commission</h2><p>Spinr charges 0% commission. You keep 100% of fares.</p><h2>3. Requirements</h2><p>You must be 21+, have a valid SK license for 1+ year, pass background check, and have a 2015+ vehicle.</p>' 
+  'driver-terms': {
+    slug: 'driver-terms',
+    title: 'Driver Terms of Service',
+    content_html: '<h2>1. Driver Obligations</h2><p>Drivers must maintain a valid license and insurance.</p>'
   },
-  'privacy': { 
-    slug: 'privacy', 
-    title: 'Privacy Policy', 
-    content_html: '<h2>1. Information We Collect</h2><p>We collect account info, payment details, and location data to provide our services.</p><h2>2. How We Use Data</h2><p>Your data is used to facilitate rides, process payments, and improve our platform.</p>' 
+  'rider-policy': {
+    slug: 'rider-policy',
+    title: 'Rider Privacy Policy',
+    content_html: '<h2>1. Rider Data Collection</h2><p>We collect location and payment data.</p>'
+  },
+  'driver-policy': {
+    slug: 'driver-policy',
+    title: 'Driver Privacy Policy',
+    content_html: '<h2>1. Driver Data Collection</h2><p>We collect license and vehicle info.</p>'
+  },
+  'driver-agreement': {
+    slug: 'driver-agreement',
+    title: 'Driver Agreement (Legacy)',
+    content_html: '<h2>Legacy Agreement</h2><p>This is the old driver agreement file.</p>'
+  },
+  'privacy': {
+    slug: 'privacy',
+    title: 'Privacy Policy (Legacy)',
+    content_html: '<h2>Legacy Privacy</h2><p>This is the old privacy policy file.</p>'
+  },
+  'terms': {
+    slug: 'terms',
+    title: 'Terms of Service (Legacy)',
+    content_html: '<h2>Legacy Terms</h2><p>This is the old terms file.</p>'
   }
 }
 
@@ -46,9 +66,9 @@ export default function PoliciesPage() {
 
   const fetchPolicies = async () => {
     try {
-      const slugs = ['rider-terms', 'driver-agreement', 'privacy']
+      const slugs = ['rider-terms', 'driver-terms', 'rider-policy', 'driver-policy', 'driver-agreement', 'privacy', 'terms']
       const fetched = { ...defaultPolicies }
-      
+
       for (const slug of slugs) {
         try {
           const res = await fetch(`/api/legal/${slug}`)
@@ -65,8 +85,8 @@ export default function PoliciesPage() {
       setPolicies(fetched)
     } catch (err) {
       console.error('Error fetching policies:', err)
-    } finally { 
-      setLoading(false) 
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -78,7 +98,7 @@ export default function PoliciesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(policies[slug])
       })
-      
+
       if (res.ok) {
         toast.success('Policy updated successfully!', {
           description: `${policies[slug].title} has been saved.`
@@ -92,15 +112,15 @@ export default function PoliciesPage() {
       toast.error('Error occurred', {
         description: 'Could not save the policy. Please try again.'
       })
-    } finally { 
-      setSaving(false) 
+    } finally {
+      setSaving(false)
     }
   }
 
   const updatePolicy = useCallback((slug, field, value) => {
-    setPolicies(prev => ({ 
-      ...prev, 
-      [slug]: { ...prev[slug], [field]: value } 
+    setPolicies(prev => ({
+      ...prev,
+      [slug]: { ...prev[slug], [field]: value }
     }))
   }, [])
 
@@ -108,7 +128,7 @@ export default function PoliciesPage() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <FileText className="w-5 h-5 text-primary" /> 
+          <FileText className="w-5 h-5 text-primary" />
           {policies[slug]?.title}
         </CardTitle>
         <CardDescription>
@@ -118,12 +138,12 @@ export default function PoliciesPage() {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label>Document Title</Label>
-          <Input 
-            value={policies[slug]?.title || ''} 
-            onChange={(e) => updatePolicy(slug, 'title', e.target.value)} 
+          <Input
+            value={policies[slug]?.title || ''}
+            onChange={(e) => updatePolicy(slug, 'title', e.target.value)}
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label>Content</Label>
           <RichTextEditor
@@ -132,18 +152,18 @@ export default function PoliciesPage() {
             placeholder="Start writing your policy..."
           />
         </div>
-        
+
         <div className="flex justify-between items-center pt-4">
-          <Link 
-            href={`/legal/${slug}`} 
-            target="_blank" 
+          <Link
+            href={`/legal/${slug}`}
+            target="_blank"
             className="text-primary hover:text-primary/80 text-sm flex items-center gap-1"
           >
             <Eye className="w-4 h-4" /> Preview Page
           </Link>
-          <Button 
-            onClick={() => handleSave(slug)} 
-            className="bg-primary hover:bg-primary/90" 
+          <Button
+            onClick={() => handleSave(slug)}
+            className="bg-primary hover:bg-primary/90"
             disabled={saving}
           >
             {saving ? (
@@ -163,45 +183,26 @@ export default function PoliciesPage() {
         <h1 className="text-3xl font-bold mb-2">Policy Manager</h1>
         <p className="text-muted-foreground">Edit legal documents with the rich text editor.</p>
       </div>
-      
+
       {loading ? (
         <div className="flex justify-center py-12">
           <Loader2 className="w-8 h-8 text-primary animate-spin" />
         </div>
       ) : (
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6">
-            <TabsTrigger 
-              value="rider-terms" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Rider Terms
-            </TabsTrigger>
-            <TabsTrigger 
-              value="driver-agreement" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Driver Agreement
-            </TabsTrigger>
-            <TabsTrigger 
-              value="privacy" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Privacy Policy
-            </TabsTrigger>
+          <TabsList className="mb-6 flex flex-wrap h-auto gap-2">
+            <TabsTrigger value="rider-terms">Rider Terms</TabsTrigger>
+            <TabsTrigger value="rider-policy">Rider Privacy</TabsTrigger>
+            <TabsTrigger value="driver-terms">Driver Terms</TabsTrigger>
+            <TabsTrigger value="driver-policy">Driver Privacy</TabsTrigger>
+            <TabsTrigger value="driver-agreement">Driver Agreement (Legacy)</TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="rider-terms">
-            <PolicyEditor slug="rider-terms" />
-          </TabsContent>
-          
-          <TabsContent value="driver-agreement">
-            <PolicyEditor slug="driver-agreement" />
-          </TabsContent>
-          
-          <TabsContent value="privacy">
-            <PolicyEditor slug="privacy" />
-          </TabsContent>
+
+          <TabsContent value="rider-terms"><PolicyEditor slug="rider-terms" /></TabsContent>
+          <TabsContent value="rider-policy"><PolicyEditor slug="rider-policy" /></TabsContent>
+          <TabsContent value="driver-terms"><PolicyEditor slug="driver-terms" /></TabsContent>
+          <TabsContent value="driver-policy"><PolicyEditor slug="driver-policy" /></TabsContent>
+          <TabsContent value="driver-agreement"><PolicyEditor slug="driver-agreement" /></TabsContent>
         </Tabs>
       )}
     </div>

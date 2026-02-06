@@ -8,7 +8,7 @@ export default function PhoneMockupUI() {
                 alt="Spinr app showing ride in progress"
                 fill
                 className="object-cover"
-                priority
+                sizes="(max-width: 768px) 100vw, 320px"
             />
         </div>
     )
