@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { Plus, Trash2, Edit, Save, Loader2, BookOpen, Star, ExternalLink } from 'lucide-react'
@@ -53,7 +54,9 @@ export default function HelpArticlesPage() {
 
     const fetchArticles = async () => {
         try {
-            const res = await fetch('/api/help-articles')
+            const { data: { session } } = await supabase.auth.getSession()
+            const headers = session ? { Authorization: `Bearer ${session.access_token}` } : {}
+            const res = await fetch('/api/help-articles', { headers })
             if (res.ok) setArticles(await res.json())
         } catch (e) {
             console.error('Error fetching articles:', e)
@@ -75,11 +78,17 @@ export default function HelpArticlesPage() {
                 slug: form.slug || generateSlug(form.title)
             }
 
+            const { data: { session } } = await supabase.auth.getSession()
+            const token = session?.access_token
+
             const res = await fetch(
                 editingArticle ? `/api/help-articles/${editingArticle.id}` : '/api/help-articles',
                 {
                     method: editingArticle ? 'PUT' : 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { Authorization: `Bearer ${token}` } : {})
+                    },
                     body: JSON.stringify(payload)
                 }
             )
@@ -105,7 +114,9 @@ export default function HelpArticlesPage() {
     const handleDelete = async (id) => {
         if (!confirm('Delete this article?')) return
         try {
-            const res = await fetch(`/api/help-articles/${id}`, { method: 'DELETE' })
+            const { data: { session } } = await supabase.auth.getSession()
+            const headers = session ? { Authorization: `Bearer ${session.access_token}` } : {}
+            const res = await fetch(`/api/help-articles/${id}`, { method: 'DELETE', headers })
             if (res.ok) {
                 toast.success('Article deleted!')
                 fetchArticles()

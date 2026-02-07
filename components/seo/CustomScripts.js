@@ -16,7 +16,7 @@ export default function CustomScripts({ position }) {
                 .from('seo_pages')
                 .select(`custom_${position}`)
                 .eq('path', pathname)
-                .single()
+                .maybeSingle()
 
             if (data && data[`custom_${position}`]) {
                 setScripts(data[`custom_${position}`])

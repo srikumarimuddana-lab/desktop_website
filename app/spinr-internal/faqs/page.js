@@ -34,16 +34,26 @@ export default function FAQsPage() {
   useEffect(() => { fetchFaqs() }, [])
 
   const fetchFaqs = async () => {
-    try { const res = await fetch('/api/faqs'); if (res.ok) setFaqs(await res.json()) }
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const headers = session ? { Authorization: `Bearer ${session.access_token}` } : {}
+      const res = await fetch('/api/faqs', { headers });
+      if (res.ok) setFaqs(await res.json())
+    }
     catch { } finally { setLoading(false) }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault(); setSaving(true)
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
       const res = await fetch(editingFaq ? `/api/faqs/${editingFaq.id}` : '/api/faqs', {
         method: editingFaq ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ ...form, tags: form.tags.split(',').map(t => t.trim()).filter(t => t) })
       })
       if (res.ok) {
@@ -65,7 +75,9 @@ export default function FAQsPage() {
   const handleDelete = async (id) => {
     if (!confirm('Delete this FAQ?')) return
     try {
-      const res = await fetch(`/api/faqs/${id}`, { method: 'DELETE' })
+      const { data: { session } } = await supabase.auth.getSession()
+      const headers = session ? { Authorization: `Bearer ${session.access_token}` } : {}
+      const res = await fetch(`/api/faqs/${id}`, { method: 'DELETE', headers })
       if (res.ok) {
         toast.success('FAQ deleted!')
         fetchFaqs()

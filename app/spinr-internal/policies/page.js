@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { Save, FileText, Loader2, Eye } from 'lucide-react'
@@ -71,7 +72,9 @@ export default function PoliciesPage() {
 
       for (const slug of slugs) {
         try {
-          const res = await fetch(`/api/legal/${slug}`)
+          const { data: { session } } = await supabase.auth.getSession()
+          const headers = session ? { Authorization: `Bearer ${session.access_token}` } : {}
+          const res = await fetch(`/api/legal/${slug}`, { headers })
           if (res.ok) {
             const data = await res.json()
             if (data?.content_html) {
@@ -93,9 +96,14 @@ export default function PoliciesPage() {
   const handleSave = async (slug) => {
     setSaving(true)
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
       const res = await fetch(`/api/legal/${slug}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         body: JSON.stringify(policies[slug])
       })
 
@@ -124,59 +132,6 @@ export default function PoliciesPage() {
     }))
   }, [])
 
-  const PolicyEditor = ({ slug }) => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="w-5 h-5 text-primary" />
-          {policies[slug]?.title}
-        </CardTitle>
-        <CardDescription>
-          Use the toolbar to format text. Changes are saved when you click Save.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label>Document Title</Label>
-          <Input
-            value={policies[slug]?.title || ''}
-            onChange={(e) => updatePolicy(slug, 'title', e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Content</Label>
-          <RichTextEditor
-            content={policies[slug]?.content_html || ''}
-            onChange={(html) => updatePolicy(slug, 'content_html', html)}
-            placeholder="Start writing your policy..."
-          />
-        </div>
-
-        <div className="flex justify-between items-center pt-4">
-          <Link
-            href={`/legal/${slug}`}
-            target="_blank"
-            className="text-primary hover:text-primary/80 text-sm flex items-center gap-1"
-          >
-            <Eye className="w-4 h-4" /> Preview Page
-          </Link>
-          <Button
-            onClick={() => handleSave(slug)}
-            className="bg-primary hover:bg-primary/90"
-            disabled={saving}
-          >
-            {saving ? (
-              <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Saving...</>
-            ) : (
-              <><Save className="w-4 h-4 mr-2" /> Save Changes</>
-            )}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  )
-
   return (
     <div className="p-8">
       <div className="mb-8">
@@ -198,13 +153,66 @@ export default function PoliciesPage() {
             <TabsTrigger value="driver-agreement">Driver Agreement (Legacy)</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="rider-terms"><PolicyEditor slug="rider-terms" /></TabsContent>
-          <TabsContent value="rider-policy"><PolicyEditor slug="rider-policy" /></TabsContent>
-          <TabsContent value="driver-terms"><PolicyEditor slug="driver-terms" /></TabsContent>
-          <TabsContent value="driver-policy"><PolicyEditor slug="driver-policy" /></TabsContent>
-          <TabsContent value="driver-agreement"><PolicyEditor slug="driver-agreement" /></TabsContent>
+          <TabsContent value="rider-terms"><PolicyEditor slug="rider-terms" policies={policies} updatePolicy={updatePolicy} handleSave={handleSave} saving={saving} /></TabsContent>
+          <TabsContent value="rider-policy"><PolicyEditor slug="rider-policy" policies={policies} updatePolicy={updatePolicy} handleSave={handleSave} saving={saving} /></TabsContent>
+          <TabsContent value="driver-terms"><PolicyEditor slug="driver-terms" policies={policies} updatePolicy={updatePolicy} handleSave={handleSave} saving={saving} /></TabsContent>
+          <TabsContent value="driver-policy"><PolicyEditor slug="driver-policy" policies={policies} updatePolicy={updatePolicy} handleSave={handleSave} saving={saving} /></TabsContent>
+          <TabsContent value="driver-agreement"><PolicyEditor slug="driver-agreement" policies={policies} updatePolicy={updatePolicy} handleSave={handleSave} saving={saving} /></TabsContent>
         </Tabs>
       )}
     </div>
   )
 }
+
+const PolicyEditor = ({ slug, policies, updatePolicy, handleSave, saving }) => (
+  <Card>
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2">
+        <FileText className="w-5 h-5 text-primary" />
+        {policies[slug]?.title}
+      </CardTitle>
+      <CardDescription>
+        Use the toolbar to format text. Changes are saved when you click Save.
+      </CardDescription>
+    </CardHeader>
+    <CardContent className="space-y-4">
+      <div className="space-y-2">
+        <Label>Document Title</Label>
+        <Input
+          value={policies[slug]?.title || ''}
+          onChange={(e) => updatePolicy(slug, 'title', e.target.value)}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Content</Label>
+        <RichTextEditor
+          content={policies[slug]?.content_html || ''}
+          onChange={(html) => updatePolicy(slug, 'content_html', html)}
+          placeholder="Start writing your policy..."
+        />
+      </div>
+
+      <div className="flex justify-between items-center pt-4">
+        <Link
+          href={`/legal/${slug}`}
+          target="_blank"
+          className="text-primary hover:text-primary/80 text-sm flex items-center gap-1"
+        >
+          <Eye className="w-4 h-4" /> Preview Page
+        </Link>
+        <Button
+          onClick={() => handleSave(slug)}
+          className="bg-primary hover:bg-primary/90"
+          disabled={saving}
+        >
+          {saving ? (
+            <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Saving...</>
+          ) : (
+            <><Save className="w-4 h-4 mr-2" /> Save Changes</>
+          )}
+        </Button>
+      </div>
+    </CardContent>
+  </Card>
+)

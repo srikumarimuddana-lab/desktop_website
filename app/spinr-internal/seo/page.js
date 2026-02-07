@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
 import { Plus, Edit, Trash2, Save, X, AlertCircle, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -21,7 +22,9 @@ export default function SEOManagerPage() {
 
   const fetchSeoPages = async () => {
     try {
-      const res = await fetch('/api/seo-pages')
+      const { data: { session } } = await supabase.auth.getSession()
+      const headers = session ? { Authorization: `Bearer ${session.access_token}` } : {}
+      const res = await fetch('/api/seo-pages', { headers })
       if (res.ok) {
         const data = await res.json()
         setSeoPages(data)
@@ -97,9 +100,15 @@ export default function SEOManagerPage() {
       const method = isCreating ? 'POST' : 'PUT'
       const url = isCreating ? '/api/seo-pages' : `/api/seo-pages/${encodeURIComponent(editingPage.path)}`
 
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         body: JSON.stringify(payload)
       })
 
@@ -120,8 +129,11 @@ export default function SEOManagerPage() {
     if (!confirm(`Delete SEO configuration for "${path}"?`)) return
 
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const headers = session ? { Authorization: `Bearer ${session.access_token}` } : {}
       const res = await fetch(`/api/seo-pages/${encodeURIComponent(path)}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers
       })
 
       if (res.ok) {
