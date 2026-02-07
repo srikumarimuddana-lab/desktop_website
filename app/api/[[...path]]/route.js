@@ -138,122 +138,7 @@ let demoLegalDocs = {
   }
 }
 
-// Help Articles demo storage
-let demoHelpArticles = [
-  {
-    id: '1',
-    slug: 'how-to-request-ride',
-    title: 'How to request a ride',
-    category_id: 'riding',
-    category_title: 'Riding with Spinr',
-    content: `<h2>Requesting a ride with Spinr</h2>
-<p>Getting a ride with Spinr is quick and easy. Follow these simple steps:</p>
-<h3>Step 1: Open the Spinr app</h3>
-<p>Launch the Spinr app on your phone. Make sure you're logged into your account.</p>
-<h3>Step 2: Enter your destination</h3>
-<p>Tap "Where to?" and enter your destination address. You can search by address, business name, or saved locations.</p>
-<h3>Step 3: Choose your ride type</h3>
-<p>Select from available ride options. You'll see the estimated fare and arrival time for each option.</p>
-<h3>Step 4: Confirm your pickup location</h3>
-<p>Make sure your pickup pin is in the right spot. You can adjust it by dragging the map.</p>
-<h3>Step 5: Request your ride</h3>
-<p>Tap "Request Spinr" to confirm. You'll be matched with a nearby driver.</p>`,
-    is_popular: true,
-    order_index: 1,
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '2',
-    slug: 'payment-methods',
-    title: 'Adding and managing payment methods',
-    category_id: 'riding',
-    category_title: 'Riding with Spinr',
-    content: `<h2>Managing your payment methods</h2>
-<p>Spinr makes it easy to add and manage your payment options.</p>
-<h3>Adding a new payment method</h3>
-<ol>
-  <li>Open the Spinr app and tap on your profile icon</li>
-  <li>Select "Wallet" or "Payment"</li>
-  <li>Tap "Add payment method"</li>
-  <li>Choose from credit/debit card, or other available options</li>
-  <li>Enter your payment details and save</li>
-</ol>
-<h3>Accepted payment methods</h3>
-<ul>
-  <li>Visa, Mastercard, American Express</li>
-  <li>Prepaid cards</li>
-  <li>Apple Pay and Google Pay (where available)</li>
-</ul>`,
-    is_popular: true,
-    order_index: 2,
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '3',
-    slug: 'lost-items',
-    title: 'Lost and found for riders',
-    category_id: 'riding',
-    category_title: 'Riding with Spinr',
-    content: `<h2>Left something behind?</h2>
-<p>We know how stressful it can be to lose something. Here's how to get your items back.</p>
-<h3>Contact your driver</h3>
-<ol>
-  <li>Open the Spinr app</li>
-  <li>Go to "Your Trips" or "Ride History"</li>
-  <li>Select the trip where you left your item</li>
-  <li>Tap "I lost an item"</li>
-  <li>Follow the prompts to contact your driver</li>
-</ol>
-<p>If your driver finds your item, you can arrange a mutually convenient time and place to pick it up.</p>`,
-    is_popular: true,
-    order_index: 3,
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '4',
-    slug: 'driver-earnings',
-    title: 'How and when driver pay is calculated',
-    category_id: 'driving',
-    category_title: 'Driving with Spinr',
-    content: `<h2>Understanding your earnings</h2>
-<p>Your earnings are calculated based on several factors for each ride.</p>
-<h3>How earnings are calculated</h3>
-<ul>
-  <li><strong>Base fare:</strong> A set amount for accepting the ride</li>
-  <li><strong>Distance:</strong> Amount per kilometer driven</li>
-  <li><strong>Time:</strong> Amount per minute of the trip</li>
-  <li><strong>Tips:</strong> 100% of tips go directly to you</li>
-</ul>
-<h3>When you get paid</h3>
-<p>Earnings are deposited directly to your bank account every week on Tuesday.</p>`,
-    is_popular: true,
-    order_index: 4,
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '5',
-    slug: 'safety-guidelines',
-    title: 'Safety guidelines and policies',
-    category_id: 'safety',
-    category_title: 'Safety & Policies',
-    content: `<h2>Your safety is our priority</h2>
-<p>At Spinr, we're committed to keeping both riders and drivers safe.</p>
-<h3>For Riders</h3>
-<ul>
-  <li><strong>Verify your ride:</strong> Always confirm the driver's name, photo, and license plate</li>
-  <li><strong>Share your trip:</strong> Use the "Share ride status" feature to let friends track your trip</li>
-  <li><strong>Sit in the back:</strong> For added safety, we recommend sitting in the back seat</li>
-</ul>
-<h3>For Drivers</h3>
-<ul>
-  <li><strong>Follow traffic laws:</strong> Always obey speed limits and traffic signals</li>
-  <li><strong>Stay alert:</strong> Never drive while fatigued or under the influence</li>
-</ul>`,
-    is_popular: true,
-    order_index: 5,
-    created_at: new Date().toISOString()
-  }
-]
+
 
 // Help Categories
 const HELP_CATEGORIES = [
@@ -587,11 +472,11 @@ async function handleRoute(request, { params }) {
 
         if (error) {
           console.error('Supabase error:', error)
-          return handleCORS(NextResponse.json(demoHelpArticles))
+          return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
         }
         return handleCORS(NextResponse.json(data || []))
       }
-      return handleCORS(NextResponse.json(demoHelpArticles))
+      return handleCORS(NextResponse.json({ error: 'Database not configured' }, { status: 503 }))
     }
 
     // Help Categories - GET /api/help-categories
@@ -611,17 +496,11 @@ async function handleRoute(request, { params }) {
           .single()
 
         if (error || !data) {
-          // Try demo data
-          const article = demoHelpArticles.find(a => a.slug === slug)
-          if (article) return handleCORS(NextResponse.json(article))
           return handleCORS(NextResponse.json({ error: 'Article not found' }, { status: 404 }))
         }
         return handleCORS(NextResponse.json(data))
       }
-
-      const article = demoHelpArticles.find(a => a.slug === slug)
-      if (article) return handleCORS(NextResponse.json(article))
-      return handleCORS(NextResponse.json({ error: 'Article not found' }, { status: 404 }))
+      return handleCORS(NextResponse.json({ error: 'Database not configured' }, { status: 503 }))
     }
 
     // Help Articles - POST /api/help-articles
@@ -640,7 +519,7 @@ async function handleRoute(request, { params }) {
         category_title: category?.title || body.category_id,
         content: body.content || '',
         is_popular: body.is_popular || false,
-        order_index: body.order_index || demoHelpArticles.length + 1,
+        order_index: body.order_index || 1, // Defaulting to 1 if not provided, removed fallback length check
         created_at: new Date().toISOString()
       }
 
@@ -657,9 +536,7 @@ async function handleRoute(request, { params }) {
         }
         return handleCORS(NextResponse.json(data))
       }
-
-      demoHelpArticles.push(newArticle)
-      return handleCORS(NextResponse.json(newArticle))
+      return handleCORS(NextResponse.json({ error: 'Database not configured' }, { status: 503 }))
     }
 
     // Help Articles - PUT /api/help-articles/:id
@@ -695,18 +572,7 @@ async function handleRoute(request, { params }) {
         }
         return handleCORS(NextResponse.json(data))
       }
-
-      const index = demoHelpArticles.findIndex(a => a.id === id)
-      if (index !== -1) {
-        demoHelpArticles[index] = {
-          ...demoHelpArticles[index],
-          ...body,
-          category_title: category?.title || body.category_id,
-          updated_at: new Date().toISOString()
-        }
-        return handleCORS(NextResponse.json(demoHelpArticles[index]))
-      }
-      return handleCORS(NextResponse.json({ error: 'Article not found' }, { status: 404 }))
+      return handleCORS(NextResponse.json({ error: 'Database not configured' }, { status: 503 }))
     }
 
     // Help Articles - DELETE /api/help-articles/:id
@@ -729,9 +595,7 @@ async function handleRoute(request, { params }) {
         }
         return handleCORS(NextResponse.json({ success: true }))
       }
-
-      demoHelpArticles = demoHelpArticles.filter(a => a.id !== id)
-      return handleCORS(NextResponse.json({ success: true }))
+      return handleCORS(NextResponse.json({ error: 'Database not configured' }, { status: 503 }))
     }
 
     // Legal Docs - GET /api/legal/:slug

@@ -1,3 +1,4 @@
+import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import {
@@ -6,6 +7,7 @@ import {
     ThumbsUp,
     ThumbsDown,
     Mail,
+    Sparkles,
 } from 'lucide-react'
 import DOMPurify from 'isomorphic-dompurify'
 import Header from '@/components/layout/Header'
@@ -13,20 +15,20 @@ import Footer from '@/components/layout/Footer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
-    getArticleBySlug,
-    getAllArticleSlugs,
     HELP_CATEGORIES,
 } from '@/constants/helpTopics'
 
-// Generate static params for all articles
-export async function generateStaticParams() {
-    return getAllArticleSlugs().map(({ slug }) => ({ slug }))
-}
+export const revalidate = 0
 
 // Dynamic metadata
 export async function generateMetadata({ params }) {
     const { slug } = await params
-    const article = getArticleBySlug(slug)
+
+    const { data: article } = await supabase
+        .from('help_articles')
+        .select('*')
+        .eq('slug', slug)
+        .single()
 
     if (!article) {
         return { title: 'Article Not Found | Spinr Help' }
@@ -34,25 +36,34 @@ export async function generateMetadata({ params }) {
 
     return {
         title: `${article.title} | Spinr Help`,
-        description: `Learn about ${article.title.toLowerCase()}. Get help with ${article.categoryTitle.toLowerCase()} on Spinr.`,
+        description: `Learn about ${article.title.toLowerCase()}. Get help with ${article.category_title.toLowerCase()} on Spinr.`,
     }
 }
 
 export default async function ArticlePage({ params }) {
     const { slug } = await params
-    const article = getArticleBySlug(slug)
+
+    // Fetch article from Supabase
+    const { data: article } = await supabase
+        .from('help_articles')
+        .select('*')
+        .eq('slug', slug)
+        .single()
 
     if (!article) {
         notFound()
     }
 
-    const Icon = article.categoryIcon
-    const category = HELP_CATEGORIES.find((c) => c.id === article.categoryId)
+    const category = HELP_CATEGORIES.find((c) => c.id === article.category_id)
+    const Icon = category?.icon || Sparkles
 
-    // Get related articles
-    const relatedArticles = (article.relatedArticles || [])
-        .map((slug) => getArticleBySlug(slug))
-        .filter(Boolean)
+    // Fetch related articles (same category, not current one, limit 3)
+    const { data: relatedArticles } = await supabase
+        .from('help_articles')
+        .select('slug, title')
+        .eq('category_id', article.category_id)
+        .neq('id', article.id)
+        .limit(3)
 
     return (
         <main className="min-h-screen bg-gray-50">
@@ -70,10 +81,10 @@ export default async function ArticlePage({ params }) {
                         </Link>
                         <ChevronRight className="w-4 h-4 text-gray-300" />
                         <Link
-                            href={`/help/category/${article.categorySlug}`}
+                            href={`/help/category/${category?.slug || 'general'}`}
                             className="text-gray-500 hover:text-red-600 transition-colors"
                         >
-                            {article.categoryTitle}
+                            {category?.title || 'General'}
                         </Link>
                         <ChevronRight className="w-4 h-4 text-gray-300" />
                         <span className="text-gray-900 font-medium">{article.title}</span>
@@ -88,7 +99,7 @@ export default async function ArticlePage({ params }) {
                                 <Icon className="w-6 h-6" />
                             </div>
                             <span className="text-sm font-medium text-gray-500">
-                                {article.categoryTitle}
+                                {category?.title || 'Help Article'}
                             </span>
                         </div>
                         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -142,7 +153,7 @@ export default async function ArticlePage({ params }) {
                     </Card>
 
                     {/* Related Articles */}
-                    {relatedArticles.length > 0 && (
+                    {relatedArticles && relatedArticles.length > 0 && (
                         <div className="mb-8">
                             <h2 className="text-xl font-bold text-gray-900 mb-4">
                                 Related articles
@@ -150,7 +161,7 @@ export default async function ArticlePage({ params }) {
                             <div className="grid gap-3">
                                 {relatedArticles.map((related) => (
                                     <Link
-                                        key={related.id}
+                                        key={related.slug}
                                         href={`/help/article/${related.slug}`}
                                         className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 hover:border-red-200 hover:shadow-sm transition-all group"
                                     >
@@ -163,6 +174,7 @@ export default async function ArticlePage({ params }) {
                             </div>
                         </div>
                     )}
+
 
                     {/* Still need help */}
                     <Card className="bg-gradient-to-r from-red-500 to-orange-500 border-0">

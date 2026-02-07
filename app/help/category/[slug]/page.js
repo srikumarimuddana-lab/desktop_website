@@ -1,3 +1,4 @@
+import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ChevronRight, ArrowLeft, Search } from 'lucide-react'
@@ -5,7 +6,9 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { getCategoryBySlug, HELP_CATEGORIES } from '@/constants/helpTopics'
+import { HELP_CATEGORIES } from '@/constants/helpTopics'
+
+export const revalidate = 0
 
 // Generate static params for all categories
 export async function generateStaticParams() {
@@ -15,7 +18,7 @@ export async function generateStaticParams() {
 // Dynamic metadata
 export async function generateMetadata({ params }) {
     const { slug } = await params
-    const category = getCategoryBySlug(slug)
+    const category = HELP_CATEGORIES.find(c => c.slug === slug)
 
     if (!category) {
         return { title: 'Category Not Found | Spinr Help' }
@@ -29,11 +32,18 @@ export async function generateMetadata({ params }) {
 
 export default async function CategoryPage({ params }) {
     const { slug } = await params
-    const category = getCategoryBySlug(slug)
+    const category = HELP_CATEGORIES.find(c => c.slug === slug)
 
     if (!category) {
         notFound()
     }
+
+    // Fetch articles for this category
+    const { data: articles } = await supabase
+        .from('help_articles')
+        .select('*')
+        .eq('category_id', category.id)
+        .order('order_index', { ascending: true })
 
     const Icon = category.icon
 
@@ -71,10 +81,10 @@ export default async function CategoryPage({ params }) {
                     {/* Articles List */}
                     <div className="space-y-3 mb-10">
                         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                            {category.articles.length} articles in this category
+                            {articles && articles.length > 0 ? `${articles.length} articles in this category` : 'No articles yet'}
                         </h2>
 
-                        {category.articles.map((article) => (
+                        {articles && articles.map((article) => (
                             <Link
                                 key={article.id}
                                 href={`/help/article/${article.slug}`}
@@ -92,7 +102,7 @@ export default async function CategoryPage({ params }) {
                                                 <h3 className="font-medium text-gray-900 group-hover:text-red-600 transition-colors">
                                                     {article.title}
                                                 </h3>
-                                                {article.popular && (
+                                                {article.is_popular && (
                                                     <span className="inline-block mt-1 text-xs font-medium text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
                                                         Popular
                                                     </span>

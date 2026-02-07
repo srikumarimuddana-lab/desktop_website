@@ -12,11 +12,24 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { HELP_CATEGORIES, POPULAR_ARTICLES } from '@/constants/helpTopics'
+import { HELP_CATEGORIES } from '@/constants/helpTopics'
 
-export default function HelpCenterClient() {
+export default function HelpCenterClient({ articles = [] }) {
     const [searchQuery, setSearchQuery] = useState('')
     const [hoveredCategory, setHoveredCategory] = useState(null)
+
+    // Hydrate categories with DB articles
+    const categories = useMemo(() => {
+        return HELP_CATEGORIES.map(cat => ({
+            ...cat,
+            articles: articles.filter(a => a.category_id === cat.id).sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+        }))
+    }, [articles])
+
+    const popularArticles = useMemo(() => {
+        return articles.filter(a => a.is_popular).slice(0, 4)
+    }, [articles])
+
 
     // Search across all articles
     const searchResults = useMemo(() => {
@@ -25,7 +38,7 @@ export default function HelpCenterClient() {
         const query = searchQuery.toLowerCase()
         const results = []
 
-        HELP_CATEGORIES.forEach((category) => {
+        categories.forEach((category) => {
             category.articles.forEach((article) => {
                 if (article.title.toLowerCase().includes(query)) {
                     results.push({
@@ -40,7 +53,7 @@ export default function HelpCenterClient() {
         })
 
         return results.slice(0, 8) // Limit to 8 results
-    }, [searchQuery])
+    }, [searchQuery, categories])
 
     const isSearching = searchQuery.trim().length > 0
 
@@ -135,40 +148,45 @@ export default function HelpCenterClient() {
 
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
                 {/* Popular Articles */}
-                <section className="mb-16">
-                    <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                            Popular articles
-                        </h2>
-                    </div>
+                {popularArticles.length > 0 && (
+                    <section className="mb-16">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+                                Popular articles
+                            </h2>
+                        </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {POPULAR_ARTICLES.slice(0, 4).map((article) => {
-                            const Icon = article.icon
-                            return (
-                                <Link
-                                    key={article.id}
-                                    href={`/help/article/${article.slug}`}
-                                    className="group"
-                                >
-                                    <Card className="h-full border-gray-100 hover:border-red-200 hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1">
-                                        <CardContent className="p-6">
-                                            <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-red-500 mb-4 group-hover:bg-red-100 transition-colors">
-                                                <Icon className="w-6 h-6" />
-                                            </div>
-                                            <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
-                                                {article.title}
-                                            </h3>
-                                            <p className="text-sm text-gray-500">
-                                                {article.categoryTitle}
-                                            </p>
-                                        </CardContent>
-                                    </Card>
-                                </Link>
-                            )
-                        })}
-                    </div>
-                </section>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {popularArticles.map((article) => {
+                                // Find icon for article category
+                                const cat = HELP_CATEGORIES.find(c => c.id === article.category_id)
+                                const Icon = cat?.icon || Sparkles
+
+                                return (
+                                    <Link
+                                        key={article.id}
+                                        href={`/help/article/${article.slug}`}
+                                        className="group"
+                                    >
+                                        <Card className="h-full border-gray-100 hover:border-red-200 hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1">
+                                            <CardContent className="p-6">
+                                                <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center text-red-500 mb-4 group-hover:bg-red-100 transition-colors">
+                                                    <Icon className="w-6 h-6" />
+                                                </div>
+                                                <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                                                    {article.title}
+                                                </h3>
+                                                <p className="text-sm text-gray-500">
+                                                    {cat?.title || 'Help Article'}
+                                                </p>
+                                            </CardContent>
+                                        </Card>
+                                    </Link>
+                                )
+                            })}
+                        </div>
+                    </section>
+                )}
 
                 {/* Choose Help Type */}
                 <section className="mb-16">
@@ -226,7 +244,7 @@ export default function HelpCenterClient() {
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {HELP_CATEGORIES.map((category) => {
+                        {categories.map((category) => {
                             const Icon = category.icon
                             return (
                                 <div key={category.id} className="space-y-4">
@@ -244,29 +262,33 @@ export default function HelpCenterClient() {
                                         </h3>
                                     </Link>
 
-                                    <ul className="space-y-2 pl-13">
-                                        {category.articles.slice(0, 5).map((article) => (
-                                            <li key={article.id}>
-                                                <Link
-                                                    href={`/help/article/${article.slug}`}
-                                                    className="flex items-center text-gray-600 hover:text-red-600 transition-colors py-1"
-                                                >
-                                                    <ChevronRight className="w-4 h-4 mr-2 text-gray-300" />
-                                                    <span className="text-sm">{article.title}</span>
-                                                </Link>
-                                            </li>
-                                        ))}
-                                        {category.articles.length > 5 && (
-                                            <li>
-                                                <Link
-                                                    href={`/help/category/${category.slug}`}
-                                                    className="text-sm text-red-500 hover:text-red-600 font-medium pl-6"
-                                                >
-                                                    View all {category.articles.length} articles →
-                                                </Link>
-                                            </li>
-                                        )}
-                                    </ul>
+                                    {category.articles.length > 0 ? (
+                                        <ul className="space-y-2 pl-13">
+                                            {category.articles.slice(0, 5).map((article) => (
+                                                <li key={article.id}>
+                                                    <Link
+                                                        href={`/help/article/${article.slug}`}
+                                                        className="flex items-center text-gray-600 hover:text-red-600 transition-colors py-1"
+                                                    >
+                                                        <ChevronRight className="w-4 h-4 mr-2 text-gray-300" />
+                                                        <span className="text-sm">{article.title}</span>
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                            {category.articles.length > 5 && (
+                                                <li>
+                                                    <Link
+                                                        href={`/help/category/${category.slug}`}
+                                                        className="text-sm text-red-500 hover:text-red-600 font-medium pl-6"
+                                                    >
+                                                        View all {category.articles.length} articles →
+                                                    </Link>
+                                                </li>
+                                            )}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-sm text-gray-400 pl-13">No articles yet</p>
+                                    )}
                                 </div>
                             )
                         })}
