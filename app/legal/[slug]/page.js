@@ -3,6 +3,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import JsonLdInjector from '@/components/seo/JsonLdInjector'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import DOMPurify from 'isomorphic-dompurify'
 
 // Generate metadata for SEO (Database-driven)
 export async function generateMetadata({ params }) {
@@ -306,7 +307,7 @@ export default async function LegalPage({ params }) {
                 prose-p:text-slate-700 prose-p:leading-relaxed
                 prose-ul:text-slate-700 prose-li:text-slate-700
                 prose-a:text-emerald-600 prose-a:hover:text-emerald-500"
-              dangerouslySetInnerHTML={{ __html: legalDoc.content_html }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(legalDoc.content_html) }}
             />
           </div>
         </div>

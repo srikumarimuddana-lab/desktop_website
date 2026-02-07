@@ -2,13 +2,40 @@ import { NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
-// Helper function to handle CORS
-function handleCORS(response) {
-  response.headers.set('Access-Control-Allow-Origin', process.env.CORS_ORIGINS || '*')
+// Helper function to handle CORS with multiple origin support
+function handleCORS(response, request) {
+  const allowedOrigins = process.env.CORS_ORIGINS?.split(',').map(o => o.trim()) || ['*']
+  const requestOrigin = request?.headers?.get('origin')
+
+  // Check if request origin is in allowed list, or allow all if '*' is set
+  let origin = '*'
+  if (allowedOrigins.includes('*')) {
+    origin = '*'
+  } else if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+    origin = requestOrigin
+  } else if (allowedOrigins.length > 0) {
+    origin = allowedOrigins[0] // Default to first allowed origin
+  }
+
+  response.headers.set('Access-Control-Allow-Origin', origin)
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   response.headers.set('Access-Control-Allow-Credentials', 'true')
   return response
+}
+
+
+// Helper to check authentication
+async function checkAuth(request) {
+  if (!isSupabaseConfigured()) return true // Dev mode fallthrough if not configured
+
+  // Get session from Supabase
+  const { data: { session }, error } = await supabase.auth.getSession()
+
+  if (error || !session) {
+    return false
+  }
+  return true
 }
 
 // OPTIONS handler for CORS
@@ -98,6 +125,10 @@ async function handleRoute(request, { params }) {
 
     // Admin Seed SEO Pages - POST /api/admin/seed-seo
     if (route === '/admin/seed-seo' && method === 'POST') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+
       if (!isSupabaseConfigured()) {
         return handleCORS(NextResponse.json({ error: 'Supabase not configured' }, { status: 503 }))
       }
@@ -249,6 +280,10 @@ async function handleRoute(request, { params }) {
 
     // Admin Stats - GET /api/admin/stats
     if (route === '/admin/stats' && method === 'GET') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+
       if (isSupabaseConfigured()) {
         const { count: faqCount } = await supabase
           .from('faqs')
@@ -294,6 +329,10 @@ async function handleRoute(request, { params }) {
 
     // FAQs - POST /api/faqs
     if (route === '/faqs' && method === 'POST') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+
       const body = await request.json()
       const newFaq = {
         id: uuidv4(),
@@ -324,6 +363,10 @@ async function handleRoute(request, { params }) {
 
     // FAQs - PUT /api/faqs/:id
     if (route.startsWith('/faqs/') && method === 'PUT') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+
       const id = path[1]
       const body = await request.json()
 
@@ -357,6 +400,10 @@ async function handleRoute(request, { params }) {
 
     // FAQs - DELETE /api/faqs/:id
     if (route.startsWith('/faqs/') && method === 'DELETE') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+
       const id = path[1]
 
       if (isSupabaseConfigured()) {
@@ -405,6 +452,10 @@ async function handleRoute(request, { params }) {
 
     // Legal Docs - PUT /api/legal/:slug
     if (route.startsWith('/legal/') && method === 'PUT') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+
       const slug = path[1]
       const body = await request.json()
 
@@ -494,6 +545,10 @@ async function handleRoute(request, { params }) {
 
     // SEO Pages - CREATE /api/seo-pages
     if (route === '/seo-pages' && method === 'POST') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+
       const body = await request.json()
       const newSeoPage = {
         path: body.path,
@@ -526,6 +581,10 @@ async function handleRoute(request, { params }) {
 
     // SEO Pages - UPDATE /api/seo-pages/:path
     if (route.startsWith('/seo-pages/') && method === 'PUT') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+
       const pathParam = path.slice(1).join('/')
       const decodedPath = decodeURIComponent(pathParam)
       const body = await request.json()
@@ -560,6 +619,10 @@ async function handleRoute(request, { params }) {
 
     // SEO Pages - DELETE /api/seo-pages/:path
     if (route.startsWith('/seo-pages/') && method === 'DELETE') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+
       const pathParam = path.slice(1).join('/')
       const decodedPath = decodeURIComponent(pathParam)
 

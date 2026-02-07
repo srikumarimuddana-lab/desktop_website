@@ -1,11 +1,14 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { Search, Car, CreditCard, MessageSquare, Mail, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, Car, CreditCard, MessageSquare, Mail, ChevronLeft, ChevronRight, ChevronDown, MessageCircle, Info } from 'lucide-react'
+import DOMPurify from 'isomorphic-dompurify'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Card, CardContent } from '@/components/ui/card'
+
+const ITEMS_PER_PAGE = 5
 
 export default function SupportClient() {
   const [faqs, setFaqs] = useState([])
@@ -13,7 +16,6 @@ export default function SupportClient() {
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('all') // 'all', 'rider', 'driver', 'general'
   const [currentPage, setCurrentPage] = useState(1)
-  const ITEMS_PER_PAGE = 5
 
   useEffect(() => {
     fetchFaqs()
@@ -101,8 +103,12 @@ export default function SupportClient() {
                   prose-headings:font-semibold prose-headings:text-gray-900 prose-headings:my-2
                   prose-strong:font-semibold prose-strong:text-gray-900
                   prose-a:text-primary prose-a:hover:underline"
-                dangerouslySetInnerHTML={{ __html: faq.answer }}
-              />
+              >
+                <div
+                  className="text-gray-600 leading-relaxed text-sm sm:text-base prose max-w-none"
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(faq.answer) }}
+                />
+              </div>
             </AccordionContent>
           </AccordionItem>
         ))}
