@@ -26,6 +26,8 @@ export default function FAQsPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingFaq, setEditingFaq] = useState(null)
   const [form, setForm] = useState({ question: '', answer: '', category: 'general', tags: '' })
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 5
 
   useEffect(() => { fetchFaqs() }, [])
 
@@ -115,7 +117,7 @@ export default function FAQsPage() {
           <Card><CardContent className="p-12 text-center"><HelpCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" /><h3 className="text-xl font-semibold mb-2">No FAQs Yet</h3><p className="text-muted-foreground mb-6">Create your first FAQ.</p><Button onClick={() => setDialogOpen(true)} className="bg-primary hover:bg-primary/90"><Plus className="w-4 h-4 mr-2" /> Create FAQ</Button></CardContent></Card>
         ) : (
           <div className="space-y-4">
-            {faqs.map((faq) => (
+            {faqs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((faq) => (
               <Card key={faq.id}>
                 <CardContent className="p-6 flex items-start justify-between gap-4">
                   <div className="flex-1">
@@ -134,6 +136,31 @@ export default function FAQsPage() {
                 </CardContent>
               </Card>
             ))}
+
+            {/* Pagination Controls */}
+            {faqs.length > itemsPerPage && (
+              <div className="flex items-center justify-center gap-2 pt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                <span className="text-sm font-medium">
+                  Page {currentPage} of {Math.ceil(faqs.length / itemsPerPage)}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(Math.ceil(faqs.length / itemsPerPage), p + 1))}
+                  disabled={currentPage >= Math.ceil(faqs.length / itemsPerPage)}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
           </div>
         )}
       <div className="mt-8 text-center"><Link href="/support" target="_blank" className="text-primary hover:text-primary/80 text-sm">View Support Page →</Link></div>

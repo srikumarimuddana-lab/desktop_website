@@ -1,6 +1,8 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
+import CookieBanner from '@/components/ui/CookieBanner'
+import CustomScripts from '@/components/seo/CustomScripts'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -12,12 +14,14 @@ export const metadata = {
   },
 }
 
-import CookieBanner from '@/components/ui/CookieBanner'
-
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <CustomScripts position="head" />
+      </head>
       <body className={`${inter.className} antialiased`}>
+        <CustomScripts position="body_start" />
         {children}
         <Toaster
           position="top-right"
@@ -30,6 +34,7 @@ export default function RootLayout({ children }) {
           }}
         />
         <CookieBanner />
+        <CustomScripts position="body_end" />
       </body>
     </html>
   )
