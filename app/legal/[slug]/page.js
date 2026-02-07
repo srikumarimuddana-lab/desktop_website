@@ -7,7 +7,7 @@ import DOMPurify from 'isomorphic-dompurify'
 
 // Generate metadata for SEO (Database-driven)
 export async function generateMetadata({ params }) {
-  const { slug } = params
+  const { slug } = await params
   const legalPath = `/legal/${slug}`
 
   // Try to fetch from SEO pages table
@@ -272,7 +272,7 @@ async function getLegalContent(slug) {
 }
 
 export default async function LegalPage({ params }) {
-  const { slug } = params
+  const { slug } = await params
   const legalDoc = await getLegalContent(slug)
 
   if (!legalDoc) {

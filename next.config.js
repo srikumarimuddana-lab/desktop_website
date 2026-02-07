@@ -9,10 +9,12 @@ const nextConfig = {
       },
     ],
   },
+  serverExternalPackages: ['mongodb'],
   experimental: {
     // Remove if not using Server Components
-    serverComponentsExternalPackages: ['mongodb'],
   },
+  devIndicators: false,
+  turbopack: {},
   webpack(config, { dev }) {
     if (dev) {
       // Reduce CPU/memory from file watching
