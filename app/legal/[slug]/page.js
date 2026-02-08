@@ -3,7 +3,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import JsonLdInjector from '@/components/seo/JsonLdInjector'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import LegalContent from '@/components/legal/LegalContent'
+import SafeHtml from '@/components/ui/SafeHtml'
 
 // Generate metadata for SEO (Database-driven)
 export async function generateMetadata({ params }) {
@@ -300,7 +300,15 @@ export default async function LegalPage({ params }) {
               })}
             </p>
 
-            <LegalContent content={legalDoc.content_html} />
+            <SafeHtml
+              content={legalDoc.content_html}
+              className="prose prose-lg max-w-none
+                prose-headings:text-slate-900 prose-headings:font-semibold
+                prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
+                prose-p:text-slate-700 prose-p:leading-relaxed
+                prose-ul:text-slate-700 prose-li:text-slate-700
+                prose-a:text-emerald-600 prose-a:hover:text-emerald-500"
+            />
           </div>
         </div>
       </article>
