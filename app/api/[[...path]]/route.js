@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase as anonymousSupabase, isSupabaseConfigured } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 
 // Helper function to handle CORS with multiple origin support
 function handleCORS(response, request) {
@@ -52,7 +53,7 @@ async function checkAuth(request) {
     }
 
     const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error } = await supabase.auth.getUser(token)
+    const { data: { user }, error } = await anonymousSupabase.auth.getUser(token)
 
     if (error || !user) {
       console.warn('Invalid token or user not found')
@@ -70,6 +71,20 @@ async function checkAuth(request) {
     console.error('Auth check error:', err)
     return false
   }
+}
+
+// Helper to create authenticated Supabase client
+const createAuthenticatedClient = (request) => {
+  const authHeader = request.headers.get('authorization')
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (authHeader && supabaseUrl && supabaseAnonKey) {
+    return createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    })
+  }
+  return anonymousSupabase
 }
 
 // OPTIONS handler for CORS
@@ -294,6 +309,7 @@ async function handleRoute(request, { params }) {
       ]
 
       try {
+        const supabase = createAuthenticatedClient(request)
         // Use upsert to insert or update based on path (primary key)
         const { data, error } = await supabase
           .from('seo_pages')
@@ -331,15 +347,16 @@ async function handleRoute(request, { params }) {
       }
 
       if (isSupabaseConfigured()) {
-        const { count: faqCount } = await supabase
+        const supabase = createAuthenticatedClient(request)
+        const { count: faqCount } = await anonymousSupabase
           .from('faqs')
           .select('*', { count: 'exact', head: true })
 
-        const { count: legalCount } = await supabase
+        const { count: legalCount } = await anonymousSupabase
           .from('legal_docs')
           .select('*', { count: 'exact', head: true })
 
-        const { count: seoCount } = await supabase
+        const { count: seoCount } = await anonymousSupabase
           .from('seo_pages')
           .select('*', { count: 'exact', head: true })
 
@@ -359,7 +376,7 @@ async function handleRoute(request, { params }) {
     // FAQs - GET /api/faqs
     if (route === '/faqs' && method === 'GET') {
       if (isSupabaseConfigured()) {
-        const { data, error } = await supabase
+        const { data, error } = await anonymousSupabase
           .from('faqs')
           .select('*')
           .order('created_at', { ascending: false })
@@ -417,6 +434,7 @@ async function handleRoute(request, { params }) {
       const body = await request.json()
 
       if (isSupabaseConfigured()) {
+        const supabase = createAuthenticatedClient(request)
         const { data, error } = await supabase
           .from('faqs')
           .update({
@@ -427,11 +445,15 @@ async function handleRoute(request, { params }) {
           })
           .eq('id', id)
           .select()
-          .single()
+          .maybeSingle()
 
         if (error) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
+        }
+
+        if (!data) {
+          return handleCORS(NextResponse.json({ error: 'FAQ not found' }, { status: 404 }))
         }
         return handleCORS(NextResponse.json(data))
       }
@@ -453,6 +475,7 @@ async function handleRoute(request, { params }) {
       const id = path[1]
 
       if (isSupabaseConfigured()) {
+        const supabase = createAuthenticatedClient(request)
         const { error } = await supabase
           .from('faqs')
           .delete()
@@ -472,7 +495,7 @@ async function handleRoute(request, { params }) {
     // Help Articles - GET ALL /api/help-articles
     if (route === '/help-articles' && method === 'GET') {
       if (isSupabaseConfigured()) {
-        const { data, error } = await supabase
+        const { data, error } = await anonymousSupabase
           .from('help_articles')
           .select('*')
           .order('order_index', { ascending: true })
@@ -496,13 +519,17 @@ async function handleRoute(request, { params }) {
       const slug = path[1]
 
       if (isSupabaseConfigured()) {
-        const { data, error } = await supabase
+        const { data, error } = await anonymousSupabase
           .from('help_articles')
           .select('*')
           .eq('slug', slug)
-          .single()
+          .maybeSingle()
 
-        if (error || !data) {
+        if (error) {
+          return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
+        }
+
+        if (!data) {
           return handleCORS(NextResponse.json({ error: 'Article not found' }, { status: 404 }))
         }
         return handleCORS(NextResponse.json(data))
@@ -531,6 +558,7 @@ async function handleRoute(request, { params }) {
       }
 
       if (isSupabaseConfigured()) {
+        const supabase = createAuthenticatedClient(request)
         const { data, error } = await supabase
           .from('help_articles')
           .insert([newArticle])
@@ -557,6 +585,7 @@ async function handleRoute(request, { params }) {
       const category = HELP_CATEGORIES.find(c => c.id === body.category_id)
 
       if (isSupabaseConfigured()) {
+        const supabase = createAuthenticatedClient(request)
         const { data, error } = await supabase
           .from('help_articles')
           .update({
@@ -571,11 +600,15 @@ async function handleRoute(request, { params }) {
           })
           .eq('id', id)
           .select()
-          .single()
+          .maybeSingle()
 
         if (error) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
+        }
+
+        if (!data) {
+          return handleCORS(NextResponse.json({ error: 'Article not found' }, { status: 404 }))
         }
         return handleCORS(NextResponse.json(data))
       }
@@ -591,6 +624,7 @@ async function handleRoute(request, { params }) {
       const id = path[1]
 
       if (isSupabaseConfigured()) {
+        const supabase = createAuthenticatedClient(request)
         const { error } = await supabase
           .from('help_articles')
           .delete()
@@ -610,13 +644,17 @@ async function handleRoute(request, { params }) {
       const slug = path[1]
 
       if (isSupabaseConfigured()) {
-        const { data, error } = await supabase
+        const { data, error } = await anonymousSupabase
           .from('legal_docs')
           .select('*')
           .eq('slug', slug)
-          .single()
+          .maybeSingle()
 
-        if (error || !data) {
+        if (error) {
+          return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
+        }
+
+        if (!data) {
           // Return demo content if not found in DB
           if (demoLegalDocs[slug]) {
             return handleCORS(NextResponse.json(demoLegalDocs[slug]))
@@ -642,12 +680,13 @@ async function handleRoute(request, { params }) {
       const body = await request.json()
 
       if (isSupabaseConfigured()) {
+        const supabase = createAuthenticatedClient(request)
         // Try to update existing, or insert new
         const { data: existing } = await supabase
           .from('legal_docs')
           .select('slug')
           .eq('slug', slug)
-          .single()
+          .maybeSingle()
 
         const docData = {
           slug,
@@ -663,7 +702,7 @@ async function handleRoute(request, { params }) {
             .update(docData)
             .eq('slug', slug)
             .select()
-            .single()
+            .maybeSingle()
         } else {
           result = await supabase
             .from('legal_docs')
@@ -691,7 +730,7 @@ async function handleRoute(request, { params }) {
     // SEO Pages - GET ALL /api/seo-pages
     if (route === '/seo-pages' && method === 'GET') {
       if (isSupabaseConfigured()) {
-        const { data, error } = await supabase
+        const { data, error } = await anonymousSupabase
           .from('seo_pages')
           .select('*')
           .order('sitemap_priority', { ascending: false })
@@ -711,13 +750,17 @@ async function handleRoute(request, { params }) {
       const decodedPath = decodeURIComponent(pathParam)
 
       if (isSupabaseConfigured()) {
-        const { data, error } = await supabase
+        const { data, error } = await anonymousSupabase
           .from('seo_pages')
           .select('*')
           .eq('path', decodedPath)
-          .single()
+          .maybeSingle()
 
-        if (error || !data) {
+        if (error) {
+          return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
+        }
+
+        if (!data) {
           return handleCORS(NextResponse.json({ error: 'SEO page not found' }, { status: 404 }))
         }
         return handleCORS(NextResponse.json(data))
@@ -746,6 +789,7 @@ async function handleRoute(request, { params }) {
       }
 
       if (isSupabaseConfigured()) {
+        const supabase = createAuthenticatedClient(request)
         const { data, error } = await supabase
           .from('seo_pages')
           .insert([newSeoPage])
@@ -772,6 +816,7 @@ async function handleRoute(request, { params }) {
       const body = await request.json()
 
       if (isSupabaseConfigured()) {
+        const supabase = createAuthenticatedClient(request)
         const { data, error } = await supabase
           .from('seo_pages')
           .update({
@@ -788,11 +833,15 @@ async function handleRoute(request, { params }) {
           })
           .eq('path', decodedPath)
           .select()
-          .single()
+          .maybeSingle()
 
         if (error) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
+        }
+
+        if (!data) {
+          return handleCORS(NextResponse.json({ error: 'SEO page not found' }, { status: 404 }))
         }
         return handleCORS(NextResponse.json(data))
       }
@@ -809,6 +858,7 @@ async function handleRoute(request, { params }) {
       const decodedPath = decodeURIComponent(pathParam)
 
       if (isSupabaseConfigured()) {
+        const supabase = createAuthenticatedClient(request)
         const { error } = await supabase
           .from('seo_pages')
           .delete()
