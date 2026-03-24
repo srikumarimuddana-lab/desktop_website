@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
 import CookieBanner from '@/components/ui/CookieBanner'
 import CustomScripts from '@/components/seo/CustomScripts'
+import ChatWidget from '@/components/ai/ChatWidget'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -34,6 +35,7 @@ export default function RootLayout({ children }) {
           }}
         />
         <CookieBanner />
+        <ChatWidget />
         <CustomScripts position="body_end" />
       </body>
     </html>

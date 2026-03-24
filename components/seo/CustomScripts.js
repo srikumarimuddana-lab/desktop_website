@@ -80,12 +80,32 @@ export default function CustomScripts({ position }) {
         fetchScripts()
     }, [pathname, position])
 
+    useEffect(() => {
+        if (position === 'head' && nonScriptHtml) {
+            const tempDiv = document.createElement('div')
+            tempDiv.innerHTML = nonScriptHtml
+            const nodesToInsert = Array.from(tempDiv.childNodes)
+
+            nodesToInsert.forEach(node => {
+                document.head.appendChild(node)
+            })
+
+            return () => {
+                nodesToInsert.forEach(node => {
+                    if (node.parentNode) {
+                        node.parentNode.removeChild(node)
+                    }
+                })
+            }
+        }
+    }, [nonScriptHtml, position])
+
     if (!scripts.length && !nonScriptHtml) return null
 
     return (
         <>
             {/* Render any non-script HTML as-is (divs, noscript, meta, style, etc.) */}
-            {nonScriptHtml && (
+            {nonScriptHtml && position !== 'head' && (
                 <div dangerouslySetInnerHTML={{ __html: nonScriptHtml }} />
             )}
 
