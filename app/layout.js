@@ -12,6 +12,8 @@ export const metadata = {
   },
 }
 
+import CookieBanner from '@/components/ui/CookieBanner'
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
@@ -27,6 +29,7 @@ export default function RootLayout({ children }) {
             },
           }}
         />
+        <CookieBanner />
       </body>
     </html>
   )

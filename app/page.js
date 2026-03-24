@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { ArrowRight, DollarSign, Shield, Clock, Users, Percent, CreditCard, Car, CheckCircle, Ticket, Heart, Smartphone, ShieldCheck, Wallet, MousePointerClick } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -7,8 +8,8 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import JsonLdInjector from '@/components/seo/JsonLdInjector'
 // HeroMockUI removed
-import RiderImageUI from '@/components/home/RiderImageUI'
-import PhoneMockupUI from '@/components/home/PhoneMockupUI'
+const RiderImageUI = dynamic(() => import('@/components/home/RiderImageUI'))
+const PhoneMockupUI = dynamic(() => import('@/components/home/PhoneMockupUI'))
 import SmartAppLink from '@/components/ui/SmartAppLink'
 import { IMAGES } from '@/constants/images'
 import { getSeoMetadata, getStructuredData } from '@/lib/seo'
@@ -54,6 +55,7 @@ export default async function Home() {
             fill
             className="object-cover opacity-30"
             priority
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent" />
         </div>
@@ -120,6 +122,7 @@ export default async function Home() {
                   fill
                   className="object-contain"
                   priority
+                  sizes="(max-width: 1024px) 100vw, 500px"
                 />
               </div>
             </div>
@@ -222,18 +225,42 @@ export default async function Home() {
                 <div className="grid grid-cols-2 gap-4 w-full max-w-md">
                   <div className="space-y-4 pt-8">
                     <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
-                      <Image src="/collage_friends.png" alt="Happy Riders" fill className="object-cover" />
+                      <Image
+                        src="/collage_friends.png"
+                        alt="Happy Riders"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      />
                     </div>
                     <div className="relative aspect-square rounded-2xl overflow-hidden shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
-                      <Image src="/collage_city.png" alt="Saskatchewan Cityscape" fill className="object-cover" />
+                      <Image
+                        src="/collage_city.png"
+                        alt="Saskatchewan Cityscape"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      />
                     </div>
                   </div>
                   <div className="space-y-4">
                     <div className="relative aspect-square rounded-2xl overflow-hidden shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
-                      <Image src="/collage_driver.png" alt="Spinr Driver" fill className="object-cover" />
+                      <Image
+                        src="/collage_driver.png"
+                        alt="Spinr Driver"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      />
                     </div>
                     <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
-                      <Image src="/collage_app_user.png" alt="Using Spinr App" fill className="object-cover" />
+                      <Image
+                        src="/collage_app_user.png"
+                        alt="Using Spinr App"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      />
                     </div>
                   </div>
                 </div>
@@ -337,6 +364,7 @@ export default async function Home() {
                 alt="Riders fans at Mosaic Stadium"
                 fill
                 className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 500px"
               />
             </div>
 

@@ -14,6 +14,7 @@ export default function RiderImageUI() {
                     alt="Happy Spinr Rider"
                     fill
                     className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 500px"
                 />
             </div>
         </div>

@@ -42,7 +42,11 @@ export async function generateMetadata({ params }) {
   const titles = {
     'terms': 'Terms of Service',
     'privacy': 'Privacy Policy',
-    'driver-agreement': 'Driver Agreement'
+    'driver-agreement': 'Driver Agreement',
+    'rider-terms': 'Rider Terms of Service',
+    'driver-terms': 'Driver Terms of Service',
+    'rider-policy': 'Rider Privacy Policy',
+    'driver-policy': 'Driver Privacy Policy'
   }
 
   const title = titles[slug] || 'Legal'
@@ -168,6 +172,49 @@ const defaultContent = {
       <h2>8. Contact</h2>
       <p>For driver-related questions, contact <a href="mailto:support@spinr.ca" className="text-primary hover:underline">support@spinr.ca</a></p>
     `
+  },
+  'rider-terms': {
+    title: 'Rider Terms of Service',
+    content: `
+      <h2>1. Introduction</h2>
+      <p>These terms govern your use of Spinr as a rider. By using our platform, you agree to pay for rides and treat drivers with respect.</p>
+      
+      <h2>2. Booking and Payments</h2>
+      <p>Riders agree to pay the fare shown in the app plus a flat $1 platform fee per trip. Payment is processed automatically.</p>
+      
+      <h2>3. Cancellations</h2>
+      <p>Cancellation fees may apply if you cancel a ride more than 2 minutes after a driver has accepted it.</p>
+    `
+  },
+  'driver-terms': {
+    title: 'Driver Terms of Service',
+    content: `
+      <h2>1. Driver Obligations</h2>
+      <p>You must maintain a valid license, insurance, and vehicle registration. You must provide safe and professional service.</p>
+      
+      <h2>2. Earnings & Fees</h2>
+      <p>You keep 100% of the fare. The rider pays a separate platform fee. Spinr may charge a subscription fee after an initial trial period.</p>
+    `
+  },
+  'rider-policy': {
+    title: 'Rider Privacy Policy',
+    content: `
+      <h2>1. Rider Data Collection</h2>
+      <p>We collect your name, phone number, payment method, and location data to facilitate your rides.</p>
+      
+      <h2>2. Data Usage</h2>
+      <p>Your location is shared with drivers only during an active trip request and ride.</p>
+    `
+  },
+  'driver-policy': {
+    title: 'Driver Privacy Policy',
+    content: `
+      <h2>1. Driver Data Collection</h2>
+      <p>We collect your license, vehicle details, insurance documents, and background check information.</p>
+      
+      <h2>2. Data Usage</h2>
+      <p>We use this data to verify your eligibility to drive and to process your earnings.</p>
+    `
   }
 }
 
@@ -232,7 +279,7 @@ export default async function LegalPage({ params }) {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950">
+    <main className="min-h-screen bg-white">
       <Header />
 
       {/* Inject JSON-LD Structured Data */}
@@ -243,8 +290,8 @@ export default async function LegalPage({ params }) {
       <article className="pt-24 pb-16 md:pt-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl font-bold text-white mb-4">{legalDoc.title}</h1>
-            <p className="text-slate-400 mb-8">
+            <h1 className="text-4xl font-bold text-slate-900 mb-4">{legalDoc.title}</h1>
+            <p className="text-slate-600 mb-8">
               Last updated: {new Date(legalDoc.last_updated).toLocaleDateString('en-CA', {
                 year: 'numeric',
                 month: 'long',
@@ -253,12 +300,12 @@ export default async function LegalPage({ params }) {
             </p>
 
             <div
-              className="prose prose-lg prose-invert max-w-none
-                prose-headings:text-white prose-headings:font-semibold
+              className="prose prose-lg max-w-none
+                prose-headings:text-slate-900 prose-headings:font-semibold
                 prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
-                prose-p:text-slate-300 prose-p:leading-relaxed
-                prose-ul:text-slate-300 prose-li:text-slate-300
-                prose-a:text-emerald-400 prose-a:hover:text-emerald-300"
+                prose-p:text-slate-700 prose-p:leading-relaxed
+                prose-ul:text-slate-700 prose-li:text-slate-700
+                prose-a:text-emerald-600 prose-a:hover:text-emerald-500"
               dangerouslySetInnerHTML={{ __html: legalDoc.content_html }}
             />
           </div>

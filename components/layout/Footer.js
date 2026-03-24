@@ -24,6 +24,8 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-gray-400">
               <li><Link href="/ride" className="hover:text-primary">How it Works</Link></li>
               <li><Link href="/support" className="hover:text-primary">Safety</Link></li>
+              <li><Link href="/legal/rider-terms" className="hover:text-primary">Rider Terms</Link></li>
+              <li><Link href="/legal/rider-policy" className="hover:text-primary">Rider Privacy</Link></li>
             </ul>
           </div>
           <div>
@@ -31,6 +33,8 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-gray-400">
               <li><Link href="/drive" className="hover:text-primary">Start Driving</Link></li>
               <li><Link href="/support" className="hover:text-primary">Requirements</Link></li>
+              <li><Link href="/legal/driver-terms" className="hover:text-primary">Driver Terms</Link></li>
+              <li><Link href="/legal/driver-policy" className="hover:text-primary">Driver Privacy</Link></li>
             </ul>
           </div>
           <div>

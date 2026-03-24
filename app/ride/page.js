@@ -169,7 +169,7 @@ export default async function RidePage() {
             <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all">
               <div className="relative h-64 w-full">
                 <Image
-                  src="https://images.unsplash.com/photo-1581094794329-cd8081648a31?auto=format&fit=crop&w=800&q=80"
+                  src="https://images.unsplash.com/photo-1557404763-69708cd8b9ce?auto=format&fit=crop&w=800&q=80"
                   alt="Fair Commission"
                   fill
                   className="object-cover"
