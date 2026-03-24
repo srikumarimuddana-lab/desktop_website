@@ -4,6 +4,10 @@ import JsonLdInjector from '@/components/seo/JsonLdInjector'
 import { getSeoMetadata, getStructuredData } from '@/lib/seo'
 import HelpCenterClient from './HelpCenterClient'
 
+import { supabase } from '@/lib/supabase'
+
+export const revalidate = 0
+
 // Dynamic metadata
 export async function generateMetadata() {
     return getSeoMetadata('/help', {
@@ -19,6 +23,12 @@ export default async function HelpCenterPage() {
     // Fetch structured data from database
     const structuredData = await getStructuredData('/help')
 
+    // Fetch all help articles
+    const { data: articles } = await supabase
+        .from('help_articles')
+        .select('*')
+        .order('order_index', { ascending: true })
+
     return (
         <main className="min-h-screen bg-background">
             <Header />
@@ -27,7 +37,7 @@ export default async function HelpCenterPage() {
             {structuredData && <JsonLdInjector data={structuredData} />}
 
             <div className="pt-16">
-                <HelpCenterClient />
+                <HelpCenterClient articles={articles || []} />
             </div>
 
             <Footer />

@@ -34,6 +34,7 @@ const MenuButton = ({ onClick, isActive, children, title }) => (
 
 export default function RichTextEditor({ content, onChange, placeholder = "Start writing..." }) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Placeholder.configure({ placeholder }),
