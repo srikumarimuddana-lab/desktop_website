@@ -17,7 +17,7 @@ import { getSeoMetadata, getStructuredData } from '@/lib/seo'
 export async function generateMetadata() {
   return getSeoMetadata('/', {
     title: "Spinr - 0% Commission Rideshare in Saskatchewan",
-    description: "Saskatchewan's own rideshare platform. Drivers keep 100% of fares, riders pay just $1. No surge pricing. Now serving Regina & Saskatoon.",
+    description: "Saskatchewan's own rideshare platform. Drivers keep 100% of net fare, riders pay just $1. No surge pricing. Now serving Regina & Saskatoon.",
     keywords: "rideshare Saskatchewan, 0% commission, Regina rideshare, Saskatoon rideshare"
   })
 }
@@ -27,7 +27,7 @@ export default async function Home() {
   const structuredData = await getStructuredData('/')
 
   const driverBenefits = [
-    { icon: Percent, title: '0% Commission', description: 'Keep 100% of every fare. Forever.' },
+    { icon: Percent, title: '0% Commission', description: 'Keep 100% of net fare. Forever.' },
     { icon: DollarSign, title: '6 Months Free', description: 'No subscription for your first 6 months.' },
     { icon: CreditCard, title: 'Daily Payouts', description: 'Get paid every day, not weekly.' },
   ]

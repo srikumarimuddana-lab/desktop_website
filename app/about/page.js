@@ -41,7 +41,7 @@ export default async function AboutPage() {
                 Forward
               </h1>
               <p className="text-xl text-gray-500 mb-8 leading-relaxed max-w-lg">
-                Innovation meets community in every ride. We're a Regina-based startup redefining urban mobility with <span className="text-gray-900 font-semibold">0% commission</span> for drivers and <span className="text-gray-900 font-semibold">100% fair rides</span> for everyone.
+                Innovation meets community in every ride. We're a Regina-based startup redefining urban mobility with <span className="text-gray-900 font-semibold">0% commission</span> for drivers and <span className="text-gray-900 font-semibold">100% net fare</span> for everyone.
               </p>
               <Link href="#mission">
                 <Button size="lg" className="rounded-full px-8 py-6 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-lg shadow-red-200">
@@ -109,7 +109,7 @@ export default async function AboutPage() {
                   As Saskatchewan locals ourselves, we understand the unique needs of our province. The cold winters that make reliable transportation essential. The tight-knit communities that value trust and accountability. The hardworking people who deserve to keep what they earn.
                 </p>
                 <p>
-                  That's why we built Spinr - a rideshare platform where drivers keep 100% of their fares and riders pay just a flat $1 fee per trip. No percentages, no surge pricing, no corporate greed. Just fair, transparent, local ridesharing.
+                  That's why we built Spinr - a rideshare platform where drivers keep 100% of their net fare and riders pay just a flat $1 fee per trip. No percentages, no surge pricing, no corporate greed. Just fair, transparent, local ridesharing.
                 </p>
               </div>
 

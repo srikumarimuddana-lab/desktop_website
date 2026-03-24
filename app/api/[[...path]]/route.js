@@ -45,7 +45,7 @@ let demoFaqs = [
   {
     id: '4',
     question: 'How does 0% commission work?',
-    answer: 'When a rider pays for a trip, you keep 100% of the fare. We make money through the flat $1 fee charged to riders, not by taking from your earnings.',
+    answer: 'When a rider pays for a trip, you keep 100% of net fare. We make money through the flat $1 fee charged to riders, not by taking from your earnings.',
     category: 'driver',
     tags: ['earnings', 'commission'],
     created_at: new Date().toISOString()
@@ -61,7 +61,7 @@ let demoLegalDocs = {
 <h2>2. Service Description</h2>
 <p>Spinr is a rideshare platform connecting riders with independent drivers in Saskatchewan.</p>
 <h2>3. Pricing</h2>
-<p>Riders pay the driver's fare plus a flat $1 platform fee. Drivers keep 100% of fares.</p>`,
+<p>Riders pay the driver's fare plus a flat $1 platform fee. Drivers keep 100% of net fare.</p>`,
     last_updated: new Date().toISOString()
   },
   'privacy': {
@@ -79,7 +79,7 @@ let demoLegalDocs = {
     content_html: `<h2>1. Independent Contractor Status</h2>
 <p>Drivers are independent contractors, not employees of Spinr.</p>
 <h2>2. Commission Structure</h2>
-<p>Spinr charges 0% commission. You keep 100% of fares.</p>`,
+<p>Spinr charges 0% commission. You keep 100% of net fare.</p>`,
     last_updated: new Date().toISOString()
   }
 }
@@ -107,7 +107,7 @@ async function handleRoute(request, { params }) {
         {
           path: '/',
           title: "Spinr - 0% Commission Rideshare in Saskatchewan",
-          description: "Saskatchewan's own rideshare platform. Drivers keep 100% of fares, riders pay just $1. No surge pricing. Now serving Regina & Saskatoon.",
+          description: "Saskatchewan's own rideshare platform. Drivers keep 100% of net fare, riders pay just $1. No surge pricing. Now serving Regina & Saskatoon.",
           keywords: "rideshare Saskatchewan, 0% commission, Regina rideshare, Saskatoon rideshare, Spinr, taxi alternative",
           og_image: null,
           canonical: "https://spinr.ca/",
@@ -149,7 +149,7 @@ async function handleRoute(request, { params }) {
         },
         {
           path: '/drive',
-          title: "Drive for Spinr - Keep 100% of Your Fare",
+          title: "Drive for Spinr - Keep 100% of Net Fare",
           description: "Become a Spinr driver in Saskatchewan. 0% commission forever, daily payouts, first 6 months free. Keep every dollar you earn.",
           keywords: "drive Spinr, rideshare driver Saskatchewan, 0% commission driver, Regina driver jobs, Saskatoon driver",
           og_image: null,
@@ -160,7 +160,7 @@ async function handleRoute(request, { params }) {
             "@context": "https://schema.org",
             "@type": "JobPosting",
             "title": "Rideshare Driver - Spinr",
-            "description": "Drive with Spinr and keep 100% of your fares. 0% commission, daily payouts.",
+            "description": "Drive with Spinr and keep 100% of net fare. 0% commission, daily payouts.",
             "hiringOrganization": {
               "@type": "Organization",
               "name": "Spinr"
@@ -220,15 +220,15 @@ async function handleRoute(request, { params }) {
         // Use upsert to insert or update based on path (primary key)
         const { data, error } = await supabase
           .from('seo_pages')
-          .upsert(corePages, { 
+          .upsert(corePages, {
             onConflict: 'path',
-            ignoreDuplicates: false 
+            ignoreDuplicates: false
           })
           .select()
 
         if (error) {
           console.error('Seed SEO error:', error)
-          return handleCORS(NextResponse.json({ 
+          return handleCORS(NextResponse.json({
             error: error.message,
             details: 'Failed to seed SEO pages'
           }, { status: 500 }))
@@ -241,7 +241,7 @@ async function handleRoute(request, { params }) {
         }))
       } catch (err) {
         console.error('Seed SEO exception:', err)
-        return handleCORS(NextResponse.json({ 
+        return handleCORS(NextResponse.json({
           error: 'Internal server error during seeding'
         }, { status: 500 }))
       }
@@ -253,7 +253,7 @@ async function handleRoute(request, { params }) {
         const { count: faqCount } = await supabase
           .from('faqs')
           .select('*', { count: 'exact', head: true })
-        
+
         const { count: legalCount } = await supabase
           .from('legal_docs')
           .select('*', { count: 'exact', head: true })
@@ -261,7 +261,7 @@ async function handleRoute(request, { params }) {
         const { count: seoCount } = await supabase
           .from('seo_pages')
           .select('*', { count: 'exact', head: true })
-        
+
         return handleCORS(NextResponse.json({
           totalFaqs: faqCount || 0,
           totalPolicies: legalCount || 0,
@@ -282,7 +282,7 @@ async function handleRoute(request, { params }) {
           .from('faqs')
           .select('*')
           .order('created_at', { ascending: false })
-        
+
         if (error) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json(demoFaqs))
@@ -310,14 +310,14 @@ async function handleRoute(request, { params }) {
           .insert([newFaq])
           .select()
           .single()
-        
+
         if (error) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
         }
         return handleCORS(NextResponse.json(data))
       }
-      
+
       demoFaqs.unshift(newFaq)
       return handleCORS(NextResponse.json(newFaq))
     }
@@ -339,14 +339,14 @@ async function handleRoute(request, { params }) {
           .eq('id', id)
           .select()
           .single()
-        
+
         if (error) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
         }
         return handleCORS(NextResponse.json(data))
       }
-      
+
       const index = demoFaqs.findIndex(f => f.id === id)
       if (index !== -1) {
         demoFaqs[index] = { ...demoFaqs[index], ...body }
@@ -364,14 +364,14 @@ async function handleRoute(request, { params }) {
           .from('faqs')
           .delete()
           .eq('id', id)
-        
+
         if (error) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
         }
         return handleCORS(NextResponse.json({ success: true }))
       }
-      
+
       demoFaqs = demoFaqs.filter(f => f.id !== id)
       return handleCORS(NextResponse.json({ success: true }))
     }
@@ -386,7 +386,7 @@ async function handleRoute(request, { params }) {
           .select('*')
           .eq('slug', slug)
           .single()
-        
+
         if (error || !data) {
           // Return demo content if not found in DB
           if (demoLegalDocs[slug]) {
@@ -396,7 +396,7 @@ async function handleRoute(request, { params }) {
         }
         return handleCORS(NextResponse.json(data))
       }
-      
+
       if (demoLegalDocs[slug]) {
         return handleCORS(NextResponse.json(demoLegalDocs[slug]))
       }
@@ -438,14 +438,14 @@ async function handleRoute(request, { params }) {
             .select()
             .single()
         }
-        
+
         if (result.error) {
           console.error('Supabase error:', result.error)
           return handleCORS(NextResponse.json({ error: result.error.message }, { status: 500 }))
         }
         return handleCORS(NextResponse.json(result.data))
       }
-      
+
       demoLegalDocs[slug] = {
         slug,
         title: body.title,
@@ -462,7 +462,7 @@ async function handleRoute(request, { params }) {
           .from('seo_pages')
           .select('*')
           .order('sitemap_priority', { ascending: false })
-        
+
         if (error) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
@@ -483,7 +483,7 @@ async function handleRoute(request, { params }) {
           .select('*')
           .eq('path', decodedPath)
           .single()
-        
+
         if (error || !data) {
           return handleCORS(NextResponse.json({ error: 'SEO page not found' }, { status: 404 }))
         }
@@ -514,7 +514,7 @@ async function handleRoute(request, { params }) {
           .insert([newSeoPage])
           .select()
           .single()
-        
+
         if (error) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
@@ -548,7 +548,7 @@ async function handleRoute(request, { params }) {
           .eq('path', decodedPath)
           .select()
           .single()
-        
+
         if (error) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
@@ -568,7 +568,7 @@ async function handleRoute(request, { params }) {
           .from('seo_pages')
           .delete()
           .eq('path', decodedPath)
-        
+
         if (error) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
