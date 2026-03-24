@@ -69,7 +69,7 @@ export default async function Home() {
                 <span className="text-primary text-sm font-medium">100% Sask Owned | Serving Regina & Saskatoon</span>
               </div>
 
-              <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-foreground mb-8 leading-[1.1] tracking-tight">
+              <h1 className="text-[12vw] sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground mb-8 leading-[1.1] tracking-tight">
                 Saskatchewan's<br />
                 <span className="text-primary">Own Ride.</span>
               </h1>

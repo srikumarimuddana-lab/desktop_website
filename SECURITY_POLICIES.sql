@@ -13,13 +13,13 @@ FOR SELECT USING (true);
 
 -- Allow only authenticated users (admins) to insert, update, or delete
 CREATE POLICY "Enable insert for authenticated users only" ON public.faqs
-FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+FOR INSERT WITH CHECK ((SELECT auth.role()) = 'authenticated');
 
 CREATE POLICY "Enable update for authenticated users only" ON public.faqs
-FOR UPDATE USING (auth.role() = 'authenticated');
+FOR UPDATE USING ((SELECT auth.role()) = 'authenticated');
 
 CREATE POLICY "Enable delete for authenticated users only" ON public.faqs
-FOR DELETE USING (auth.role() = 'authenticated');
+FOR DELETE USING ((SELECT auth.role()) = 'authenticated');
 
 -- 3. Legal Docs Policies
 -- Allow anyone to read legal docs (public)
@@ -28,7 +28,7 @@ FOR SELECT USING (true);
 
 -- Allow only authenticated users to modify
 CREATE POLICY "Enable modification for authenticated users only" ON public.legal_docs
-FOR ALL USING (auth.role() = 'authenticated');
+FOR ALL USING ((SELECT auth.role()) = 'authenticated');
 
 -- 4. SEO Pages Policies
 -- Allow anyone to read SEO pages (public/server)
@@ -37,4 +37,4 @@ FOR SELECT USING (true);
 
 -- Allow only authenticated users to modify
 CREATE POLICY "Enable modification for authenticated users only" ON public.seo_pages
-FOR ALL USING (auth.role() = 'authenticated');
+FOR ALL USING ((SELECT auth.role()) = 'authenticated');

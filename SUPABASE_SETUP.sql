@@ -28,7 +28,7 @@ CREATE POLICY "Allow public read access on faqs"
 -- Policy: Allow authenticated users to insert/update/delete
 CREATE POLICY "Allow authenticated users to manage faqs"
   ON public.faqs FOR ALL
-  USING (auth.role() = 'authenticated');
+  USING ((SELECT auth.role()) = 'authenticated');
 
 -- =====================================================
 -- 2. LEGAL DOCUMENTS TABLE
@@ -51,7 +51,7 @@ CREATE POLICY "Allow public read access on legal_docs"
 -- Policy: Allow authenticated users to insert/update/delete
 CREATE POLICY "Allow authenticated users to manage legal_docs"
   ON public.legal_docs FOR ALL
-  USING (auth.role() = 'authenticated');
+  USING ((SELECT auth.role()) = 'authenticated');
 
 -- =====================================================
 -- 3. SEO PAGES TABLE (Database-First SEO Engine)
@@ -82,7 +82,7 @@ CREATE POLICY "Allow public read access on seo_pages"
 -- Policy: Allow authenticated users to insert/update/delete
 CREATE POLICY "Allow authenticated users to manage seo_pages"
   ON public.seo_pages FOR ALL
-  USING (auth.role() = 'authenticated');
+  USING ((SELECT auth.role()) = 'authenticated');
 
 -- Index for faster sitemap generation
 CREATE INDEX IF NOT EXISTS idx_seo_pages_no_index ON public.seo_pages(no_index);

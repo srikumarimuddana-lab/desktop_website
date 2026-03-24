@@ -10,10 +10,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { IMAGES } from '@/constants/images'
-import { QRCodeSVG } from 'qrcode.react'
+import SmartAppLink from '@/components/ui/SmartAppLink'
 
 export default function DrivePageClient({ structuredData }) {
   const [trips, setTrips] = useState([40])
+  const [dailyRides, setDailyRides] = useState([5]) // Default to recommended minimum
   const avgFare = 18
   const weeklyEarnings = trips[0] * avgFare
   const competitorEarnings = weeklyEarnings * 0.75
@@ -108,7 +109,10 @@ export default function DrivePageClient({ structuredData }) {
                     <div className="bg-red-50 rounded-xl p-4 border-2 border-primary text-center">
                       <h4 className="text-primary font-medium mb-1 text-sm">With Spinr</h4>
                       <p className="text-2xl font-bold text-primary">${spinrEarnings.toFixed(0)}</p>
-                      <p className="text-xs text-red-500 mt-1">0% commission!</p>
+                      <div className="flex flex-col gap-0.5">
+                        <p className="text-xs text-red-500 mt-1 font-bold">0% commission!</p>
+                        <p className="text-[10px] text-gray-500">(Free for 6 months)</p>
+                      </div>
                     </div>
                   </div>
                   <div className="text-center bg-gray-900 rounded-xl p-4">
@@ -195,6 +199,46 @@ export default function DrivePageClient({ structuredData }) {
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* Quick Download QR Section */}
+      <section className="py-20 relative overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900" />
+        {/* Decorative blur orbs */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-blue-500/15 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-1/2 right-0 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none" />
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/80 text-sm font-medium mb-8 border border-white/10">
+              <Car className="w-4 h-4" />
+              <span>Start Earning Today</span>
+            </div>
+
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Download the Driver App
+            </h2>
+            <p className="text-gray-400 text-lg mb-12 max-w-xl mx-auto">
+              Scan the QR code with your phone camera or tap the card to download. Available on iOS and Android.
+            </p>
+
+            {/* QR Card - Glassmorphism style */}
+            <div className="flex justify-center">
+              <div className="">
+                <SmartAppLink
+                  appType="driver"
+                  title="Spinr Driver"
+                  qrSize={120}
+                  className="w-full !bg-white/95 !backdrop-blur-sm !shadow-2xl !border-0 !rounded-2xl"
+                />
+
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -305,6 +349,216 @@ export default function DrivePageClient({ structuredData }) {
 
 
 
+      {/* Subscription Plans Section */}
+      <section id="subscription" className="py-24 bg-white scroll-mt-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              0% Commission - <span className="text-primary">That's Our Promise</span>
+            </h2>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full font-medium text-sm mb-8">
+              <Shield className="w-4 h-4" />
+              <span>We don't take any commission - ever</span>
+            </div>
+            <p className="text-xl text-gray-600">
+              Keep 100% of your fares with our transparent subscription model.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-20">
+            {/* Standard Plan */}
+            <Card className="border border-gray-200 hover:border-gray-300 transition-all duration-300 shadow-lg relative overflow-hidden bg-white">
+              <CardHeader className="text-center pb-4 border-b border-gray-100">
+                <CardTitle className="text-2xl font-bold text-gray-900">Standard Driver</CardTitle>
+                <div className="mt-4 flex flex-col items-center justify-center">
+                  <span className="text-gray-400 line-through text-lg font-medium">$19.99/mo</span>
+                  <span className="text-5xl font-extrabold text-gray-900">$0<span className="text-lg font-medium text-gray-500">/mo</span></span>
+                  <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-bold">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Free for 6 Months
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-8 pt-8 px-6 sm:px-8">
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                  <p className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-primary" />
+                    The "Catch":
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    Limited to <span className="font-bold text-gray-900">5 rides/day maximum</span>.
+                  </p>
+                </div>
+
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-green-100 text-green-600 shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                    <span className="text-gray-700 font-medium">Keep 100% of fares</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-green-100 text-green-600 shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                    <span className="text-gray-700">Weekly Payouts</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-green-100 text-green-600 shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                    <span className="text-gray-700">Standard Support</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-green-100 text-green-600 shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                    <span className="text-gray-700">Basic App Features</span>
+                  </li>
+                </ul>
+                <Button variant="outline" className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-bold py-4 rounded-xl text-lg transition-all">
+                  Choose Standard
+                </Button>
+                <p className="text-xs text-center text-gray-400">
+                  Cancel anytime. Limit resets daily.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Pro Plan */}
+            <Card className="border-2 border-primary shadow-xl relative overflow-hidden group bg-white">
+              <div className="absolute top-0 inset-x-0 h-2 bg-primary" />
+              <div className="absolute top-0 right-0 bg-primary text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
+                Most Popular
+              </div>
+              <CardHeader className="text-center pb-4 border-b border-gray-100">
+                <CardTitle className="text-2xl font-bold text-gray-900">Pro Driver</CardTitle>
+                <div className="mt-4 flex flex-col items-center justify-center">
+                  <span className="text-gray-400 line-through text-lg font-medium">$49.99/mo</span>
+                  <span className="text-5xl font-extrabold text-gray-900">$0<span className="text-lg font-medium text-gray-500">/mo</span></span>
+                  <span className="text-sm text-green-600 font-bold mt-2">Free for 6 months</span>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-8 pt-8 px-6 sm:px-8">
+                <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                  <p className="text-sm font-semibold text-blue-900 mb-1 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-500" />
+                    Pro Benefit:
+                  </p>
+                  <p className="text-blue-800 text-sm">
+                    <span className="font-bold">Unlimited Rides</span>. Drive as much as you want with no caps.
+                  </p>
+                </div>
+
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-blue-100 text-blue-600 shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                    <span className="text-gray-900 font-medium">Keep 100% of fares</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-blue-100 text-blue-600 shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                    <span className="text-gray-700">Weekly Payouts</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-blue-100 text-blue-600 shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                    <span className="text-gray-700">Priority 24/7 Support</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-blue-100 text-blue-600 shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                    <span className="text-gray-700">Advanced Heatmaps</span>
+                  </li>
+                </ul>
+                <Button className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl text-lg shadow-lg shadow-primary/20 transition-all transform active:scale-95">
+                  Try Pro Free
+                </Button>
+                <p className="text-xs text-center text-gray-400">
+                  $49.99/mo after 6 months. Cancel anytime.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Savings Calculator */}
+          <div className="max-w-4xl mx-auto bg-gray-900 rounded-[2.5rem] p-8 md:p-12 text-white shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none" />
+
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <h3 className="text-3xl font-bold mb-4">See how much you'll save</h3>
+                <p className="text-gray-400 mb-8">
+                  Compare Spinr's flat subscription to the standard 25% commission.
+                </p>
+
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <label className="text-sm font-medium text-gray-300">Daily Rides</label>
+                      <span className="text-2xl font-bold text-white">{dailyRides[0]} rides</span>
+                    </div>
+                    <Slider
+                      value={dailyRides}
+                      onValueChange={setDailyRides}
+                      max={30}
+                      min={1}
+                      step={1}
+                      className="w-full [&>span]:bg-primary"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-2">
+                      <span>1 ride</span>
+                      <span>30 rides</span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-white/10 rounded-xl border border-white/10 backdrop-blur-sm">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-2 h-2 rounded-full bg-green-400" />
+                      <span className="text-sm text-gray-300">Break-even Point</span>
+                    </div>
+                    <p className="text-sm text-gray-400">
+                      You only need to do <span className="text-white font-bold">5 rides in a whole month</span> to cover your subscription!
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white text-gray-900 rounded-3xl p-8 shadow-xl">
+                <div className="text-center">
+                  <p className="text-gray-500 font-medium mb-1">Your Monthly Savings</p>
+                  <p className="text-5xl font-extrabold text-primary mb-2">
+                    ${((dailyRides[0] * 30 * 18 * 0.25) - 19.99).toFixed(0)}
+                  </p>
+                  <p className="text-sm text-gray-400 mb-6">vs paying 25% commission</p>
+
+                  <div className="space-y-3 pt-6 border-t border-gray-100">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Competitor Takes (25%)</span>
+                      <span className="font-semibold text-red-500">-${(dailyRides[0] * 30 * 18 * 0.25).toFixed(0)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Spinr Cost</span>
+                      <span className="font-semibold text-gray-900">-$19.99</span>
+                    </div>
+                    <div className="flex justify-between text-sm pt-2">
+                      <span className="font-bold text-gray-900">Yearly Savings</span>
+                      <span className="font-bold text-green-600">+${(((dailyRides[0] * 30 * 18 * 0.25) - 19.99) * 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Download App Section */}
       <section id="download" className="py-20 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -317,26 +571,14 @@ export default function DrivePageClient({ structuredData }) {
             </p>
           </div>
 
+          {/* Driver App QR - SmartAppLink auto-detects iOS vs Android */}
           <div className="flex justify-center max-w-sm mx-auto">
-            {/* Driver App QR */}
-            <Link href="https://play.google.com/store/apps/details?id=com.spinr.driver" target="_blank" className="w-full bg-white text-gray-900 p-6 rounded-2xl flex items-center gap-6 hover:bg-gray-50 transition-colors group shadow-lg">
-              <div className="bg-gray-100 p-2 rounded-xl shrink-0">
-                <QRCodeSVG
-                  value="https://play.google.com/store/apps/details?id=com.spinr.driver"
-                  size={80}
-                  level="H"
-                  fgColor="#000000"
-                  bgColor="#ffffff"
-                />
-              </div>
-              <div className="text-left">
-                <h4 className="font-bold text-xl mb-1">Driver App</h4>
-                <div className="flex items-center text-gray-500 gap-2 text-sm group-hover:text-primary transition-colors font-medium">
-                  {/* Changed text as requested "Apply to drive" */}
-                  <span>Apply to Drive</span> <ArrowRight className="w-4 h-4" />
-                </div>
-              </div>
-            </Link>
+            <SmartAppLink
+              appType="driver"
+              title="Driver App"
+              qrSize={80}
+              className="w-full shadow-lg"
+            />
           </div>
         </div>
       </section>

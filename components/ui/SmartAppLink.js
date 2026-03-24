@@ -5,25 +5,7 @@ import { useState, useEffect } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import { ArrowRight } from 'lucide-react'
 
-// App store URLs
-const APP_URLS = {
-    rider: {
-        ios: 'https://apps.apple.com/ca/app/spinr/id6755680889',
-        android: 'https://play.google.com/store/apps/details?id=com.spinr.app',
-    },
-    driver: {
-        ios: 'https://apps.apple.com/ca/app/spinr-driver/id6755680810',
-        android: 'https://play.google.com/store/apps/details?id=com.spinr.driver',
-    },
-}
-
-function detectPlatform() {
-    if (typeof navigator === 'undefined') return 'ios' // Default to iOS for SSR
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera
-    if (/android/i.test(userAgent)) return 'android'
-    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) return 'ios'
-    return 'ios' // Default to iOS for desktop
-}
+import { APP_URLS, detectPlatform } from '@/lib/app-links'
 
 export default function SmartAppLink({
     appType = 'rider', // 'rider' or 'driver'
@@ -40,10 +22,22 @@ export default function SmartAppLink({
         setUrl(APP_URLS[appType][detected])
     }, [appType])
 
+    // Track click events in Google Analytics
+    const trackClick = () => {
+        if (typeof window !== 'undefined' && window.gtag) {
+            window.gtag('event', 'qr_code_click', {
+                event_category: 'download',
+                event_label: appType,
+                platform: platform,
+            })
+        }
+    }
+
     return (
         <Link
             href={url}
             target="_blank"
+            onClick={trackClick}
             className={`bg-white p-6 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer min-w-[320px] group border border-gray-100 ${className}`}
         >
             <div className="bg-white p-2 rounded-xl border border-gray-100 shrink-0">

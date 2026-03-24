@@ -9,11 +9,11 @@ import {
     Mail,
     Sparkles,
 } from 'lucide-react'
-import DOMPurify from 'isomorphic-dompurify'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import SafeHtml from '@/components/ui/SafeHtml'
 import {
     HELP_CATEGORIES,
 } from '@/constants/helpTopics'
@@ -110,7 +110,8 @@ export default async function ArticlePage({ params }) {
                     {/* Article Content */}
                     <Card className="bg-white border-gray-100 shadow-sm mb-8">
                         <CardContent className="p-8 md:p-10">
-                            <div
+                            <SafeHtml
+                                content={article.content}
                                 className="prose prose-lg max-w-none 
                   prose-headings:font-bold prose-headings:text-gray-900
                   prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
@@ -120,9 +121,6 @@ export default async function ArticlePage({ params }) {
                   prose-li:my-1
                   prose-a:text-red-600 prose-a:no-underline hover:prose-a:underline
                   prose-strong:text-gray-900"
-                                dangerouslySetInnerHTML={{
-                                    __html: DOMPurify.sanitize(article.content),
-                                }}
                             />
                         </CardContent>
                     </Card>
