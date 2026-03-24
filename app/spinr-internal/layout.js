@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { FileText, HelpCircle, LogOut, Home, Shield } from 'lucide-react'
+import { FileText, HelpCircle, LogOut, Home, Shield, BookOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
@@ -98,6 +98,7 @@ export default function AdminLayout({ children }) {
     { href: '/spinr-internal', label: 'Dashboard', icon: Home },
     { href: '/spinr-internal/policies', label: 'Policies', icon: FileText },
     { href: '/spinr-internal/faqs', label: 'FAQs', icon: HelpCircle },
+    { href: '/spinr-internal/help-articles', label: 'Help Articles', icon: BookOpen },
     { href: '/spinr-internal/seo', label: 'SEO', icon: Shield },
   ]
 
@@ -128,11 +129,10 @@ export default function AdminLayout({ children }) {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                      isActive
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:bg-gray-100 hover:text-foreground'
-                    }`}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-gray-100 hover:text-foreground'
+                      }`}
                   >
                     <item.icon className="w-5 h-5" />
                     {item.label}

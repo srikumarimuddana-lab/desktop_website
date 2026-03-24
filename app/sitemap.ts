@@ -14,7 +14,7 @@ interface SeoPage {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://spinr.ca'
-  
+
   // Default pages if Supabase not configured or no data exists
   const defaultPages: MetadataRoute.Sitemap = [
     {
@@ -56,7 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     // Fetch all SEO pages from database (excluding no_index pages)
-    const { data: seoPages, error } = (supabase as any)
+    const { data: seoPages, error } = await (supabase as any)
       .from('seo_pages')
       .select('path, sitemap_priority, sitemap_frequency, updated_at')
       .eq('no_index', false)
