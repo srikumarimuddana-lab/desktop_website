@@ -15,9 +15,12 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch('/api/admin/stats')
+      const { data: { session } } = await import('@/lib/supabase').then(m => m.supabase.auth.getSession())
+      const headers = session ? { Authorization: `Bearer ${session.access_token}` } : {}
+
+      const res = await fetch('/api/admin/stats', { headers })
       if (res.ok) setStats(await res.json())
-    } catch {} finally { setLoading(false) }
+    } catch { } finally { setLoading(false) }
   }
 
   const menu = [
@@ -71,7 +74,7 @@ export default function AdminDashboard() {
             <h3 className="text-amber-700 font-semibold mb-2">Setup Required: Connect Supabase</h3>
             <p className="text-amber-600 text-sm mb-4">Add credentials to <code className="bg-amber-100 px-1 rounded">.env.local</code>:</p>
             <pre className="bg-white p-4 rounded-lg text-sm overflow-x-auto">NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key</pre>
+              NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key</pre>
           </CardContent>
         </Card>
       )}

@@ -44,17 +44,24 @@ async function checkAuth(request) {
   }
 
   try {
-    // Get session from Supabase
-    const { data: { session }, error } = await supabase.auth.getSession()
+    // Get token from Authorization header
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader) {
+      console.warn('Missing Authorization header')
+      return false
+    }
 
-    if (error || !session) {
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error } = await supabase.auth.getUser(token)
+
+    if (error || !user) {
+      console.warn('Invalid token or user not found')
       return false
     }
 
     // Verify the user is the super admin
-    const userEmail = session.user?.email
-    if (userEmail !== SUPER_ADMIN_EMAIL) {
-      console.warn(`Unauthorized access attempt by: ${userEmail}`)
+    if (user.email !== SUPER_ADMIN_EMAIL) {
+      console.warn(`Unauthorized access attempt by: ${user.email}`)
       return false
     }
 

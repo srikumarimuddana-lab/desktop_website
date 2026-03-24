@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 const MenuButton = ({ onClick, isActive, children, title }) => (
   <Button
@@ -33,18 +33,27 @@ const MenuButton = ({ onClick, isActive, children, title }) => (
 )
 
 export default function RichTextEditor({ content, onChange, placeholder = "Start writing..." }) {
+  /* 
+    memoize extensions to prevent "Duplicate extension names" warning 
+    which happens when the array is re-created on every render in Strict Mode 
+  */
+  const extensions = useMemo(() => [
+    StarterKit.configure({
+      heading: {
+        levels: [1, 2, 3],
+      },
+      // Disable extensions that we add manually if they were in StarterKit (they aren't usually, but good practice)
+      // code: false,
+      // codeBlock: false,
+    }),
+    Placeholder.configure({ placeholder }),
+
+    TextAlign.configure({ types: ['heading', 'paragraph'] }),
+  ], [placeholder])
+
   const editor = useEditor({
     immediatelyRender: false,
-    extensions: [
-      StarterKit,
-      Placeholder.configure({ placeholder }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: { class: 'text-primary underline cursor-pointer' },
-      }),
-      Underline,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-    ],
+    extensions,
     content,
     editorProps: {
       attributes: {
