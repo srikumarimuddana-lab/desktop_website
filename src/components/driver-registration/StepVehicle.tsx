@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { useDriverRegistration } from "@/src/hooks/useDriverRegistration"
 import { fetchVehicleTypes, fetchDocTypes, submitVehicleDetails, submitFinalDocs } from "@/src/services/driver-service"
+import { VehicleDetailsPayload } from "@/src/types/driver-api"
 import { Loader2 } from "lucide-react"
 
 // Since vehicle details and docs might be separate steps or combined, instructions said:
@@ -94,7 +95,7 @@ export function StepVehicle() {
                 vehicle_registration_image: "placeholder_key", // TODO: Add upload
             }
 
-            await submitVehicleDetails(vehiclePayload, authToken)
+            await submitVehicleDetails(vehiclePayload as VehicleDetailsPayload, authToken)
 
             // 2. Submit Documents?
             // "submitFinalDocs(docs: any[], token: string)"
