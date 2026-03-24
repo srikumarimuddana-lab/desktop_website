@@ -46,7 +46,7 @@ export default async function Home() {
       {structuredData && <JsonLdInjector data={structuredData} />}
 
       {/* Hero Section with 2-Column Layout */}
-      <section className="relative pt-32 pb-20 min-h-[90vh] flex items-center overflow-hidden">
+      <section id="hero" className="relative pt-32 pb-20 min-h-[90vh] flex items-center overflow-hidden">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -132,7 +132,7 @@ export default async function Home() {
       </section>
 
       {/* NEW: Your city, at your fingertips Section */}
-      <section className="py-24 bg-white relative overflow-hidden">
+      <section id="features" className="py-24 bg-white relative overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
@@ -183,7 +183,7 @@ export default async function Home() {
 
 
       {/* NEW: Exclusive Rider Benefits Section */}
-      <section className="py-24 bg-gray-50">
+      <section id="benefits" className="py-24 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-[40px] p-8 md:p-12 shadow-sm border border-gray-100">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -272,7 +272,7 @@ export default async function Home() {
       </section>
 
       {/* NEW: Why Choose Spinr Section */}
-      <section className="py-24 bg-white">
+      <section id="why-choose" className="py-24 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -320,7 +320,7 @@ export default async function Home() {
         </div>
       </section>
       {/* Game Day Ready Section */}
-      <section className="py-24 bg-gray-50">
+      <section id="game-day" className="py-24 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
@@ -372,7 +372,7 @@ export default async function Home() {
         </div>
       </section>
       {/* NEW: Get the App CTA Section */}
-      <section className="py-20 bg-background">
+      <section id="download" className="py-20 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-[48px] p-8 md:p-16 shadow-xl border border-gray-100 relative overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center relative z-10">

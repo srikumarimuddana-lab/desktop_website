@@ -22,8 +22,8 @@ export default function DrivePageClient({ structuredData }) {
   const benefits = [
     { icon: DollarSign, title: '0% Commission Forever', description: 'Every dollar goes to you.' },
     { icon: Calendar, title: '6 Months Free', description: 'No subscription to start.' },
-    { icon: Clock, title: 'Daily Payouts', description: 'Earnings deposited in 24h.' },
-    { icon: Shield, title: 'Full Insurance', description: 'Coverage while on the job.' },
+    { icon: Clock, title: 'Weekly Payouts', description: 'Earnings deposited every week.' },
+    { icon: Shield, title: 'Full Insurance', description: 'Coverage after ride starts.' },
     { icon: Car, title: 'Be Your Own Boss', description: 'Set your own hours.' },
     { icon: CheckCircle2, title: 'Local Support', description: 'Real people in Saskatchewan.' },
   ]
@@ -43,7 +43,7 @@ export default function DrivePageClient({ structuredData }) {
       )}
 
       {/* Hero Section with Form */}
-      <section className="relative pt-32 pb-20 min-h-[90vh] flex items-center overflow-hidden">
+      <section id="hero" className="relative pt-32 pb-20 min-h-[90vh] flex items-center overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -81,42 +81,47 @@ export default function DrivePageClient({ structuredData }) {
               </div>
             </div>
 
-            {/* Right Column: Sign Up Form */}
+            {/* Right Column: Earnings Calculator */}
             <div>
               <Card className="shadow-2xl border-0 rounded-[30px] overflow-hidden bg-white/90 backdrop-blur-sm">
                 <CardHeader className="p-8 pb-4">
-                  <CardTitle className="text-2xl font-bold text-gray-900">Become a Driver</CardTitle>
-                  <p className="text-gray-500">Join our community of 50,000+ drivers.</p>
+                  <CardTitle className="text-2xl font-bold text-gray-900">Weekly Earnings Calculator</CardTitle>
+                  <div className="flex justify-between text-sm mt-4">
+                    <span className="text-muted-foreground">Weekly Trips</span>
+                    <span className="text-primary font-semibold text-lg">{trips[0]} trips</span>
+                  </div>
                 </CardHeader>
-                <CardContent className="p-8 pt-2">
-                  <form className="space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Full Name</label>
-                      <input type="text" placeholder="Enter your full name" className="flex h-12 w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
+                <CardContent className="p-8 pt-2 space-y-8">
+                  <div className="space-y-4">
+                    <Slider value={trips} onValueChange={setTrips} max={100} min={10} step={5} className="w-full" />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>10 trips</span>
+                      <span>100 trips</span>
                     </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Email Address</label>
-                      <input type="email" placeholder="name@example.com" className="flex h-12 w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-secondary rounded-xl p-4 text-center">
+                      <h4 className="text-muted-foreground font-medium mb-1 text-sm">Other Rideshare Companies</h4>
+                      <p className="text-2xl font-bold text-foreground">${competitorEarnings.toFixed(0)}</p>
+                      <p className="text-xs text-primary mt-1">-25% commission</p>
                     </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">City</label>
-                      <select className="flex h-12 w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                        <option value="">Where will you drive?</option>
-                        <option value="regina">Regina</option>
-                        <option value="saskatoon">Saskatoon</option>
-                      </select>
+                    <div className="bg-red-50 rounded-xl p-4 border-2 border-primary text-center">
+                      <h4 className="text-primary font-medium mb-1 text-sm">With Spinr</h4>
+                      <p className="text-2xl font-bold text-primary">${spinrEarnings.toFixed(0)}</p>
+                      <p className="text-xs text-red-500 mt-1">0% commission!</p>
                     </div>
+                  </div>
+                  <div className="text-center bg-gray-900 rounded-xl p-4">
+                    <p className="text-gray-400 mb-1 text-sm">Extra earnings with Spinr</p>
+                    <p className="text-3xl font-bold text-primary">${(spinrEarnings - competitorEarnings).toFixed(0)}/week</p>
+                    <p className="text-gray-400 text-xs mt-1">${((spinrEarnings - competitorEarnings) * 52).toFixed(0)} more per year!</p>
+                  </div>
 
-                    <Button className="w-full h-12 text-lg font-bold bg-primary hover:bg-primary/90 text-white rounded-xl mt-4">
-                      Get Started
+                  <div className="pt-2">
+                    <Button className="w-full h-12 text-lg font-bold bg-primary hover:bg-primary/90 text-white rounded-xl" onClick={() => document.getElementById('download').scrollIntoView({ behavior: 'smooth' })}>
+                      Start Earning Now
                     </Button>
-
-                    <p className="text-[10px] text-gray-400 text-center leading-tight pt-2">
-                      By proceeding, you consent to get calls, WhatsApp or SMS messages, including by automated means, from Spinr.
-                    </p>
-                  </form>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -126,14 +131,14 @@ export default function DrivePageClient({ structuredData }) {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 bg-white text-center">
+      <section id="how-it-works" className="py-24 bg-white text-center">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Driving with Spinr is easy</h2>
           <p className="text-gray-600 max-w-2xl mx-auto mb-16">
             From signup to your first paycheck, we've streamlined the process so you can focus on the road.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
             {/* Step 1 */}
             <div className="flex flex-col items-center">
               <div className="w-20 h-20 bg-red-50 rounded-[2rem] flex items-center justify-center mb-6 text-primary">
@@ -167,58 +172,35 @@ export default function DrivePageClient({ structuredData }) {
               </p>
             </div>
           </div>
+
+          {/* NEW: Quick Requirements Buttons */}
+          <div className="bg-gray-50 rounded-2xl p-8 max-w-4xl mx-auto">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Check requirements before you start</h3>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link href="/support/requirements#driver-requirements">
+                <Button variant="outline" className="h-12 px-6 rounded-xl border-gray-300 hover:border-primary hover:text-primary hover:bg-white text-gray-700 font-medium">
+                  Driver Requirements
+                </Button>
+              </Link>
+              <Link href="/support/requirements#vehicle-requirements">
+                <Button variant="outline" className="h-12 px-6 rounded-xl border-gray-300 hover:border-primary hover:text-primary hover:bg-white text-gray-700 font-medium">
+                  Vehicle Requirements
+                </Button>
+              </Link>
+              <Link href="/support/requirements#document-requirements">
+                <Button variant="outline" className="h-12 px-6 rounded-xl border-gray-300 hover:border-primary hover:text-primary hover:bg-white text-gray-700 font-medium">
+                  Document Requirements
+                </Button>
+              </Link>
+            </div>
+          </div>
+
         </div>
       </section>
 
-      {/* Earnings Calculator */}
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-foreground mb-4">
-            See How Much More You Could <span className="text-primary">Earn</span>
-          </h2>
-          <p className="text-muted-foreground text-center mb-8">Compare earnings: Spinr vs competitors</p>
-          <div className="max-w-4xl mx-auto">
-            <Card className="border-border bg-card">
-              <CardHeader>
-                <CardTitle className="text-center text-card-foreground">Weekly Earnings Calculator</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-8">
-                <div className="space-y-4">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Weekly Trips</span>
-                    <span className="text-primary font-semibold text-lg">{trips[0]} trips</span>
-                  </div>
-                  <Slider value={trips} onValueChange={setTrips} max={100} min={10} step={5} className="w-full" />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>10 trips</span>
-                    <span>100 trips</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-secondary rounded-xl p-6">
-                    <h4 className="text-muted-foreground font-medium mb-2">With Uber/Lyft</h4>
-                    <p className="text-3xl font-bold text-foreground">${competitorEarnings.toFixed(0)}</p>
-                    <p className="text-sm text-primary mt-1">-25% commission taken</p>
-                  </div>
-                  <div className="bg-red-50 rounded-xl p-6 border-2 border-primary">
-                    <h4 className="text-primary font-medium mb-2">With Spinr</h4>
-                    <p className="text-3xl font-bold text-primary">${spinrEarnings.toFixed(0)}</p>
-                    <p className="text-sm text-red-400 mt-1">0% commission - keep it all!</p>
-                  </div>
-                </div>
-                <div className="text-center bg-gray-900 rounded-xl p-6">
-                  <p className="text-gray-400 mb-2">Extra earnings with Spinr</p>
-                  <p className="text-4xl font-bold text-primary">${(spinrEarnings - competitorEarnings).toFixed(0)}/week</p>
-                  <p className="text-gray-400 text-sm mt-2">${((spinrEarnings - competitorEarnings) * 52).toFixed(0)} more per year!</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
 
       {/* Why Drivers Choose Spinr */}
-      <section className="py-24 bg-white">
+      <section id="why-choose" className="py-24 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
@@ -300,7 +282,7 @@ export default function DrivePageClient({ structuredData }) {
       </section>
 
       {/* Benefits Grid */}
-      <section className="py-16 bg-secondary">
+      <section id="benefits" className="py-16 bg-secondary">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-foreground mb-12">
             Everything You Need to <span className="text-primary">Succeed</span>
@@ -324,7 +306,7 @@ export default function DrivePageClient({ structuredData }) {
 
 
       {/* Download App Section */}
-      <section className="py-20 bg-primary text-primary-foreground">
+      <section id="download" className="py-20 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">

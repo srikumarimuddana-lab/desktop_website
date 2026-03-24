@@ -45,6 +45,12 @@ export default function SEOManagerPage() {
       sitemap_priority: 0.5,
       sitemap_frequency: 'weekly',
       structured_data: '',
+      custom_head: '',
+      custom_body_start: '',
+      custom_body_end: '',
+      sitemap_priority: 0.5,
+      sitemap_frequency: 'weekly',
+      structured_data: '',
       no_index: false
     })
   }
@@ -90,7 +96,7 @@ export default function SEOManagerPage() {
     try {
       const method = isCreating ? 'POST' : 'PUT'
       const url = isCreating ? '/api/seo-pages' : `/api/seo-pages/${encodeURIComponent(editingPage.path)}`
-      
+
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -349,16 +355,60 @@ export default function SEOManagerPage() {
                 className="font-mono text-xs"
               />
               <p className="text-xs text-muted-foreground">
-                Paste valid JSON-LD for Google Rich Results (e.g., FAQPage, LocalBusiness). 
-                <a 
-                  href="https://schema.org/" 
-                  target="_blank" 
+                Paste valid JSON-LD for Google Rich Results (e.g., FAQPage, LocalBusiness).
+                <a
+                  href="https://schema.org/"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary hover:underline ml-1"
                 >
                   Learn more →
                 </a>
               </p>
+            </div>
+
+            {/* Custom Scripts */}
+            <div className="space-y-4 border-t pt-4">
+              <h3 className="font-semibold text-sm">Custom Scripts & Tags</h3>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Custom Head Content</Label>
+                <p className="text-xs text-muted-foreground">Scripts/Tags to inject into <code>&lt;head&gt;</code> (e.g., Google Analytics, Meta Pixels, Verification Tags).</p>
+                <Textarea
+                  placeholder='<script>...</script> or <meta ... />'
+                  value={editingPage.custom_head || ''}
+                  onChange={(e) => setEditingPage({ ...editingPage, custom_head: e.target.value })}
+                  rows={4}
+                  className="font-mono text-xs bg-gray-50"
+                  spellCheck={false}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Custom Body Start</Label>
+                <p className="text-xs text-muted-foreground">Scripts to inject immediately after <code>&lt;body&gt;</code> opening tag (e.g., GTM noscript).</p>
+                <Textarea
+                  placeholder='<noscript>...</noscript>'
+                  value={editingPage.custom_body_start || ''}
+                  onChange={(e) => setEditingPage({ ...editingPage, custom_body_start: e.target.value })}
+                  rows={3}
+                  className="font-mono text-xs bg-gray-50"
+                  spellCheck={false}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Custom Body End (Footer)</Label>
+                <p className="text-xs text-muted-foreground">Scripts to inject before <code>&lt;/body&gt;</code> closing tag (e.g., Chat widgets, Tracking scripts).</p>
+                <Textarea
+                  placeholder='<script>...</script>'
+                  value={editingPage.custom_body_end || ''}
+                  onChange={(e) => setEditingPage({ ...editingPage, custom_body_end: e.target.value })}
+                  rows={4}
+                  className="font-mono text-xs bg-gray-50"
+                  spellCheck={false}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -411,16 +461,16 @@ export default function SEOManagerPage() {
                       )}
                     </div>
                     <div className="flex gap-2 ml-4">
-                      <Button 
-                        onClick={() => handleEdit(page)} 
-                        variant="outline" 
+                      <Button
+                        onClick={() => handleEdit(page)}
+                        variant="outline"
                         size="sm"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button 
-                        onClick={() => handleDelete(page.path)} 
-                        variant="outline" 
+                      <Button
+                        onClick={() => handleDelete(page.path)}
+                        variant="outline"
                         size="sm"
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       >

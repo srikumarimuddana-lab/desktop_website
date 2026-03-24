@@ -49,7 +49,7 @@ export default async function RidePage() {
       {structuredData && <JsonLdInjector data={structuredData} />}
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-white overflow-hidden">
+      <section id="hero" className="pt-32 pb-20 bg-white overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left Content */}
@@ -92,7 +92,7 @@ export default async function RidePage() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 bg-white">
+      <section id="how-it-works" className="py-24 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-12">How It Works</h2>
 
@@ -137,7 +137,7 @@ export default async function RidePage() {
       </section>
 
       {/* Community Impact Section */}
-      <section className="py-20 bg-gray-50">
+      <section id="community" className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Our Community Impact</h2>
@@ -187,7 +187,7 @@ export default async function RidePage() {
       </section>
 
       {/* Fare Transparency Calculator Section */}
-      <section className="py-20 bg-white relative overflow-hidden">
+      <section id="fare-calculator" className="py-20 bg-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/3 h-full bg-red-50/50 skew-x-12 translate-x-32"></div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -234,7 +234,7 @@ export default async function RidePage() {
 
 
       {/* Benefits Grid */}
-      <section className="py-16 bg-background">
+      <section id="benefits" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
@@ -259,7 +259,7 @@ export default async function RidePage() {
       </section>
 
       {/* Download App Section */}
-      <section className="py-20 bg-primary text-primary-foreground">
+      <section id="download" className="py-20 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
