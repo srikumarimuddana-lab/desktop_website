@@ -1,4 +1,6 @@
 'use client'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import DOMPurify from 'isomorphic-dompurify'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
@@ -127,7 +129,7 @@ export default function FAQsPage() {
                     </div>
                     <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
                     {/* Render partial HTML in the preview card properly or strip tags for preview */}
-                    <div className="text-muted-foreground text-sm line-clamp-2" dangerouslySetInnerHTML={{ __html: faq.answer }} />
+                    <div className="text-muted-foreground text-sm line-clamp-2" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(faq.answer) }} />
                   </div>
                   <div className="flex items-center gap-2">
                     <Button variant="ghost" size="sm" onClick={() => handleEdit(faq)}><Edit className="w-4 h-4" /></Button>
