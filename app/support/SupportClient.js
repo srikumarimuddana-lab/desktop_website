@@ -178,15 +178,14 @@ export default function SupportClient() {
         <CardContent className="p-10 flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Still need help?</h3>
-            <p className="text-gray-500">Our support team is available 24/7 to assist you with any issues.</p>
+            <p className="text-gray-500">Our support team is available 24/7 to assist you via email.</p>
           </div>
-          <div className="flex gap-4">
-            <Button className="h-12 px-8 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-red-200 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5" /> Live Chat
-            </Button>
-            <Button variant="outline" className="h-12 px-8 border-gray-200 hover:bg-gray-50 text-gray-900 font-bold rounded-xl flex items-center gap-2">
-              <Mail className="w-5 h-5" /> Email Us
-            </Button>
+          <div>
+            <a href="mailto:support@spinr.ca">
+              <Button className="h-12 px-8 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-red-200 flex items-center gap-2">
+                <Mail className="w-5 h-5" /> Email Us
+              </Button>
+            </a>
           </div>
         </CardContent>
       </Card>
