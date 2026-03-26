@@ -177,10 +177,43 @@ function buildContext(entries, userType) {
   return ctx;
 }
 
+// LOCATION GUARD — detect non-Saskatoon city mentions and inject hard negative context
+const NON_SASKATOON_CITIES = [
+  'yorkton', 'moose jaw', 'prince albert', 'swift current', 'north battleford',
+  'estevan', 'weyburn', 'lloydminster', 'melfort', 'humboldt', 'martensville',
+  'warman', 'meadow lake', 'tisdale', 'nipawin', 'kindersley', 'melville',
+  'la ronge', 'battleford', 'canora', 'esterhazy', 'moosomin', 'shaunavon',
+  'assiniboia', 'outlook', 'watrous', 'indian head', 'fort qu\'appelle',
+  'lumsden', 'white city', 'pilot butte', 'balgonie', 'emerald park'
+];
+
+function locationGuard(question) {
+  const q = question.toLowerCase();
+  // Check if user is asking about a specific non-Saskatoon, non-Regina city
+  for (const city of NON_SASKATOON_CITIES) {
+    if (q.includes(city)) {
+      return `CRITICAL FACT: Spinr is NOT available in ${city.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}. Spinr is currently ONLY available in Saskatoon, Saskatchewan. We are NOT available in any other Saskatchewan city at this time. Regina is launching soon but is NOT yet available.`;
+    }
+  }
+  // Check for Regina specifically
+  if (q.includes('regina')) {
+    return 'CRITICAL FACT: Spinr is NOT currently available in Regina. We are headquartered in Regina but rideshare services have NOT launched there yet. Regina is launching soon. Spinr is currently ONLY available in Saskatoon.';
+  }
+  return null;
+}
+
 // CALL LLM WITH CONTEXT
 async function callLLM(question, context, userType) {
-  const sysPrompt = `You are an exclusive customer support assistant for Spinr, a rideshare platform in Saskatchewan, Canada. You help ${userType === 'driver' ? 'drivers' : 'riders'} with their questions about the Spinr platform ONLY. 
-CRITICAL RULE: You MUST strictly refuse to answer any questions that are not directly related to Spinr, ridesharing, or the user's account (e.g. no politics, world news, coding, general knowledge). If asked an off-topic question, simply reply: "I am a Spinr support assistant and can only answer questions related to the Spinr app and our services." Please contact support@spinr.ca if you cannot find the answer to a valid Spinr question.`;
+  const sysPrompt = `You are an exclusive customer support assistant for Spinr, a rideshare platform in Saskatchewan, Canada. You help ${userType === 'driver' ? 'drivers' : 'riders'} with their questions about the Spinr platform ONLY.
+
+CRITICAL RULES YOU MUST FOLLOW:
+1. ONLY answer based on the Knowledge Base Context provided below. Do NOT use your own training data or make up information.
+2. If the answer is NOT found in the provided context, say: "I don't have specific information about that. Please contact support@spinr.ca for assistance."
+3. NEVER fabricate, guess, or assume facts about Spinr's service availability, pricing, policies, or features.
+4. SERVICE AVAILABILITY: Spinr is currently ONLY available in Saskatoon, Saskatchewan. It is NOT available in Regina (launching soon), Yorkton, Moose Jaw, Prince Albert, Swift Current, or ANY other city. If a user asks about availability in any city other than Saskatoon, clearly state it is NOT available there.
+5. Strictly refuse to answer any questions not directly related to Spinr, ridesharing, or the user's account. Reply: "I am a Spinr support assistant and can only answer questions related to the Spinr app and our services."
+6. Be concise, helpful, and friendly in your responses.
+7. For support issues you cannot resolve, direct users to support@spinr.ca.`;
   const userMsg = context ? `Knowledge Base Context:\n${context}\n\nUser Question: ${question}` : `User Question: ${question}`;
   const maxTokens = parseInt(process.env.AGENT_MAX_TOKENS || '500');
 
@@ -197,7 +230,7 @@ CRITICAL RULE: You MUST strictly refuse to answer any questions that are not dir
       const res = await fetch(config.url, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${config.key}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: config.model, messages: [{ role: 'system', content: sysPrompt }, { role: 'user', content: userMsg }], max_tokens: maxTokens, temperature: 0.7 })
+        body: JSON.stringify({ model: config.model, messages: [{ role: 'system', content: sysPrompt }, { role: 'user', content: userMsg }], max_tokens: maxTokens, temperature: 0.2 })
       });
       if (!res.ok) throw new Error('LLM API error:' + res.status);
       const data = await res.json();
@@ -215,8 +248,15 @@ CRITICAL RULE: You MUST strictly refuse to answer any questions that are not dir
 // RAG-BASED SEARCH
 async function searchWithRAG(question, userType) {
   const q = await generateEmbedding(question);
-  const entries = await vectorSearch(q, 5);
-  const ctx = buildContext(entries, userType);
+  const entries = await vectorSearch(q, 8);
+  let ctx = buildContext(entries, userType);
+
+  // Inject location guard context if the question mentions a specific city
+  const locGuard = locationGuard(question);
+  if (locGuard) {
+    ctx = locGuard + '\n\n' + ctx;
+  }
+
   const llm = await callLLM(question, ctx, userType);
   return { success: true, answer: llm.answer, model_used: llm.model_used, tokens_used: llm.tokens_used };
 }
