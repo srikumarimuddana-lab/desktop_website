@@ -6,7 +6,7 @@ export default function SmartDownloadButton({ children, className, variant, size
     const handleDownload = () => {
         // In a real implementation, you would replace these with your actual App Store / Play Store URLs
         const IOS_URL = 'https://apps.apple.com/ca/app/spinr/id6755680889'
-        const ANDROID_URL = 'https://play.google.com/store/apps/details?id=com.spinr.app'
+        const ANDROID_URL = 'https://play.google.com/store/apps/details?id=com.spinr.user'
 
         const userAgent = typeof navigator === 'undefined' ? '' : navigator.userAgent || navigator.vendor || window.opera
 
