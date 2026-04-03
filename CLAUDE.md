@@ -1,0 +1,284 @@
+# Spinr Website — Project Knowledge Base
+
+> This file provides full project context for AI agents (Claude, Copilot, Gemini, etc.).
+> Last updated: 2026-04-03
+
+---
+
+## What Is Spinr
+
+Spinr is a **Saskatchewan-based rideshare platform**. Drivers keep 100% of net fare (0% commission). Riders pay a flat $1 platform fee per trip. No surge pricing. Currently available **only in Saskatoon**. Regina launching soon. 100% Saskatchewan owned and operated.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router, React 19) |
+| Language | JavaScript/JSX (no TypeScript) |
+| Styling | Tailwind CSS 3.4 + Shadcn/ui (Radix primitives) |
+| Database | Supabase (PostgreSQL + pgvector + RLS) |
+| AI/RAG | LangChain.js + Alibaba DashScope (Qwen LLM, text-embedding-v4) |
+| Icons | Lucide React |
+| Forms | React Hook Form + Zod |
+| Rich Text | Tiptap (WYSIWYG editor in admin) |
+| Notifications | Sonner (toast) |
+| Deployment | Vercel (standalone output) |
+| Package Manager | npm (`.npmrc` has `legacy-peer-deps=true` for Vercel) |
+
+---
+
+## Directory Structure
+
+```
+desktop_website/
+├── app/                          # Next.js App Router
+│   ├── api/
+│   │   ├── [[...path]]/route.js  # Catch-all API (FAQs, help articles, legal, SEO, admin)
+│   │   └── agent/search/route.js # AI chat agent endpoint (LangChain hybrid RAG)
+│   ├── about/page.js
+│   ├── account-deletion/page.js
+│   ├── app/page.js
+│   ├── drive/                    # Driver onboarding (page.js + DrivePageClient.js)
+│   ├── help/                     # Help center (page.js, HelpCenterClient.js, article/[slug], category/[slug])
+│   ├── legal/[slug]/page.js      # Dynamic legal pages
+│   ├── ride/                     # Rider page (page.js + FareCalculator.js)
+│   ├── safety/page.js
+│   ├── spinr-internal/           # Admin dashboard (protected)
+│   │   ├── login/page.js
+│   │   ├── layout.js             # Auth guard
+│   │   ├── page.js               # Dashboard stats
+│   │   ├── faqs/page.js
+│   │   ├── help-articles/page.js
+│   │   ├── policies/page.js      # Legal doc WYSIWYG editor
+│   │   ├── seo/page.js
+│   │   └── agent-conversations/page.js
+│   ├── support/page.js
+│   ├── layout.js                 # Root layout (providers, ChatWidget, SpeedInsights)
+│   ├── globals.css
+│   ├── sitemap.ts                # Dynamic XML sitemap
+│   ├── robots.ts
+│   └── not-found.js
+├── components/
+│   ├── ai/ChatWidget.js          # Floating AI chat bot widget
+│   ├── home/                     # Hero, phone mockup, rider image
+│   ├── layout/Header.js, Footer.js
+│   ├── seo/CustomScripts.js, JsonLdInjector.js
+│   ├── ui/                       # 60+ Shadcn components + CookieBanner, SafeHtml, SmartAppLink
+│   └── RichTextEditor.js         # Tiptap editor for admin
+├── lib/
+│   ├── langchain.js              # LangChain singletons (getEmbeddings, getLLM) — lazy init
+│   ├── hybrid-retriever.js       # hybridRetrieve() — calls Supabase hybrid_search RPC
+│   ├── context-builder.js        # XML-bounded context formatting for LLM prompts
+│   ├── kb-sync.js                # syncToKB(), deleteFromKB() — CMS auto-sync to KB
+│   ├── supabase.js               # Supabase client + mock fallback for dev
+│   ├── seo.js                    # SEO metadata fetchers
+│   ├── app-links.js              # App Store / Play Store URLs + platform detection
+│   └── utils.js                  # cn() utility (clsx + tailwind-merge)
+├── constants/
+│   ├── helpTopics.js             # Static help center data (fallback)
+│   └── images.js
+├── hooks/
+│   ├── use-mobile.jsx
+│   └── use-toast.js
+├── scripts/
+│   └── ingest-documents.js       # CLI: chunk .docx files → embeddings → Supabase KB
+├── spinrhelpfiles/               # 11 Word docs (6 driver, 5 rider)
+├── supabase/                     # SQL migrations and seeds
+│   ├── knowledge_base_seed.sql   # ~40 manually curated KB entries
+│   ├── hybrid_search_migration.sql  # BM25 + vector hybrid search RPC
+│   ├── cms_sync_migration.sql    # source_id column for CMS sync
+│   ├── create_vector_search.sql  # Original vector search (legacy)
+│   └── update_vector_dimensions.sql # 1536 → 1024 dimension migration
+├── public/                       # Static assets (logo, images, QR codes)
+├── docs/superpowers/             # Design specs and implementation plans
+├── .env.local                    # Environment variables (gitignored)
+├── .npmrc                        # legacy-peer-deps=true
+├── next.config.js
+├── tailwind.config.js
+├── jsconfig.json                 # Path aliases: @/*
+└── package.json
+```
+
+---
+
+## Architecture
+
+### Public Website
+Standard Next.js pages. Server components fetch SEO metadata from Supabase, client components handle interactivity. The `FareCalculator` uses Nominatim (geocoding) + OSRM (routing) — both free/open APIs.
+
+### Admin CMS (`/spinr-internal`)
+Protected by Supabase Auth. Super admin email: `admin@spinr.ca` (hardcoded). Manages FAQs, help articles, legal docs, SEO metadata. All CRUD goes through the catch-all API route.
+
+### AI Chat Agent
+The `ChatWidget.js` component POSTs to `/api/agent/search`. The pipeline:
+
+```
+User Question → Rate Limit → Cache Check → Hybrid Retrieval → LLM Call → Response
+                                               ↓
+                                    Supabase hybrid_search RPC
+                                    (BM25 keyword + pgvector semantic)
+                                    Reciprocal Rank Fusion → Top 3
+                                               ↓
+                                    LangChain ChatOpenAI (Qwen via DashScope)
+                                    XML-bounded context + system prompt
+                                               ↓
+                                    Validate → Store conversation → Return
+```
+
+**Fallback chain:** Hybrid RAG → keyword search on faqs/help_articles tables → "contact support@spinr.ca"
+
+**Location guard:** Detects city names in queries and injects hard-negative context (Spinr is ONLY in Saskatoon).
+
+### CMS → KB Auto-Sync
+When admin creates/updates/deletes FAQs or help articles, `lib/kb-sync.js` automatically:
+- Generates an embedding via DashScope
+- Upserts/deletes the corresponding `knowledge_base` entry
+- Tracked via `source` + `source_id` columns
+- Fire-and-forget (doesn't block the API response)
+
+---
+
+## Database Tables (Supabase)
+
+| Table | Purpose | RLS |
+|-------|---------|-----|
+| `knowledge_base` | AI agent knowledge (embeddings, content, categories) | Public read, admin write |
+| `faqs` | FAQ entries managed via CMS | Public read, admin write |
+| `help_articles` | Help center articles managed via CMS | Public read, admin write |
+| `legal_docs` | Legal documents (terms, privacy, etc.) | Public read, admin write |
+| `seo_pages` | Per-page SEO metadata, JSON-LD, sitemap config | Public read, admin write |
+| `agent_conversations` | Chat history for analytics | Insert by anon, read by admin |
+
+### Key: `knowledge_base` table
+- `embedding`: vector(1024) — DashScope text-embedding-v4
+- `fts`: tsvector — auto-generated from title + content (for BM25 search)
+- `source`: origin identifier — `website_analysis` (seed), `docx_ingestion` (Word docs), `cms_faq`, `cms_article`
+- `source_id`: links back to FAQ/article UUID (for CMS sync)
+- `is_active`: boolean toggle
+
+### Key RPC: `hybrid_search(query_text, query_embedding, match_count, ...)`
+Combines BM25 full-text search + pgvector cosine similarity using Reciprocal Rank Fusion. Returns ranked results with `combined_score`.
+
+---
+
+## API Routes
+
+### Catch-all: `/api/[[...path]]/route.js` (~915 lines)
+
+| Endpoint | Method | Auth | Purpose |
+|----------|--------|------|---------|
+| `/api/faqs` | GET | No | List all FAQs |
+| `/api/faqs` | POST | Yes | Create FAQ (+ KB sync) |
+| `/api/faqs/:id` | PUT | Yes | Update FAQ (+ KB sync) |
+| `/api/faqs/:id` | DELETE | Yes | Delete FAQ (+ KB sync) |
+| `/api/help-articles` | GET | No | List articles |
+| `/api/help-articles` | POST | Yes | Create article (+ KB sync) |
+| `/api/help-articles/:slug` | GET | No | Get single article |
+| `/api/help-articles/:id` | PUT | Yes | Update article (+ KB sync) |
+| `/api/help-articles/:id` | DELETE | Yes | Delete article (+ KB sync) |
+| `/api/help-categories` | GET | No | List categories |
+| `/api/legal/:slug` | GET | No | Get legal doc |
+| `/api/legal/:slug` | PUT | Yes | Update legal doc |
+| `/api/seo-pages` | GET/POST | Mixed | SEO metadata CRUD |
+| `/api/seo-pages/:path` | PUT/DELETE | Yes | SEO page management |
+| `/api/admin/stats` | GET | No | Dashboard counts |
+| `/api/admin/seed-seo` | POST | No | Seed default SEO pages |
+
+### AI Agent: `/api/agent/search/route.js` (~291 lines)
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/agent/search` | POST | AI chat query (hybrid RAG) |
+| `/api/agent/search` | GET | Health check |
+
+---
+
+## Environment Variables
+
+Required in Vercel (and `.env.local` for local dev):
+
+```
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://cfrazforbupizntxvvtp.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<jwt>
+
+# LLM (Alibaba DashScope — OpenAI-compatible)
+LLM_API_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions
+LLM_API_KEY=<key>
+LLM_MODEL_NAME=qwen-vl-max-2025-04-08
+
+# Embeddings (Alibaba DashScope)
+EMBEDDING_API_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1/embeddings
+EMBEDDING_API_KEY=<key>
+EMBEDDING_MODEL_NAME=text-embedding-v4
+
+# IMPORTANT: Also set OPENAI_API_KEY to the same DashScope key
+# (the openai npm package reads this automatically)
+OPENAI_API_KEY=<same key as LLM_API_KEY>
+
+# Feature flags
+AI_AGENT_ENABLED=true
+FALLBACK_TO_KEYWORD_SEARCH=true
+AGENT_RATE_LIMIT=10
+AGENT_MAX_TOKENS=500
+```
+
+---
+
+## Key Patterns & Conventions
+
+### Module System
+- Next.js App Router pages use ESM `import/export`
+- Standalone scripts (e.g., `scripts/ingest-documents.js`) use CommonJS `require()`
+- Path aliases: `@/` maps to project root (`jsconfig.json`)
+
+### LangChain Initialization
+LangChain instances (`getEmbeddings()`, `getLLM()`) are **lazily initialized** in `lib/langchain.js`. This is required because Vercel serverless may not have env vars ready at module load time.
+
+### Supabase Client
+`lib/supabase.js` exports a singleton client. If Supabase is not configured, it returns a mock client that allows the app to run in demo mode with hardcoded data.
+
+### Component Pattern
+- Server components for pages (data fetching, metadata)
+- Client components (`'use client'`) for interactivity
+- Shadcn/ui components in `components/ui/` — don't modify these directly
+
+### Error Handling in API
+- Supabase errors return 500 with error message
+- Auth failures return 401
+- Not found returns 404
+- AI agent errors fail silently to fallback chain
+
+---
+
+## Scripts
+
+### `node scripts/ingest-documents.js`
+Ingests Word docs from `spinrhelpfiles/` into `knowledge_base`:
+- `--force` — clear and re-ingest all docx entries
+- `--file "X.docx"` — ingest single file
+- Uses mammoth for .docx parsing, LangChain RecursiveCharacterTextSplitter for chunking
+
+---
+
+## Known Issues & Gotchas
+
+1. **Vercel peer deps**: `.npmrc` must have `legacy-peer-deps=true` or build fails
+2. **LangChain + Vercel**: All LangChain packages must be in `serverExternalPackages` in `next.config.js` to avoid ESM/CJS bundling issues
+3. **OPENAI_API_KEY**: Must be set in Vercel env vars to the DashScope key — the `openai` npm package reads it directly, overriding what LangChain passes
+4. **Vector dimensions**: Embeddings are 1024-dimensional (DashScope text-embedding-v4), not 1536 (OpenAI ada-002). The `knowledge_base.embedding` column is `vector(1024)`.
+5. **Auth bypass in dev**: If Supabase is not configured AND `NODE_ENV=development`, admin auth is bypassed. Never deploy with this.
+6. **CORS headers**: `X-Frame-Options: ALLOWALL` in `next.config.js` — allows clickjacking. Should be `DENY` or `SAMEORIGIN` in production.
+7. **Catch-all route is large**: `app/api/[[...path]]/route.js` is ~915 lines. Consider splitting if it grows further.
+
+---
+
+## Recent Changes (April 2026)
+
+- Replaced hand-rolled RAG with **LangChain.js hybrid search** (BM25 + vector + RRF)
+- Added **document ingestion** from Word docs (`scripts/ingest-documents.js`)
+- Added **CMS auto-sync** — FAQ and help article CRUD auto-updates AI knowledge base
+- Added Vercel Speed Insights
+- Knowledge base scaled from ~40 seed entries to 100+ (with Word doc chunks)
