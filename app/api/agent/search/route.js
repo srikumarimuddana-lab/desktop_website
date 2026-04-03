@@ -136,7 +136,9 @@ CRITICAL RULES YOU MUST FOLLOW:
 // ============================================
 async function searchWithLangChainRAG(question, userType) {
   // 1. Hybrid retrieval (BM25 + vector via Supabase RPC)
+  console.log('[RAG] Starting hybrid retrieval for:', question)
   const entries = await hybridRetrieve(question, 3)
+  console.log('[RAG] Retrieved entries:', entries.length, entries.map(e => e.title))
 
   // 2. Build structured context
   let context = buildStructuredContext(entries, userType)
@@ -201,7 +203,7 @@ async function searchWithHybridApproach(q, ut, uid) {
         setCachedResponse(sa, ut, r)
         return r
       }
-    } catch (e) { console.warn('LangChain RAG failed:', e.message) }
+    } catch (e) { console.error('[RAG] LangChain RAG failed:', e.message, e.stack) }
   }
 
   const fe = process.env.FALLBACK_TO_KEYWORD_SEARCH !== 'false'
