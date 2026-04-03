@@ -9,7 +9,7 @@ const nextConfig = {
       },
     ],
   },
-  serverExternalPackages: ['mongodb'],
+  serverExternalPackages: ['mongodb', '@langchain/community', '@langchain/core', '@langchain/openai', 'langchain', 'mammoth', 'jsdom'],
   experimental: {
     // Remove if not using Server Components
   },
