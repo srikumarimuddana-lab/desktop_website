@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import { llm } from '@/lib/langchain'
+import { getLLM } from '@/lib/langchain'
 import { hybridRetrieve } from '@/lib/hybrid-retriever'
 import { buildStructuredContext, formatUserMessage } from '@/lib/context-builder'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
@@ -154,6 +154,7 @@ async function searchWithLangChainRAG(question, userType) {
   const userMessage = formatUserMessage(context, question)
 
   // 5. Call LLM via LangChain
+  const llm = getLLM()
   const response = await llm.invoke([
     new SystemMessage(systemPrompt),
     new HumanMessage(userMessage)
