@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import { supabase as anonymousSupabase, isSupabaseConfigured } from '@/lib/supabase'
 import { createClient } from '@supabase/supabase-js'
+import { syncToKB, deleteFromKB } from '@/lib/kb-sync'
 
 // Helper function to handle CORS with multiple origin support
 function handleCORS(response, request) {
@@ -417,6 +418,8 @@ async function handleRoute(request, { params }) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
         }
+        // Sync to AI knowledge base (fire-and-forget)
+        syncToKB('cms_faq', data.id, data.question, data.answer, data.category)
         return handleCORS(NextResponse.json(data))
       }
 
@@ -455,6 +458,8 @@ async function handleRoute(request, { params }) {
         if (!data) {
           return handleCORS(NextResponse.json({ error: 'FAQ not found' }, { status: 404 }))
         }
+        // Sync to AI knowledge base (fire-and-forget)
+        syncToKB('cms_faq', id, body.question, body.answer, body.category)
         return handleCORS(NextResponse.json(data))
       }
 
@@ -485,6 +490,8 @@ async function handleRoute(request, { params }) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
         }
+        // Delete from AI knowledge base (fire-and-forget)
+        deleteFromKB('cms_faq', id)
         return handleCORS(NextResponse.json({ success: true }))
       }
 
@@ -569,6 +576,8 @@ async function handleRoute(request, { params }) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
         }
+        // Sync to AI knowledge base (fire-and-forget)
+        syncToKB('cms_article', data.id, data.title, data.content, data.category_id)
         return handleCORS(NextResponse.json(data))
       }
       return handleCORS(NextResponse.json({ error: 'Database not configured' }, { status: 503 }))
@@ -610,6 +619,8 @@ async function handleRoute(request, { params }) {
         if (!data) {
           return handleCORS(NextResponse.json({ error: 'Article not found' }, { status: 404 }))
         }
+        // Sync to AI knowledge base (fire-and-forget)
+        syncToKB('cms_article', id, body.title, body.content, body.category_id)
         return handleCORS(NextResponse.json(data))
       }
       return handleCORS(NextResponse.json({ error: 'Database not configured' }, { status: 503 }))
@@ -634,6 +645,8 @@ async function handleRoute(request, { params }) {
           console.error('Supabase error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
         }
+        // Delete from AI knowledge base (fire-and-forget)
+        deleteFromKB('cms_article', id)
         return handleCORS(NextResponse.json({ success: true }))
       }
       return handleCORS(NextResponse.json({ error: 'Database not configured' }, { status: 503 }))
