@@ -311,9 +311,9 @@ INSERT INTO public.knowledge_base (title, content, category, tags, source) VALUE
 INSERT INTO public.knowledge_base (title, content, category, tags, source) VALUES
 (
     'Spinr Driver Subscription Plans',
-    'Spinr offers optional subscription plans for drivers that provide additional features and benefits. These may include priority ride assignments, enhanced visibility to riders, and access to premium features. The subscription is optional — drivers can earn without a subscription. Contact support@spinr.ca for current subscription options and pricing.',
+    'Spinr offers optional subscription plans for drivers that provide additional features and benefits. Subscription plans are available on a weekly or monthly basis and can be cancelled anytime without penalty. Benefits of subscription plans include: 1) Priority ride assignments — receive ride requests before non-subscribers. 2) Enhanced visibility to riders — appear higher in search results. 3) Access to premium features and tools. 4) Potential for higher earnings through priority positioning. The subscription is optional — drivers can earn without a subscription by receiving standard ride assignments. To subscribe: go to the Driver app > Settings > Subscription Plans. For current subscription options and pricing, contact support@spinr.ca or check the subscription section in your Driver app.',
     'driver',
-    ARRAY['subscription', 'plan', 'premium', 'membership', 'monthly'],
+    ARRAY['subscription', 'plan', 'premium', 'membership', 'monthly', 'weekly', 'priority', 'benefits'],
     'website_analysis'
 );
 
