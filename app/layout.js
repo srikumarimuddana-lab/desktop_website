@@ -4,6 +4,7 @@ import { Toaster } from 'sonner'
 import CookieBanner from '@/components/ui/CookieBanner'
 import CustomScripts from '@/components/seo/CustomScripts'
 import ChatWidget from '@/components/ai/ChatWidget'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -36,6 +37,7 @@ export default function RootLayout({ children }) {
         />
         <CookieBanner />
         <ChatWidget />
+        <SpeedInsights />
         <CustomScripts position="body_end" />
       </body>
     </html>
