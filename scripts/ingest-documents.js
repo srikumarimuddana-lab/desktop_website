@@ -11,7 +11,7 @@
  */
 
 const { createClient } = require('@supabase/supabase-js')
-const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter')
+const { RecursiveCharacterTextSplitter } = require('@langchain/textsplitters')
 const mammoth = require('mammoth')
 const path = require('path')
 const fs = require('fs')
