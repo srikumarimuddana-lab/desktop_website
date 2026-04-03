@@ -160,7 +160,7 @@ async function searchWithLangChainRAG(question, userType) {
   return {
     success: true,
     answer: response.content,
-    model_used: llm.modelName,
+    model_used: llm.model,
     tokens_used: response.usage_metadata?.total_tokens || 0
   }
 }
