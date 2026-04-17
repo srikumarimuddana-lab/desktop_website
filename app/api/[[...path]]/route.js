@@ -1,9 +1,23 @@
 import { NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
+import crypto from 'crypto'
 import { supabase as anonymousSupabase, isSupabaseConfigured } from '@/lib/supabase'
 import { createClient } from '@supabase/supabase-js'
 import { syncToKB, deleteFromKB } from '@/lib/kb-sync'
 import { getPromotionBySlug } from '@/constants/promotions'
+
+// Coupon code helpers — confusion-free alphabet (no 0/O/1/I/L)
+const COUPON_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
+function generateCouponCode() {
+  const bytes = crypto.randomBytes(9)
+  let out = ''
+  for (let i = 0; i < 9; i++) {
+    out += COUPON_ALPHABET[bytes[i] % COUPON_ALPHABET.length]
+    if (i === 2 || i === 5) out += '-'
+  }
+  return out // e.g. A2B-C3D-E4F
+}
+const COUPON_TTL_MS = 24 * 60 * 60 * 1000 // 24 hours
 
 // Helper function to handle CORS with multiple origin support
 function handleCORS(response, request) {
@@ -166,6 +180,9 @@ let demoLegalDocs = {
 
 // In-memory promotion signups (demo fallback when Supabase is not configured)
 let demoPromotionSignups = []
+
+// In-memory coupon store (demo fallback)
+let demoPromotionCoupons = []
 
 // Help Categories
 const HELP_CATEGORIES = [
@@ -919,8 +936,136 @@ async function handleRoute(request, { params }) {
       return handleCORS(NextResponse.json(demoPromotionSignups))
     }
 
+    // Promotion Coupons - GET /api/promotion-coupons/:code (public, validate)
+    if (route.startsWith('/promotion-coupons/') && method === 'GET' && path[1] && path.length === 2) {
+      const code = decodeURIComponent(path[1]).trim().toUpperCase()
+      const nowIso = new Date().toISOString()
+
+      let coupon
+      if (isSupabaseConfigured()) {
+        const { data } = await anonymousSupabase
+          .from('promotion_coupons')
+          .select('code, promotion_slug, status, expires_at')
+          .eq('code', code)
+          .maybeSingle()
+        coupon = data
+      } else {
+        coupon = demoPromotionCoupons.find((c) => c.code === code)
+      }
+
+      if (!coupon) {
+        return handleCORS(NextResponse.json(
+          { valid: false, error: 'This code is not valid.' },
+          { status: 404 }
+        ))
+      }
+      if (coupon.status === 'used') {
+        return handleCORS(NextResponse.json(
+          { valid: false, error: 'This code has already been used.' },
+          { status: 410 }
+        ))
+      }
+      if (coupon.expires_at && coupon.expires_at < nowIso) {
+        return handleCORS(NextResponse.json(
+          { valid: false, error: 'This code has expired.' },
+          { status: 410 }
+        ))
+      }
+      const promo = getPromotionBySlug(coupon.promotion_slug)
+      return handleCORS(NextResponse.json({
+        valid: true,
+        code: coupon.code,
+        promotion_slug: coupon.promotion_slug,
+        promotion_title: promo?.title || null,
+        expires_at: coupon.expires_at,
+      }))
+    }
+
+    // Promotion Coupons - GET /api/promotion-coupons (admin, list all)
+    if (route === '/promotion-coupons' && method === 'GET') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+
+      if (isSupabaseConfigured()) {
+        const supabase = createAuthenticatedClient(request)
+        const { data, error } = await supabase
+          .from('promotion_coupons')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (error) {
+          console.error('Promotion coupons fetch error:', error)
+          return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
+        }
+        return handleCORS(NextResponse.json(data || []))
+      }
+      return handleCORS(NextResponse.json(demoPromotionCoupons))
+    }
+
+    // Promotion Coupons - POST /api/promotion-coupons (admin, generate batch)
+    if (route === '/promotion-coupons' && method === 'POST') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+
+      let body
+      try {
+        body = await request.json()
+      } catch {
+        return handleCORS(NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }))
+      }
+
+      const { promotion_slug, recipients } = body || {}
+      const promo = promotion_slug ? getPromotionBySlug(promotion_slug) : null
+      if (!promo || promo.status !== 'active') {
+        return handleCORS(NextResponse.json(
+          { error: 'Promotion not found or no longer active' },
+          { status: 404 }
+        ))
+      }
+      if (!Array.isArray(recipients) || recipients.length === 0 || recipients.length > 100) {
+        return handleCORS(NextResponse.json(
+          { error: 'Provide 1–100 recipients' },
+          { status: 400 }
+        ))
+      }
+
+      const now = new Date()
+      const expiresIso = new Date(now.getTime() + COUPON_TTL_MS).toISOString()
+      const coupons = recipients.map((r) => ({
+        id: uuidv4(),
+        code: generateCouponCode(),
+        promotion_slug: promo.slug,
+        recipient_name: (r?.name || '').toString().trim() || null,
+        recipient_phone: (r?.phone || '').toString().trim() || null,
+        status: 'pending',
+        expires_at: expiresIso,
+        used_at: null,
+        used_by_email: null,
+        used_by_signup_id: null,
+        created_at: now.toISOString(),
+      }))
+
+      if (isSupabaseConfigured()) {
+        const supabase = createAuthenticatedClient(request)
+        const { data, error } = await supabase
+          .from('promotion_coupons')
+          .insert(coupons)
+          .select()
+        if (error) {
+          console.error('Coupon generation error:', error)
+          return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
+        }
+        return handleCORS(NextResponse.json(data))
+      }
+
+      demoPromotionCoupons.unshift(...coupons)
+      return handleCORS(NextResponse.json(coupons))
+    }
+
     // Promotion Signups - POST /api/promotion-signups
-    // Public endpoint — drivers register for a promotion/quest via shareable link
+    // Public endpoint — drivers register using a valid, unused coupon code
     if (route === '/promotion-signups' && method === 'POST') {
       let body
       try {
@@ -931,6 +1076,7 @@ async function handleRoute(request, { params }) {
 
       const {
         promotion_slug,
+        coupon_code,
         full_name,
         email,
         phone,
@@ -949,6 +1095,13 @@ async function handleRoute(request, { params }) {
 
       // Validate input
       const emailOk = typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      const normalizedCode = typeof coupon_code === 'string' ? coupon_code.trim().toUpperCase() : ''
+      if (!normalizedCode) {
+        return handleCORS(NextResponse.json(
+          { error: 'A coupon code is required' },
+          { status: 400 }
+        ))
+      }
       if (
         !emailOk ||
         typeof full_name !== 'string' || full_name.trim().length < 2 ||
@@ -961,11 +1114,14 @@ async function handleRoute(request, { params }) {
         ))
       }
 
+      const nowDate = new Date()
+      const nowIso = nowDate.toISOString()
       const reference = `SPINR-${promo.slug.toUpperCase().slice(0, 6)}-${uuidv4().slice(0, 6).toUpperCase()}`
-      const now = new Date()
+      const signupId = uuidv4()
       const signup = {
-        id: uuidv4(),
+        id: signupId,
         reference,
+        coupon_code: normalizedCode,
         promotion_slug: promo.slug,
         audience: promo.audience,
         full_name: full_name.trim(),
@@ -977,26 +1133,41 @@ async function handleRoute(request, { params }) {
         window_days: promo.windowDays,
         reward_amount: promo.reward,
         status: 'accepted',
-        accepted_at: now.toISOString(),
-        expires_at: new Date(now.getTime() + promo.windowDays * 24 * 60 * 60 * 1000).toISOString()
+        accepted_at: nowIso,
+        expires_at: new Date(nowDate.getTime() + promo.windowDays * 24 * 60 * 60 * 1000).toISOString()
       }
 
       if (isSupabaseConfigured()) {
-        // Prevent the same driver from registering twice for the same promotion
-        const { data: existing } = await anonymousSupabase
-          .from('promotion_signups')
-          .select('id, reference')
+        // 1) Atomically burn the coupon (only if pending, matching promo, not expired)
+        const { data: burned, error: burnErr } = await anonymousSupabase
+          .from('promotion_coupons')
+          .update({
+            status: 'used',
+            used_at: nowIso,
+            used_by_email: signup.email,
+            used_by_signup_id: signupId,
+          })
+          .eq('code', normalizedCode)
           .eq('promotion_slug', promo.slug)
-          .eq('email', signup.email)
-          .maybeSingle()
+          .eq('status', 'pending')
+          .gt('expires_at', nowIso)
+          .select('code, recipient_phone, recipient_name')
 
-        if (existing) {
+        if (burnErr) {
+          console.error('Coupon burn error:', burnErr)
           return handleCORS(NextResponse.json(
-            { error: 'You have already registered for this promotion', reference: existing.reference },
-            { status: 409 }
+            { error: 'Could not validate code. Please try again.' },
+            { status: 500 }
+          ))
+        }
+        if (!burned || burned.length === 0) {
+          return handleCORS(NextResponse.json(
+            { error: 'Invalid, expired, or already-used code' },
+            { status: 410 }
           ))
         }
 
+        // 2) Insert the signup
         const { data, error } = await anonymousSupabase
           .from('promotion_signups')
           .insert([signup])
@@ -1004,6 +1175,16 @@ async function handleRoute(request, { params }) {
           .single()
 
         if (error) {
+          // Rollback: re-open the coupon so the driver can retry
+          await anonymousSupabase
+            .from('promotion_coupons')
+            .update({
+              status: 'pending',
+              used_at: null,
+              used_by_email: null,
+              used_by_signup_id: null,
+            })
+            .eq('code', normalizedCode)
           console.error('Promotion signup error:', error)
           return handleCORS(NextResponse.json(
             { error: 'Could not save signup. Please try again.' },
@@ -1013,16 +1194,29 @@ async function handleRoute(request, { params }) {
         return handleCORS(NextResponse.json(data))
       }
 
-      // Demo fallback
-      const dup = demoPromotionSignups.find(
-        (s) => s.promotion_slug === promo.slug && s.email === signup.email
+      // Demo fallback — burn in-memory
+      const coupon = demoPromotionCoupons.find(
+        (c) => c.code === normalizedCode && c.promotion_slug === promo.slug
       )
-      if (dup) {
+      if (!coupon) {
+        return handleCORS(NextResponse.json({ error: 'Invalid code' }, { status: 410 }))
+      }
+      if (coupon.status !== 'pending') {
         return handleCORS(NextResponse.json(
-          { error: 'You have already registered for this promotion', reference: dup.reference },
-          { status: 409 }
+          { error: 'This code has already been used' },
+          { status: 410 }
         ))
       }
+      if (coupon.expires_at && coupon.expires_at < nowIso) {
+        return handleCORS(NextResponse.json(
+          { error: 'This code has expired' },
+          { status: 410 }
+        ))
+      }
+      coupon.status = 'used'
+      coupon.used_at = nowIso
+      coupon.used_by_email = signup.email
+      coupon.used_by_signup_id = signupId
       demoPromotionSignups.unshift(signup)
       return handleCORS(NextResponse.json(signup))
     }

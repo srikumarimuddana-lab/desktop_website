@@ -15,9 +15,11 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default async function PromotionDetailPage({ params }) {
+export default async function PromotionDetailPage({ params, searchParams }) {
   const { slug } = await params
+  const sp = (await searchParams) || {}
+  const initialCode = typeof sp.code === 'string' ? sp.code : ''
   const promo = getPromotionBySlug(slug)
   if (!promo) notFound()
-  return <PromotionDetailClient promo={promo} />
+  return <PromotionDetailClient promo={promo} initialCode={initialCode} />
 }
