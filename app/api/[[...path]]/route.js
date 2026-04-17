@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { supabase as anonymousSupabase, isSupabaseConfigured } from '@/lib/supabase'
 import { createClient } from '@supabase/supabase-js'
 import { syncToKB, deleteFromKB } from '@/lib/kb-sync'
+import { getPromotionBySlug } from '@/constants/promotions'
 
 // Helper function to handle CORS with multiple origin support
 function handleCORS(response, request) {
@@ -162,6 +163,9 @@ let demoLegalDocs = {
 }
 
 
+
+// In-memory promotion signups (demo fallback when Supabase is not configured)
+let demoPromotionSignups = []
 
 // Help Categories
 const HELP_CATEGORIES = [
@@ -890,6 +894,114 @@ async function handleRoute(request, { params }) {
         return handleCORS(NextResponse.json({ success: true }))
       }
       return handleCORS(NextResponse.json({ error: 'Supabase not configured' }, { status: 503 }))
+    }
+
+    // Promotion Signups - POST /api/promotion-signups
+    // Public endpoint — drivers register for a promotion/quest via shareable link
+    if (route === '/promotion-signups' && method === 'POST') {
+      let body
+      try {
+        body = await request.json()
+      } catch {
+        return handleCORS(NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }))
+      }
+
+      const {
+        promotion_slug,
+        full_name,
+        email,
+        phone,
+        driver_id,
+        city
+      } = body || {}
+
+      // Validate promotion exists and is active
+      const promo = promotion_slug ? getPromotionBySlug(promotion_slug) : null
+      if (!promo || promo.status !== 'active') {
+        return handleCORS(NextResponse.json(
+          { error: 'Promotion not found or no longer active' },
+          { status: 404 }
+        ))
+      }
+
+      // Validate input
+      const emailOk = typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      if (
+        !emailOk ||
+        typeof full_name !== 'string' || full_name.trim().length < 2 ||
+        typeof phone !== 'string' || phone.trim().length < 7 ||
+        typeof driver_id !== 'string' || driver_id.trim().length < 3
+      ) {
+        return handleCORS(NextResponse.json(
+          { error: 'Missing or invalid fields' },
+          { status: 400 }
+        ))
+      }
+
+      const reference = `SPINR-${promo.slug.toUpperCase().slice(0, 6)}-${uuidv4().slice(0, 6).toUpperCase()}`
+      const now = new Date()
+      const signup = {
+        id: uuidv4(),
+        reference,
+        promotion_slug: promo.slug,
+        audience: promo.audience,
+        full_name: full_name.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        driver_id: driver_id.trim(),
+        city: (city || promo.city).trim(),
+        goal_rides: promo.goalRides,
+        window_days: promo.windowDays,
+        reward_amount: promo.reward,
+        status: 'accepted',
+        accepted_at: now.toISOString(),
+        expires_at: new Date(now.getTime() + promo.windowDays * 24 * 60 * 60 * 1000).toISOString()
+      }
+
+      if (isSupabaseConfigured()) {
+        // Prevent the same driver from registering twice for the same promotion
+        const { data: existing } = await anonymousSupabase
+          .from('promotion_signups')
+          .select('id, reference')
+          .eq('promotion_slug', promo.slug)
+          .eq('email', signup.email)
+          .maybeSingle()
+
+        if (existing) {
+          return handleCORS(NextResponse.json(
+            { error: 'You have already registered for this promotion', reference: existing.reference },
+            { status: 409 }
+          ))
+        }
+
+        const { data, error } = await anonymousSupabase
+          .from('promotion_signups')
+          .insert([signup])
+          .select()
+          .single()
+
+        if (error) {
+          console.error('Promotion signup error:', error)
+          return handleCORS(NextResponse.json(
+            { error: 'Could not save signup. Please try again.' },
+            { status: 500 }
+          ))
+        }
+        return handleCORS(NextResponse.json(data))
+      }
+
+      // Demo fallback
+      const dup = demoPromotionSignups.find(
+        (s) => s.promotion_slug === promo.slug && s.email === signup.email
+      )
+      if (dup) {
+        return handleCORS(NextResponse.json(
+          { error: 'You have already registered for this promotion', reference: dup.reference },
+          { status: 409 }
+        ))
+      }
+      demoPromotionSignups.unshift(signup)
+      return handleCORS(NextResponse.json(signup))
     }
 
     // Route not found
