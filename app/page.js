@@ -244,14 +244,19 @@ export default async function Home() {
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <div className="relative aspect-square rounded-2xl overflow-hidden shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
-                      <Image
-                        src="/collage_driver.png"
-                        alt="Spinr Driver"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      />
+                    <div className="relative aspect-square rounded-2xl overflow-hidden shadow-lg transform hover:-translate-y-1 transition-transform duration-300 bg-gradient-to-br from-primary via-primary to-red-700 text-white flex flex-col items-center justify-center p-4">
+                      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.6),transparent_60%)] pointer-events-none" />
+                      <div className="relative z-10 flex flex-col items-center text-center">
+                        <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center mb-3 border border-white/20">
+                          <Car className="w-7 h-7" />
+                        </div>
+                        <p className="text-xs font-semibold uppercase tracking-wider opacity-90 mb-1">
+                          Local Drivers
+                        </p>
+                        <p className="text-lg font-bold leading-tight">
+                          100% Sask owned
+                        </p>
+                      </div>
                     </div>
                     <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
                       <Image
