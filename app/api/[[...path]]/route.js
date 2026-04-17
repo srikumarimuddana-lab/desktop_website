@@ -896,6 +896,29 @@ async function handleRoute(request, { params }) {
       return handleCORS(NextResponse.json({ error: 'Supabase not configured' }, { status: 503 }))
     }
 
+    // Promotion Signups - GET /api/promotion-signups (admin only)
+    if (route === '/promotion-signups' && method === 'GET') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+
+      if (isSupabaseConfigured()) {
+        const supabase = createAuthenticatedClient(request)
+        const { data, error } = await supabase
+          .from('promotion_signups')
+          .select('*')
+          .order('accepted_at', { ascending: false })
+
+        if (error) {
+          console.error('Promotion signups fetch error:', error)
+          return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
+        }
+        return handleCORS(NextResponse.json(data || []))
+      }
+
+      return handleCORS(NextResponse.json(demoPromotionSignups))
+    }
+
     // Promotion Signups - POST /api/promotion-signups
     // Public endpoint — drivers register for a promotion/quest via shareable link
     if (route === '/promotion-signups' && method === 'POST') {
