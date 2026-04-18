@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import { PROMOTIONS } from '@/constants/promotions'
+import { getActivePromotions } from '@/lib/promotions'
 
 export const metadata = {
   title: 'Spinr Promotions — Driver & Rider Bonuses',
@@ -22,8 +22,8 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
-export default function PromotionsPage() {
-  const activePromos = PROMOTIONS.filter((p) => p.status === 'active')
+export default async function PromotionsPage() {
+  const activePromos = await getActivePromotions()
 
   return (
     <main className="min-h-screen bg-background">

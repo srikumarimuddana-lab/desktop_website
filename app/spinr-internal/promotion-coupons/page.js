@@ -15,6 +15,8 @@ import {
   XCircle,
   Download,
   Send,
+  MessageSquare,
+  AlertTriangle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -37,17 +39,37 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { PROMOTIONS } from '@/constants/promotions'
 
-function buildSmsText(promo, code, link) {
-  return `Hi! Spinr is offering you a $${promo.reward} bonus for completing ${promo.goalRides} rides in ${promo.windowDays} days in ${promo.city}. Use code ${code} at ${link} — expires in 24 hours.`
+const DEFAULT_SMS_TEMPLATE =
+  'Hi {name}! Spinr is offering you a ${reward} bonus for completing {goal_rides} rides in {window_days} days in {city}. Use code {code} at {link} — expires in 24 hours.'
+
+function renderTemplate(template, vars) {
+  const text = template || DEFAULT_SMS_TEMPLATE
+  return text.replace(/\{(\w+)\}/g, (_, key) => {
+    const v = vars[key]
+    return v == null ? '' : String(v)
+  })
 }
 
 function buildLink(origin, slug, code) {
   return `${origin}/promotions/${slug}?code=${encodeURIComponent(code)}`
 }
 
-function statusBadge(coupon) {
+function buildSms(promo, coupon, link) {
+  if (!promo) return link
+  return renderTemplate(promo.smsTemplate, {
+    name: coupon.recipient_name || 'there',
+    code: coupon.code,
+    link,
+    reward: promo.reward,
+    goal_rides: promo.goalRides,
+    window_days: promo.windowDays,
+    city: promo.city,
+    title: promo.title,
+  })
+}
+
+function couponStatusBadge(coupon) {
   const now = Date.now()
   const exp = coupon.expires_at ? new Date(coupon.expires_at).getTime() : 0
   if (coupon.status === 'used') {
@@ -57,6 +79,15 @@ function statusBadge(coupon) {
     return <Badge className="bg-red-200 text-red-800 text-xs">Expired</Badge>
   }
   return <Badge className="bg-green-600 text-white text-xs">Active</Badge>
+}
+
+function smsStatusBadge(coupon) {
+  const s = coupon.sms_status || 'not_sent'
+  if (s === 'sent') return <Badge className="bg-green-600 text-white text-xs">SMS sent</Badge>
+  if (s === 'queued') return <Badge className="bg-blue-500 text-white text-xs">Queued</Badge>
+  if (s === 'failed') return <Badge className="bg-red-500 text-white text-xs">Failed</Badge>
+  if (s === 'skipped') return <Badge className="bg-yellow-500 text-white text-xs">Skipped</Badge>
+  return <Badge variant="outline" className="text-xs">Not sent</Badge>
 }
 
 function timeLeft(iso) {
@@ -71,30 +102,36 @@ function timeLeft(iso) {
 
 export default function PromotionCouponsPage() {
   const [coupons, setCoupons] = useState([])
+  const [promos, setPromos] = useState([])
   const [loading, setLoading] = useState(true)
   const [origin, setOrigin] = useState('')
+  const [twilioConfigured, setTwilioConfigured] = useState(null)
 
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [selectedPromo, setSelectedPromo] = useState(
-    PROMOTIONS.find((p) => p.status === 'active')?.slug || ''
-  )
+  const [selectedPromo, setSelectedPromo] = useState('')
+  const [autoSend, setAutoSend] = useState(true)
   const [recipients, setRecipients] = useState([{ name: '', phone: '' }])
   const [generating, setGenerating] = useState(false)
   const [generatedBatch, setGeneratedBatch] = useState(null)
   const [copiedKey, setCopiedKey] = useState('')
+  const [resendingId, setResendingId] = useState('')
 
   useEffect(() => {
     if (typeof window !== 'undefined') setOrigin(window.location.origin)
-    fetchCoupons()
+    Promise.all([fetchCoupons(), fetchPromos()])
   }, [])
+
+  const authHeaders = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    return session
+      ? { Authorization: `Bearer ${session.access_token}` }
+      : {}
+  }
 
   const fetchCoupons = async () => {
     setLoading(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const headers = session
-        ? { Authorization: `Bearer ${session.access_token}` }
-        : {}
+      const headers = await authHeaders()
       const res = await fetch('/api/promotion-coupons', { headers })
       if (res.ok) setCoupons(await res.json())
       else toast.error('Failed to load coupons')
@@ -105,10 +142,25 @@ export default function PromotionCouponsPage() {
     }
   }
 
-  const activePromos = PROMOTIONS.filter((p) => p.status === 'active')
+  const fetchPromos = async () => {
+    try {
+      const headers = await authHeaders()
+      const res = await fetch('/api/promotions', { headers })
+      if (res.ok) {
+        const data = await res.json()
+        setPromos(data)
+        const firstActive = data.find((p) => p.status === 'active')
+        if (firstActive && !selectedPromo) setSelectedPromo(firstActive.slug)
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  const activePromos = promos.filter((p) => p.status === 'active')
   const selectedPromoObj = useMemo(
-    () => PROMOTIONS.find((p) => p.slug === selectedPromo),
-    [selectedPromo]
+    () => promos.find((p) => p.slug === selectedPromo),
+    [selectedPromo, promos]
   )
 
   const stats = useMemo(() => {
@@ -127,7 +179,8 @@ export default function PromotionCouponsPage() {
         c.expires_at &&
         new Date(c.expires_at).getTime() <= now
     ).length
-    return { total, active, used, expired }
+    const smsSent = coupons.filter((c) => c.sms_status === 'sent').length
+    return { total, active, used, expired, smsSent }
   }, [coupons])
 
   const addRecipient = () =>
@@ -142,6 +195,9 @@ export default function PromotionCouponsPage() {
   const openDialog = () => {
     setGeneratedBatch(null)
     setRecipients([{ name: '', phone: '' }])
+    if (!selectedPromo && activePromos[0]) {
+      setSelectedPromo(activePromos[0].slug)
+    }
     setDialogOpen(true)
   }
 
@@ -162,10 +218,9 @@ export default function PromotionCouponsPage() {
 
     setGenerating(true)
     try {
-      const { data: { session } } = await supabase.auth.getSession()
       const headers = {
         'Content-Type': 'application/json',
-        ...(session ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        ...(await authHeaders()),
       }
       const res = await fetch('/api/promotion-coupons', {
         method: 'POST',
@@ -173,12 +228,21 @@ export default function PromotionCouponsPage() {
         body: JSON.stringify({
           promotion_slug: selectedPromo,
           recipients: trimmed,
+          send_sms: autoSend,
         }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data?.error || 'Failed to generate')
-      setGeneratedBatch(data)
-      toast.success(`Generated ${data.length} coupon${data.length === 1 ? '' : 's'}`)
+      const couponsList = data.coupons || data
+      setGeneratedBatch(couponsList)
+      setTwilioConfigured(!!data.twilio_configured)
+      if (autoSend && data.twilio_configured === false) {
+        toast.warning(
+          'Codes generated, but Twilio isn\'t configured — SMS not sent. Copy manually below.'
+        )
+      } else {
+        toast.success(`Generated ${couponsList.length} coupon${couponsList.length === 1 ? '' : 's'}`)
+      }
       fetchCoupons()
     } catch (err) {
       toast.error(err.message || 'Error generating coupons')
@@ -197,6 +261,29 @@ export default function PromotionCouponsPage() {
     }
   }
 
+  const resendSms = async (couponId) => {
+    setResendingId(couponId)
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(await authHeaders()),
+      }
+      const res = await fetch(`/api/promotion-coupons/${couponId}/resend-sms`, {
+        method: 'POST',
+        headers,
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.error || 'Failed')
+      if (data.ok) toast.success('SMS sent')
+      else toast.error(data.error || 'Failed to send')
+      fetchCoupons()
+    } catch (err) {
+      toast.error(err.message || 'Failed to resend')
+    } finally {
+      setResendingId('')
+    }
+  }
+
   const handleExport = () => {
     if (coupons.length === 0) {
       toast.error('Nothing to export')
@@ -211,6 +298,9 @@ export default function PromotionCouponsPage() {
       'expires_at',
       'used_at',
       'used_by_email',
+      'sms_status',
+      'sms_error',
+      'sms_sent_at',
       'created_at',
     ]
     const escape = (v) => {
@@ -231,9 +321,10 @@ export default function PromotionCouponsPage() {
     URL.revokeObjectURL(url)
   }
 
+  const promoForCoupon = (slug) => promos.find((p) => p.slug === slug)
+
   return (
     <div className="p-4 sm:p-8">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-bold mb-1">Promotion Coupons</h1>
@@ -241,8 +332,8 @@ export default function PromotionCouponsPage() {
             Generate invite-only codes. 24h expiry, one driver per code.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={fetchCoupons} disabled={loading}>
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" onClick={() => { fetchCoupons(); fetchPromos() }} disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
@@ -269,18 +360,27 @@ export default function PromotionCouponsPage() {
                 <form onSubmit={handleGenerate} className="space-y-5 mt-4">
                   <div className="space-y-2">
                     <Label>Promotion</Label>
-                    <Select value={selectedPromo} onValueChange={setSelectedPromo}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a promotion" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {activePromos.map((p) => (
-                          <SelectItem key={p.slug} value={p.slug}>
-                            {p.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    {activePromos.length === 0 ? (
+                      <div className="p-3 rounded-lg border border-yellow-200 bg-yellow-50 text-sm text-yellow-900 flex items-start gap-2">
+                        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                        <span>
+                          No active promotions. Create one on the Promotions page first.
+                        </span>
+                      </div>
+                    ) : (
+                      <Select value={selectedPromo} onValueChange={setSelectedPromo}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a promotion" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {activePromos.map((p) => (
+                            <SelectItem key={p.slug} value={p.slug}>
+                              {p.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -333,6 +433,23 @@ export default function PromotionCouponsPage() {
                     </Button>
                   </div>
 
+                  <label className="flex items-start gap-3 cursor-pointer select-none p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <input
+                      type="checkbox"
+                      checked={autoSend}
+                      onChange={(e) => setAutoSend(e.target.checked)}
+                      className="mt-1 w-4 h-4 accent-primary shrink-0"
+                    />
+                    <span className="text-sm text-gray-700 leading-relaxed">
+                      <span className="font-semibold">Send SMS automatically via Twilio</span>
+                      <br />
+                      <span className="text-xs text-muted-foreground">
+                        If Twilio isn't configured on the server, codes are still
+                        generated — you'll see a "Copy SMS" button for each one.
+                      </span>
+                    </span>
+                  </label>
+
                   <div className="flex justify-end gap-2 pt-2">
                     <Button
                       type="button"
@@ -344,7 +461,7 @@ export default function PromotionCouponsPage() {
                     <Button
                       type="submit"
                       className="bg-primary hover:bg-primary/90"
-                      disabled={generating}
+                      disabled={generating || activePromos.length === 0}
                     >
                       {generating ? (
                         <>
@@ -369,22 +486,24 @@ export default function PromotionCouponsPage() {
                         {generatedBatch.length} code{generatedBatch.length === 1 ? '' : 's'} generated
                       </p>
                       <p className="text-green-800">
-                        Copy each SMS below and send to the recipient. They expire in 24 hours.
+                        {twilioConfigured
+                          ? 'SMS delivery is running in the background — status below.'
+                          : 'Twilio is not configured. Copy each SMS below and send manually.'}
                       </p>
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     {generatedBatch.map((c) => {
-                      const promo = PROMOTIONS.find((p) => p.slug === c.promotion_slug)
+                      const promo = promoForCoupon(c.promotion_slug)
                       const link = buildLink(origin, c.promotion_slug, c.code)
-                      const sms = promo ? buildSmsText(promo, c.code, link) : link
+                      const sms = buildSms(promo, c, link)
                       return (
                         <div
                           key={c.id}
                           className="border border-gray-200 rounded-xl p-4 bg-white"
                         >
-                          <div className="flex items-center justify-between gap-2 mb-3">
+                          <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
                             <div>
                               <p className="font-mono font-bold text-gray-900">
                                 {c.code}
@@ -394,10 +513,16 @@ export default function PromotionCouponsPage() {
                                 {c.recipient_phone ? ` · ${c.recipient_phone}` : ''}
                               </p>
                             </div>
-                            <Badge className="bg-green-600 text-white">
-                              24h
-                            </Badge>
+                            <div className="flex gap-2 items-center">
+                              {smsStatusBadge(c)}
+                              <Badge className="bg-green-600 text-white">24h</Badge>
+                            </div>
                           </div>
+                          {c.sms_error && (
+                            <p className="text-xs text-red-600 mb-2">
+                              SMS error: {c.sms_error}
+                            </p>
+                          )}
                           <div className="bg-gray-50 border border-gray-100 rounded-lg p-3 text-xs text-gray-700 font-mono whitespace-pre-wrap break-all mb-2">
                             {sms}
                           </div>
@@ -414,7 +539,7 @@ export default function PromotionCouponsPage() {
                                 </>
                               ) : (
                                 <>
-                                  <Send className="w-3 h-3 mr-1.5" /> Copy SMS
+                                  <MessageSquare className="w-3 h-3 mr-1.5" /> Copy SMS
                                 </>
                               )}
                             </Button>
@@ -434,6 +559,26 @@ export default function PromotionCouponsPage() {
                                 </>
                               )}
                             </Button>
+                            {twilioConfigured && c.sms_status !== 'sent' && c.recipient_phone && (
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => resendSms(c.id)}
+                                disabled={resendingId === c.id}
+                              >
+                                {resendingId === c.id ? (
+                                  <>
+                                    <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
+                                    Sending
+                                  </>
+                                ) : (
+                                  <>
+                                    <Send className="w-3 h-3 mr-1.5" /> Send SMS
+                                  </>
+                                )}
+                              </Button>
+                            )}
                           </div>
                         </div>
                       )
@@ -465,9 +610,9 @@ export default function PromotionCouponsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
         <Card>
-          <CardContent className="p-4 sm:p-5 flex items-center gap-3">
+          <CardContent className="p-4 flex items-center gap-3">
             <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
               <Ticket className="w-5 h-5 text-primary" />
             </div>
@@ -480,7 +625,7 @@ export default function PromotionCouponsPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 sm:p-5 flex items-center gap-3">
+          <CardContent className="p-4 flex items-center gap-3">
             <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
               <Clock className="w-5 h-5 text-green-600" />
             </div>
@@ -493,7 +638,7 @@ export default function PromotionCouponsPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 sm:p-5 flex items-center gap-3">
+          <CardContent className="p-4 flex items-center gap-3">
             <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
               <Users className="w-5 h-5 text-gray-600" />
             </div>
@@ -506,7 +651,7 @@ export default function PromotionCouponsPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 sm:p-5 flex items-center gap-3">
+          <CardContent className="p-4 flex items-center gap-3">
             <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
               <XCircle className="w-5 h-5 text-red-600" />
             </div>
@@ -515,6 +660,19 @@ export default function PromotionCouponsPage() {
                 Expired
               </p>
               <p className="text-xl font-bold">{stats.expired}</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+              <MessageSquare className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                SMS Sent
+              </p>
+              <p className="text-xl font-bold">{stats.smsSent}</p>
             </div>
           </CardContent>
         </Card>
@@ -553,6 +711,7 @@ export default function PromotionCouponsPage() {
                       <th className="px-4 py-3 font-semibold">Promotion</th>
                       <th className="px-4 py-3 font-semibold">Status</th>
                       <th className="px-4 py-3 font-semibold">Expires</th>
+                      <th className="px-4 py-3 font-semibold">SMS</th>
                       <th className="px-4 py-3 font-semibold">Redeemed by</th>
                       <th className="px-4 py-3 font-semibold"></th>
                     </tr>
@@ -575,29 +734,48 @@ export default function PromotionCouponsPage() {
                             </p>
                           </td>
                           <td className="px-4 py-3 text-xs">{c.promotion_slug}</td>
-                          <td className="px-4 py-3">{statusBadge(c)}</td>
+                          <td className="px-4 py-3">{couponStatusBadge(c)}</td>
                           <td className="px-4 py-3 text-xs">
                             {c.status === 'pending' ? timeLeft(c.expires_at) : '—'}
                           </td>
+                          <td className="px-4 py-3">{smsStatusBadge(c)}</td>
                           <td className="px-4 py-3 text-xs">
                             {c.used_by_email || '—'}
                           </td>
                           <td className="px-4 py-3">
-                            {c.status === 'pending' && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() =>
-                                  copyToClipboard(link, `link-${c.id}`)
-                                }
-                              >
-                                {copiedKey === `link-${c.id}` ? (
-                                  <Check className="w-3.5 h-3.5 text-green-600" />
-                                ) : (
-                                  <Copy className="w-3.5 h-3.5" />
-                                )}
-                              </Button>
-                            )}
+                            <div className="flex items-center gap-1">
+                              {c.status === 'pending' && c.recipient_phone && c.sms_status !== 'sent' && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => resendSms(c.id)}
+                                  disabled={resendingId === c.id}
+                                  title="Send/Resend SMS"
+                                >
+                                  {resendingId === c.id ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  ) : (
+                                    <Send className="w-3.5 h-3.5" />
+                                  )}
+                                </Button>
+                              )}
+                              {c.status === 'pending' && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() =>
+                                    copyToClipboard(link, `link-${c.id}`)
+                                  }
+                                  title="Copy invite link"
+                                >
+                                  {copiedKey === `link-${c.id}` ? (
+                                    <Check className="w-3.5 h-3.5 text-green-600" />
+                                  ) : (
+                                    <Copy className="w-3.5 h-3.5" />
+                                  )}
+                                </Button>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       )
@@ -625,7 +803,10 @@ export default function PromotionCouponsPage() {
                           {c.recipient_phone ? ` · ${c.recipient_phone}` : ''}
                         </p>
                       </div>
-                      {statusBadge(c)}
+                      <div className="flex flex-col items-end gap-1">
+                        {couponStatusBadge(c)}
+                        {smsStatusBadge(c)}
+                      </div>
                     </div>
                     <div className="text-xs text-muted-foreground space-y-1">
                       <p>Promotion: {c.promotion_slug}</p>
@@ -633,25 +814,48 @@ export default function PromotionCouponsPage() {
                         <p>Expires in: {timeLeft(c.expires_at)}</p>
                       )}
                       {c.used_by_email && <p>Used by: {c.used_by_email}</p>}
+                      {c.sms_error && (
+                        <p className="text-red-600">SMS error: {c.sms_error}</p>
+                      )}
                     </div>
-                    {c.status === 'pending' && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => copyToClipboard(link, `link-${c.id}`)}
-                      >
-                        {copiedKey === `link-${c.id}` ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 mr-2" /> Link copied
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3.5 h-3.5 mr-2" /> Copy invite link
-                          </>
-                        )}
-                      </Button>
-                    )}
+                    <div className="flex gap-2 flex-wrap">
+                      {c.status === 'pending' && c.recipient_phone && c.sms_status !== 'sent' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => resendSms(c.id)}
+                          disabled={resendingId === c.id}
+                        >
+                          {resendingId === c.id ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
+                              Sending
+                            </>
+                          ) : (
+                            <>
+                              <Send className="w-3.5 h-3.5 mr-2" /> Send SMS
+                            </>
+                          )}
+                        </Button>
+                      )}
+                      {c.status === 'pending' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copyToClipboard(link, `link-${c.id}`)}
+                        >
+                          {copiedKey === `link-${c.id}` ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 mr-2" /> Link copied
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 mr-2" /> Copy invite link
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               )

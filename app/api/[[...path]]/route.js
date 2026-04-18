@@ -4,7 +4,8 @@ import crypto from 'crypto'
 import { supabase as anonymousSupabase, isSupabaseConfigured } from '@/lib/supabase'
 import { createClient } from '@supabase/supabase-js'
 import { syncToKB, deleteFromKB } from '@/lib/kb-sync'
-import { getPromotionBySlug } from '@/constants/promotions'
+import { getPromotionBySlug, toDbRow, normalizePromotion, renderSmsTemplate } from '@/lib/promotions'
+import { sendSms, isTwilioConfigured } from '@/lib/twilio'
 
 // Coupon code helpers — confusion-free alphabet (no 0/O/1/I/L)
 const COUPON_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
@@ -913,6 +914,110 @@ async function handleRoute(request, { params }) {
       return handleCORS(NextResponse.json({ error: 'Supabase not configured' }, { status: 503 }))
     }
 
+    // =====================================================
+    // Promotions CMS — CRUD (admin only except public GET by slug)
+    // =====================================================
+
+    // GET /api/promotions — admin lists all
+    if (route === '/promotions' && method === 'GET') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+      if (!isSupabaseConfigured()) {
+        return handleCORS(NextResponse.json({ error: 'Supabase not configured' }, { status: 503 }))
+      }
+      const supabase = createAuthenticatedClient(request)
+      const { data, error } = await supabase
+        .from('promotions')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (error) {
+        console.error('Promotions list error:', error)
+        return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
+      }
+      return handleCORS(NextResponse.json((data || []).map(normalizePromotion)))
+    }
+
+    // POST /api/promotions — admin create
+    if (route === '/promotions' && method === 'POST') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+      if (!isSupabaseConfigured()) {
+        return handleCORS(NextResponse.json({ error: 'Supabase not configured' }, { status: 503 }))
+      }
+      let body
+      try { body = await request.json() } catch {
+        return handleCORS(NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }))
+      }
+      if (!body?.slug || !body?.title) {
+        return handleCORS(NextResponse.json({ error: 'slug and title are required' }, { status: 400 }))
+      }
+      const supabase = createAuthenticatedClient(request)
+      const { data, error } = await supabase
+        .from('promotions')
+        .insert([toDbRow(body)])
+        .select()
+        .single()
+      if (error) {
+        console.error('Promotion create error:', error)
+        const msg = error.code === '23505' ? 'A promotion with that slug already exists' : error.message
+        return handleCORS(NextResponse.json({ error: msg }, { status: 400 }))
+      }
+      return handleCORS(NextResponse.json(normalizePromotion(data)))
+    }
+
+    // PUT /api/promotions/:id — admin update
+    if (route.startsWith('/promotions/') && method === 'PUT') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+      if (!isSupabaseConfigured()) {
+        return handleCORS(NextResponse.json({ error: 'Supabase not configured' }, { status: 503 }))
+      }
+      const id = path[1]
+      let body
+      try { body = await request.json() } catch {
+        return handleCORS(NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }))
+      }
+      const supabase = createAuthenticatedClient(request)
+      const { data, error } = await supabase
+        .from('promotions')
+        .update(toDbRow(body))
+        .eq('id', id)
+        .select()
+        .maybeSingle()
+      if (error) {
+        console.error('Promotion update error:', error)
+        return handleCORS(NextResponse.json({ error: error.message }, { status: 400 }))
+      }
+      if (!data) {
+        return handleCORS(NextResponse.json({ error: 'Promotion not found' }, { status: 404 }))
+      }
+      return handleCORS(NextResponse.json(normalizePromotion(data)))
+    }
+
+    // DELETE /api/promotions/:id — admin delete
+    if (route.startsWith('/promotions/') && method === 'DELETE') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+      if (!isSupabaseConfigured()) {
+        return handleCORS(NextResponse.json({ error: 'Supabase not configured' }, { status: 503 }))
+      }
+      const id = path[1]
+      const supabase = createAuthenticatedClient(request)
+      const { error } = await supabase
+        .from('promotions')
+        .delete()
+        .eq('id', id)
+      if (error) {
+        console.error('Promotion delete error:', error)
+        return handleCORS(NextResponse.json({ error: error.message }, { status: 400 }))
+      }
+      return handleCORS(NextResponse.json({ success: true }))
+    }
+
     // Promotion Signups - GET /api/promotion-signups (admin only)
     if (route === '/promotion-signups' && method === 'GET') {
       if (!await checkAuth(request)) {
@@ -971,7 +1076,7 @@ async function handleRoute(request, { params }) {
           { status: 410 }
         ))
       }
-      const promo = getPromotionBySlug(coupon.promotion_slug)
+      const promo = await getPromotionBySlug(coupon.promotion_slug)
       return handleCORS(NextResponse.json({
         valid: true,
         code: coupon.code,
@@ -1016,8 +1121,8 @@ async function handleRoute(request, { params }) {
         return handleCORS(NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }))
       }
 
-      const { promotion_slug, recipients } = body || {}
-      const promo = promotion_slug ? getPromotionBySlug(promotion_slug) : null
+      const { promotion_slug, recipients, send_sms } = body || {}
+      const promo = promotion_slug ? await getPromotionBySlug(promotion_slug) : null
       if (!promo || promo.status !== 'active') {
         return handleCORS(NextResponse.json(
           { error: 'Promotion not found or no longer active' },
@@ -1030,6 +1135,11 @@ async function handleRoute(request, { params }) {
           { status: 400 }
         ))
       }
+
+      const publicBaseUrl =
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        request.headers.get('origin') ||
+        `https://${request.headers.get('host') || 'spinr.ca'}`
 
       const now = new Date()
       const expiresIso = new Date(now.getTime() + COUPON_TTL_MS).toISOString()
@@ -1044,9 +1154,13 @@ async function handleRoute(request, { params }) {
         used_at: null,
         used_by_email: null,
         used_by_signup_id: null,
+        sms_status: 'not_sent',
+        sms_error: null,
+        sms_sent_at: null,
         created_at: now.toISOString(),
       }))
 
+      let inserted = coupons
       if (isSupabaseConfigured()) {
         const supabase = createAuthenticatedClient(request)
         const { data, error } = await supabase
@@ -1057,11 +1171,120 @@ async function handleRoute(request, { params }) {
           console.error('Coupon generation error:', error)
           return handleCORS(NextResponse.json({ error: error.message }, { status: 500 }))
         }
-        return handleCORS(NextResponse.json(data))
+        inserted = data
+      } else {
+        demoPromotionCoupons.unshift(...coupons)
       }
 
-      demoPromotionCoupons.unshift(...coupons)
-      return handleCORS(NextResponse.json(coupons))
+      // Optional SMS auto-send
+      const shouldSend = send_sms !== false && isTwilioConfigured()
+      if (shouldSend) {
+        await Promise.all(inserted.map(async (c) => {
+          if (!c.recipient_phone) {
+            c.sms_status = 'skipped'
+            c.sms_error = 'No phone number'
+            return
+          }
+          const link = `${publicBaseUrl.replace(/\/$/, '')}/promotions/${promo.slug}?code=${encodeURIComponent(c.code)}`
+          const body = renderSmsTemplate(promo.smsTemplate, {
+            name: c.recipient_name || 'there',
+            code: c.code,
+            link,
+            reward: promo.reward,
+            goal_rides: promo.goalRides,
+            window_days: promo.windowDays,
+            city: promo.city,
+            title: promo.title,
+          })
+          const result = await sendSms({ to: c.recipient_phone, body })
+          c.sms_status = result.ok ? 'sent' : result.status
+          c.sms_error = result.error
+          c.sms_sent_at = result.ok ? new Date().toISOString() : null
+
+          if (isSupabaseConfigured()) {
+            await anonymousSupabase
+              .from('promotion_coupons')
+              .update({
+                sms_status: c.sms_status,
+                sms_error: c.sms_error,
+                sms_sent_at: c.sms_sent_at,
+              })
+              .eq('id', c.id)
+          }
+        }))
+      } else if (!send_sms && isTwilioConfigured()) {
+        // User explicitly chose not to auto-send (send_sms === false)
+      } else if (send_sms !== false && !isTwilioConfigured()) {
+        // Admin wanted to send, but Twilio isn't configured — flag as skipped
+        inserted.forEach((c) => {
+          c.sms_status = 'skipped'
+          c.sms_error = 'Twilio not configured'
+        })
+      }
+
+      return handleCORS(NextResponse.json({
+        coupons: inserted,
+        twilio_configured: isTwilioConfigured(),
+      }))
+    }
+
+    // POST /api/promotion-coupons/:id/resend-sms — admin manual resend
+    if (route.startsWith('/promotion-coupons/') && path[2] === 'resend-sms' && method === 'POST') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+      if (!isTwilioConfigured()) {
+        return handleCORS(NextResponse.json({ error: 'Twilio is not configured' }, { status: 503 }))
+      }
+      const id = path[1]
+      if (!isSupabaseConfigured()) {
+        return handleCORS(NextResponse.json({ error: 'Supabase not configured' }, { status: 503 }))
+      }
+      const supabase = createAuthenticatedClient(request)
+      const { data: coupon, error } = await supabase
+        .from('promotion_coupons')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle()
+      if (error || !coupon) {
+        return handleCORS(NextResponse.json({ error: 'Coupon not found' }, { status: 404 }))
+      }
+      if (!coupon.recipient_phone) {
+        return handleCORS(NextResponse.json({ error: 'No phone on file for this coupon' }, { status: 400 }))
+      }
+      const promo = await getPromotionBySlug(coupon.promotion_slug)
+      if (!promo) {
+        return handleCORS(NextResponse.json({ error: 'Promotion not found' }, { status: 404 }))
+      }
+      const publicBaseUrl =
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        request.headers.get('origin') ||
+        `https://${request.headers.get('host') || 'spinr.ca'}`
+      const link = `${publicBaseUrl.replace(/\/$/, '')}/promotions/${promo.slug}?code=${encodeURIComponent(coupon.code)}`
+      const body = renderSmsTemplate(promo.smsTemplate, {
+        name: coupon.recipient_name || 'there',
+        code: coupon.code,
+        link,
+        reward: promo.reward,
+        goal_rides: promo.goalRides,
+        window_days: promo.windowDays,
+        city: promo.city,
+        title: promo.title,
+      })
+      const result = await sendSms({ to: coupon.recipient_phone, body })
+      await anonymousSupabase
+        .from('promotion_coupons')
+        .update({
+          sms_status: result.ok ? 'sent' : result.status,
+          sms_error: result.error,
+          sms_sent_at: result.ok ? new Date().toISOString() : null,
+        })
+        .eq('id', id)
+      return handleCORS(NextResponse.json({
+        ok: result.ok,
+        status: result.ok ? 'sent' : result.status,
+        error: result.error,
+      }))
     }
 
     // Promotion Signups - POST /api/promotion-signups
@@ -1085,7 +1308,7 @@ async function handleRoute(request, { params }) {
       } = body || {}
 
       // Validate promotion exists and is active
-      const promo = promotion_slug ? getPromotionBySlug(promotion_slug) : null
+      const promo = promotion_slug ? await getPromotionBySlug(promotion_slug) : null
       if (!promo || promo.status !== 'active') {
         return handleCORS(NextResponse.json(
           { error: 'Promotion not found or no longer active' },

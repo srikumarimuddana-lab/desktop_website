@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation'
-import { getPromotionBySlug } from '@/constants/promotions'
+import { getPromotionBySlug } from '@/lib/promotions'
 import PromotionDetailClient from './PromotionDetailClient'
 
 export async function generateMetadata({ params }) {
   const { slug } = await params
-  const promo = getPromotionBySlug(slug)
+  const promo = await getPromotionBySlug(slug)
   if (!promo) {
     return { title: 'Promotion not found — Spinr', robots: { index: false, follow: false } }
   }
@@ -19,7 +19,7 @@ export default async function PromotionDetailPage({ params, searchParams }) {
   const { slug } = await params
   const sp = (await searchParams) || {}
   const initialCode = typeof sp.code === 'string' ? sp.code : ''
-  const promo = getPromotionBySlug(slug)
-  if (!promo) notFound()
+  const promo = await getPromotionBySlug(slug)
+  if (!promo || promo.status !== 'active') notFound()
   return <PromotionDetailClient promo={promo} initialCode={initialCode} />
 }

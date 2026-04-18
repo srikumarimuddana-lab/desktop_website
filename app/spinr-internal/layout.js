@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { FileText, HelpCircle, LogOut, Home, Shield, BookOpen, Gift, Ticket } from 'lucide-react'
+import { FileText, HelpCircle, LogOut, Home, Shield, BookOpen, Gift, Ticket, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
@@ -100,8 +100,9 @@ export default function AdminLayout({ children }) {
     { href: '/spinr-internal/faqs', label: 'FAQs', icon: HelpCircle },
     { href: '/spinr-internal/help-articles', label: 'Help Articles', icon: BookOpen },
     { href: '/spinr-internal/seo', label: 'SEO', icon: Shield },
+    { href: '/spinr-internal/promotions', label: 'Promotions', icon: Gift },
     { href: '/spinr-internal/promotion-coupons', label: 'Coupon Codes', icon: Ticket },
-    { href: '/spinr-internal/promotion-signups', label: 'Promotion Signups', icon: Gift },
+    { href: '/spinr-internal/promotion-signups', label: 'Signups', icon: Users },
   ]
 
   return (
