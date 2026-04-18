@@ -60,7 +60,7 @@ export default function PromotionSignupsPage() {
         s.full_name?.toLowerCase().includes(q) ||
         s.email?.toLowerCase().includes(q) ||
         s.phone?.includes(q) ||
-        s.driver_id?.toLowerCase().includes(q) ||
+        s.coupon_code?.toLowerCase().includes(q) ||
         s.reference?.toLowerCase().includes(q)
       return matchesPromo && matchesQuery
     })
@@ -261,7 +261,7 @@ export default function PromotionSignupsPage() {
                         <td className="px-4 py-3">
                           <p className="font-semibold">{s.full_name}</p>
                           <p className="text-xs text-muted-foreground">
-                            ID: {s.driver_id}
+                            {s.coupon_code ? `Coupon: ${s.coupon_code}` : '—'}
                           </p>
                         </td>
                         <td className="px-4 py-3">
@@ -316,7 +316,7 @@ export default function PromotionSignupsPage() {
                     </div>
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Hash className="w-3.5 h-3.5" />
-                      <span>Driver ID: {s.driver_id}</span>
+                      <span>Coupon: {s.coupon_code || '—'}</span>
                     </div>
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <MapPin className="w-3.5 h-3.5" />

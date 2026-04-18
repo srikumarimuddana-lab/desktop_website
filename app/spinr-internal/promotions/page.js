@@ -52,6 +52,8 @@ const EMPTY_FORM = {
   termsText: '',
   smsTemplate:
     'Hi {name}! Spinr is offering you a ${reward} bonus for completing {goal_rides} rides in {window_days} days in {city}. Use code {code} at {link} — expires in 24 hours.',
+  reminderSmsTemplate:
+    'Reminder from Spinr: your ${reward} bonus code {code} expires in 12 hours. Register here before it\'s gone: {link}',
 }
 
 function toFormShape(p) {
@@ -72,6 +74,7 @@ function toFormShape(p) {
     howItWorksText: (p.howItWorks || []).join('\n'),
     termsText: (p.terms || []).join('\n'),
     smsTemplate: p.smsTemplate || EMPTY_FORM.smsTemplate,
+    reminderSmsTemplate: p.reminderSmsTemplate || EMPTY_FORM.reminderSmsTemplate,
   }
 }
 
@@ -98,6 +101,7 @@ function fromFormShape(f) {
       .map((s) => s.trim())
       .filter(Boolean),
     smsTemplate: f.smsTemplate.trim(),
+    reminderSmsTemplate: f.reminderSmsTemplate.trim(),
   }
 }
 
@@ -397,7 +401,7 @@ export default function PromotionsCmsPage() {
               </div>
 
               <div className="space-y-2 sm:col-span-2">
-                <Label>SMS template</Label>
+                <Label>SMS template (initial)</Label>
                 <Textarea
                   value={form.smsTemplate}
                   onChange={(e) => updateField('smsTemplate', e.target.value)}
@@ -413,6 +417,23 @@ export default function PromotionsCmsPage() {
                   <code className="bg-gray-100 px-1">{'{window_days}'}</code>{' '}
                   <code className="bg-gray-100 px-1">{'{city}'}</code>{' '}
                   <code className="bg-gray-100 px-1">{'{title}'}</code>
+                </p>
+              </div>
+
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Reminder SMS template (12h after issue)</Label>
+                <Textarea
+                  value={form.reminderSmsTemplate}
+                  onChange={(e) =>
+                    updateField('reminderSmsTemplate', e.target.value)
+                  }
+                  rows={3}
+                  className="font-mono text-xs"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Sent automatically to drivers who haven't redeemed a coupon 12
+                  hours after it was issued (while still inside the 24h window).
+                  Same placeholders as above.
                 </p>
               </div>
             </div>

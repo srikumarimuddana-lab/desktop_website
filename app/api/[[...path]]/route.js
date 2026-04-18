@@ -1287,6 +1287,144 @@ async function handleRoute(request, { params }) {
       }))
     }
 
+    // POST /api/promotion-coupons/:id/send-reminder — admin manual reminder
+    if (route.startsWith('/promotion-coupons/') && path[2] === 'send-reminder' && method === 'POST') {
+      if (!await checkAuth(request)) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+      if (!isTwilioConfigured()) {
+        return handleCORS(NextResponse.json({ error: 'Twilio is not configured' }, { status: 503 }))
+      }
+      if (!isSupabaseConfigured()) {
+        return handleCORS(NextResponse.json({ error: 'Supabase not configured' }, { status: 503 }))
+      }
+      const id = path[1]
+      const supabase = createAuthenticatedClient(request)
+      const { data: coupon, error } = await supabase
+        .from('promotion_coupons')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle()
+      if (error || !coupon) {
+        return handleCORS(NextResponse.json({ error: 'Coupon not found' }, { status: 404 }))
+      }
+      if (coupon.status !== 'pending') {
+        return handleCORS(NextResponse.json({ error: 'Coupon is not pending' }, { status: 400 }))
+      }
+      if (!coupon.recipient_phone) {
+        return handleCORS(NextResponse.json({ error: 'No phone on file' }, { status: 400 }))
+      }
+      const promo = await getPromotionBySlug(coupon.promotion_slug)
+      if (!promo) {
+        return handleCORS(NextResponse.json({ error: 'Promotion not found' }, { status: 404 }))
+      }
+      const publicBaseUrl =
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        request.headers.get('origin') ||
+        `https://${request.headers.get('host') || 'spinr.ca'}`
+      const link = `${publicBaseUrl.replace(/\/$/, '')}/promotions/${promo.slug}?code=${encodeURIComponent(coupon.code)}`
+      const body = renderSmsTemplate(promo.reminderSmsTemplate, {
+        name: coupon.recipient_name || 'there',
+        code: coupon.code,
+        link,
+        reward: promo.reward,
+        goal_rides: promo.goalRides,
+        window_days: promo.windowDays,
+        city: promo.city,
+        title: promo.title,
+      })
+      const result = await sendSms({ to: coupon.recipient_phone, body })
+      await anonymousSupabase
+        .from('promotion_coupons')
+        .update({
+          reminder_sms_status: result.ok ? 'sent' : result.status,
+          reminder_sms_error: result.error,
+          reminder_sent_at: result.ok ? new Date().toISOString() : null,
+        })
+        .eq('id', id)
+      return handleCORS(NextResponse.json({
+        ok: result.ok,
+        status: result.ok ? 'sent' : result.status,
+        error: result.error,
+      }))
+    }
+
+    // GET /api/cron/coupon-reminders — Vercel Cron triggers this hourly.
+    // Sends a reminder SMS to drivers who haven't redeemed a coupon that
+    // was issued 12+ hours ago and hasn't been reminded yet.
+    if (route === '/cron/coupon-reminders' && method === 'GET') {
+      const cronSecret = process.env.CRON_SECRET
+      const authHeader = request.headers.get('authorization')
+      if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+        return handleCORS(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }))
+      }
+      if (!isSupabaseConfigured() || !isTwilioConfigured()) {
+        return handleCORS(NextResponse.json({
+          skipped: true,
+          reason: !isSupabaseConfigured() ? 'Supabase not configured' : 'Twilio not configured',
+        }))
+      }
+
+      const now = new Date()
+      const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000).toISOString()
+      const nowIso = now.toISOString()
+
+      // Find eligible coupons: pending, not expired, 12h+ old, no reminder yet, has phone
+      const { data: eligible, error: selErr } = await anonymousSupabase
+        .from('promotion_coupons')
+        .select('*')
+        .eq('status', 'pending')
+        .gt('expires_at', nowIso)
+        .lt('created_at', twelveHoursAgo)
+        .is('reminder_sent_at', null)
+        .not('recipient_phone', 'is', null)
+        .limit(200)
+
+      if (selErr) {
+        console.error('Cron reminder select error:', selErr)
+        return handleCORS(NextResponse.json({ error: selErr.message }, { status: 500 }))
+      }
+
+      const publicBaseUrl =
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        request.headers.get('origin') ||
+        `https://${request.headers.get('host') || 'spinr.ca'}`
+
+      let sent = 0, failed = 0
+      await Promise.all((eligible || []).map(async (coupon) => {
+        const promo = await getPromotionBySlug(coupon.promotion_slug)
+        if (!promo) return
+        const link = `${publicBaseUrl.replace(/\/$/, '')}/promotions/${promo.slug}?code=${encodeURIComponent(coupon.code)}`
+        const smsBody = renderSmsTemplate(promo.reminderSmsTemplate, {
+          name: coupon.recipient_name || 'there',
+          code: coupon.code,
+          link,
+          reward: promo.reward,
+          goal_rides: promo.goalRides,
+          window_days: promo.windowDays,
+          city: promo.city,
+          title: promo.title,
+        })
+        const result = await sendSms({ to: coupon.recipient_phone, body: smsBody })
+        await anonymousSupabase
+          .from('promotion_coupons')
+          .update({
+            reminder_sms_status: result.ok ? 'sent' : result.status,
+            reminder_sms_error: result.error,
+            reminder_sent_at: result.ok ? new Date().toISOString() : null,
+          })
+          .eq('id', coupon.id)
+        if (result.ok) sent++; else failed++
+      }))
+
+      return handleCORS(NextResponse.json({
+        checked: eligible?.length || 0,
+        sent,
+        failed,
+        at: nowIso,
+      }))
+    }
+
     // Promotion Signups - POST /api/promotion-signups
     // Public endpoint — drivers register using a valid, unused coupon code
     if (route === '/promotion-signups' && method === 'POST') {
@@ -1303,7 +1441,6 @@ async function handleRoute(request, { params }) {
         full_name,
         email,
         phone,
-        driver_id,
         city
       } = body || {}
 
@@ -1328,8 +1465,7 @@ async function handleRoute(request, { params }) {
       if (
         !emailOk ||
         typeof full_name !== 'string' || full_name.trim().length < 2 ||
-        typeof phone !== 'string' || phone.trim().length < 7 ||
-        typeof driver_id !== 'string' || driver_id.trim().length < 3
+        typeof phone !== 'string' || phone.trim().length < 7
       ) {
         return handleCORS(NextResponse.json(
           { error: 'Missing or invalid fields' },
@@ -1350,7 +1486,7 @@ async function handleRoute(request, { params }) {
         full_name: full_name.trim(),
         email: email.trim().toLowerCase(),
         phone: phone.trim(),
-        driver_id: driver_id.trim(),
+        driver_id: null,
         city: (city || promo.city).trim(),
         goal_rides: promo.goalRides,
         window_days: promo.windowDays,

@@ -30,9 +30,15 @@ CREATE TABLE IF NOT EXISTS public.promotions (
   terms               jsonb NOT NULL DEFAULT '[]'::jsonb,
   sms_template        text NOT NULL DEFAULT
     'Hi {name}! Spinr is offering you a ${reward} bonus for completing {goal_rides} rides in {window_days} days in {city}. Use code {code} at {link} — expires in 24 hours.',
+  reminder_sms_template text NOT NULL DEFAULT
+    'Reminder from Spinr: your ${reward} bonus code {code} expires in 12 hours. Register here before it''s gone: {link}',
   created_at          timestamptz NOT NULL DEFAULT now(),
   updated_at          timestamptz NOT NULL DEFAULT now()
 );
+-- idempotent column add for re-runs after initial migration
+ALTER TABLE public.promotions
+  ADD COLUMN IF NOT EXISTS reminder_sms_template text NOT NULL DEFAULT
+    'Reminder from Spinr: your ${reward} bonus code {code} expires in 12 hours. Register here before it''s gone: {link}';
 CREATE INDEX IF NOT EXISTS promotions_status_idx ON public.promotions (status);
 CREATE INDEX IF NOT EXISTS promotions_audience_idx ON public.promotions (audience);
 
@@ -68,7 +74,11 @@ ALTER TABLE public.promotion_coupons
   ADD COLUMN IF NOT EXISTS sms_status text NOT NULL DEFAULT 'not_sent'
     CHECK (sms_status IN ('not_sent','queued','sent','failed','skipped')),
   ADD COLUMN IF NOT EXISTS sms_error  text,
-  ADD COLUMN IF NOT EXISTS sms_sent_at timestamptz;
+  ADD COLUMN IF NOT EXISTS sms_sent_at timestamptz,
+  ADD COLUMN IF NOT EXISTS reminder_sent_at timestamptz,
+  ADD COLUMN IF NOT EXISTS reminder_sms_status text NOT NULL DEFAULT 'not_sent'
+    CHECK (reminder_sms_status IN ('not_sent','queued','sent','failed','skipped')),
+  ADD COLUMN IF NOT EXISTS reminder_sms_error text;
 
 CREATE INDEX IF NOT EXISTS promotion_coupons_status_idx ON public.promotion_coupons (status);
 CREATE INDEX IF NOT EXISTS promotion_coupons_promo_idx  ON public.promotion_coupons (promotion_slug);
@@ -95,6 +105,9 @@ CREATE TABLE IF NOT EXISTS public.promotion_signups (
   accepted_at     timestamptz NOT NULL DEFAULT now(),
   expires_at      timestamptz NOT NULL
 );
+-- driver_id is no longer required
+ALTER TABLE public.promotion_signups ALTER COLUMN driver_id DROP NOT NULL;
+
 CREATE UNIQUE INDEX IF NOT EXISTS promotion_signups_promo_email_uniq
   ON public.promotion_signups (promotion_slug, email);
 CREATE INDEX IF NOT EXISTS promotion_signups_promo_idx

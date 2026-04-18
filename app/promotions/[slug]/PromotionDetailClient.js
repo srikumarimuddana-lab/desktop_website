@@ -53,7 +53,6 @@ export default function PromotionDetailClient({ promo, initialCode = '' }) {
     fullName: '',
     email: '',
     phone: '',
-    driverId: '',
     city: promo.city,
   })
   const [accepted, setAccepted] = useState(false)
@@ -146,7 +145,6 @@ export default function PromotionDetailClient({ promo, initialCode = '' }) {
     form.fullName.trim().length > 1 &&
     validEmail &&
     form.phone.trim().length >= 7 &&
-    form.driverId.trim().length >= 3 &&
     accepted &&
     !submitting
 
@@ -173,7 +171,6 @@ export default function PromotionDetailClient({ promo, initialCode = '' }) {
           full_name: form.fullName.trim(),
           email: form.email.trim().toLowerCase(),
           phone: form.phone.trim(),
-          driver_id: form.driverId.trim(),
           city: form.city.trim(),
         }),
       })
@@ -596,21 +593,6 @@ export default function PromotionDetailClient({ promo, initialCode = '' }) {
                             required
                             autoComplete="tel"
                             inputMode="tel"
-                            className="h-12 rounded-xl bg-white"
-                          />
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <Label htmlFor="driverId" className="text-gray-700">
-                            Spinr driver ID
-                          </Label>
-                          <Input
-                            id="driverId"
-                            name="driverId"
-                            value={form.driverId}
-                            onChange={handleChange}
-                            placeholder="From your driver app profile"
-                            required
                             className="h-12 rounded-xl bg-white"
                           />
                         </div>

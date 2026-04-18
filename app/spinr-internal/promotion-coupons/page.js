@@ -90,6 +90,14 @@ function smsStatusBadge(coupon) {
   return <Badge variant="outline" className="text-xs">Not sent</Badge>
 }
 
+function reminderStatusBadge(coupon) {
+  const s = coupon.reminder_sms_status || 'not_sent'
+  if (s === 'sent') return <Badge className="bg-purple-600 text-white text-xs">Reminder sent</Badge>
+  if (s === 'failed') return <Badge className="bg-red-500 text-white text-xs">Reminder failed</Badge>
+  if (s === 'skipped') return <Badge className="bg-yellow-500 text-white text-xs">Reminder skipped</Badge>
+  return null
+}
+
 function timeLeft(iso) {
   if (!iso) return '—'
   const ms = new Date(iso).getTime() - Date.now()
@@ -279,6 +287,29 @@ export default function PromotionCouponsPage() {
       fetchCoupons()
     } catch (err) {
       toast.error(err.message || 'Failed to resend')
+    } finally {
+      setResendingId('')
+    }
+  }
+
+  const sendReminder = async (couponId) => {
+    setResendingId(couponId)
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(await authHeaders()),
+      }
+      const res = await fetch(`/api/promotion-coupons/${couponId}/send-reminder`, {
+        method: 'POST',
+        headers,
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.error || 'Failed')
+      if (data.ok) toast.success('Reminder sent')
+      else toast.error(data.error || 'Failed to send reminder')
+      fetchCoupons()
+    } catch (err) {
+      toast.error(err.message || 'Failed to send reminder')
     } finally {
       setResendingId('')
     }
@@ -712,6 +743,7 @@ export default function PromotionCouponsPage() {
                       <th className="px-4 py-3 font-semibold">Status</th>
                       <th className="px-4 py-3 font-semibold">Expires</th>
                       <th className="px-4 py-3 font-semibold">SMS</th>
+                      <th className="px-4 py-3 font-semibold">Reminder</th>
                       <th className="px-4 py-3 font-semibold">Redeemed by</th>
                       <th className="px-4 py-3 font-semibold"></th>
                     </tr>
@@ -739,6 +771,11 @@ export default function PromotionCouponsPage() {
                             {c.status === 'pending' ? timeLeft(c.expires_at) : '—'}
                           </td>
                           <td className="px-4 py-3">{smsStatusBadge(c)}</td>
+                          <td className="px-4 py-3">
+                            {reminderStatusBadge(c) || (
+                              <span className="text-xs text-muted-foreground">—</span>
+                            )}
+                          </td>
                           <td className="px-4 py-3 text-xs">
                             {c.used_by_email || '—'}
                           </td>
@@ -756,6 +793,22 @@ export default function PromotionCouponsPage() {
                                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                   ) : (
                                     <Send className="w-3.5 h-3.5" />
+                                  )}
+                                </Button>
+                              )}
+                              {c.status === 'pending' && c.recipient_phone && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => sendReminder(c.id)}
+                                  disabled={resendingId === c.id}
+                                  title="Send reminder SMS"
+                                  className="text-purple-600 hover:text-purple-700"
+                                >
+                                  {resendingId === c.id ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  ) : (
+                                    <MessageSquare className="w-3.5 h-3.5" />
                                   )}
                                 </Button>
                               )}
@@ -806,6 +859,7 @@ export default function PromotionCouponsPage() {
                       <div className="flex flex-col items-end gap-1">
                         {couponStatusBadge(c)}
                         {smsStatusBadge(c)}
+                        {reminderStatusBadge(c)}
                       </div>
                     </div>
                     <div className="text-xs text-muted-foreground space-y-1">
@@ -836,6 +890,20 @@ export default function PromotionCouponsPage() {
                               <Send className="w-3.5 h-3.5 mr-2" /> Send SMS
                             </>
                           )}
+                        </Button>
+                      )}
+                      {c.status === 'pending' && c.recipient_phone && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => sendReminder(c.id)}
+                          disabled={resendingId === c.id}
+                          className="text-purple-600 border-purple-200"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5 mr-2" />
+                          {c.reminder_sms_status === 'sent'
+                            ? 'Resend reminder'
+                            : 'Send reminder'}
                         </Button>
                       )}
                       {c.status === 'pending' && (
