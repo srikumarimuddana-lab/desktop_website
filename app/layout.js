@@ -2,6 +2,7 @@ import './globals.css'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'sonner'
 import CookieBanner from '@/components/ui/CookieBanner'
+import { AuthProvider } from '@/components/auth/AuthProvider'
 import CustomScripts from '@/components/seo/CustomScripts'
 import ChatWidget from '@/components/ai/ChatWidget'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -24,7 +25,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${inter.className} antialiased`}>
         <CustomScripts position="body_start" />
-        {children}
+        <AuthProvider>{children}</AuthProvider>
         <Toaster
           position="top-right"
           richColors
