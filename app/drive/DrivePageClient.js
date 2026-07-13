@@ -122,8 +122,8 @@ export default function DrivePageClient({ structuredData }) {
                   </div>
 
                   <div className="pt-2">
-                    <Button className="w-full h-12 text-lg font-bold bg-primary hover:bg-primary/90 text-white rounded-xl" onClick={() => document.getElementById('download').scrollIntoView({ behavior: 'smooth' })}>
-                      Start Earning Now
+                    <Button asChild className="w-full h-12 text-lg font-bold bg-primary hover:bg-primary/90 text-white rounded-xl">
+                      <Link href="/drive/signup">Start Earning Now</Link>
                     </Button>
                   </div>
                 </CardContent>
@@ -150,7 +150,7 @@ export default function DrivePageClient({ structuredData }) {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">1. Sign Up Online</h3>
               <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
-                Tell us a little about yourself and your vehicle. The form above takes less than 2 minutes.
+                Tell us a little about yourself and your vehicle. The online application takes about 10 minutes.
               </p>
             </div>
 
@@ -416,8 +416,8 @@ export default function DrivePageClient({ structuredData }) {
                     <span className="text-gray-700">Basic App Features</span>
                   </li>
                 </ul>
-                <Button variant="outline" className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-bold py-4 rounded-xl text-lg transition-all">
-                  Choose Standard
+                <Button asChild variant="outline" className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-bold py-4 rounded-xl text-lg transition-all">
+                  <Link href="/drive/signup">Choose Standard</Link>
                 </Button>
                 <p className="text-xs text-center text-gray-400">
                   Cancel anytime. Limit resets daily.
@@ -476,8 +476,8 @@ export default function DrivePageClient({ structuredData }) {
                     <span className="text-gray-700">Advanced Heatmaps</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl text-lg shadow-lg shadow-primary/20 transition-all transform active:scale-95">
-                  Try Pro Free
+                <Button asChild className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl text-lg shadow-lg shadow-primary/20 transition-all transform active:scale-95">
+                  <Link href="/drive/signup">Try Pro Free</Link>
                 </Button>
                 <p className="text-xs text-center text-gray-400">
                   $49.99/mo after 6 months. Cancel anytime.
