@@ -95,13 +95,13 @@ CREATE INDEX IF NOT EXISTS idx_seo_pages_priority ON public.seo_pages(sitemap_pr
 INSERT INTO public.seo_pages (path, title, description, keywords, sitemap_priority, sitemap_frequency, og_image, structured_data) VALUES
   (
     '/',
-    'Spinr - Saskatchewan''s Fair Rideshare Platform',
-    'Fair ridesharing in Saskatchewan. 0% commission for drivers, flat $1 fee for riders. Join Spinr today.',
-    'rideshare, saskatchewan, regina, saskatoon, taxi, uber alternative',
+    'Spinr - Canada''s Fair Rideshare Platform',
+    'Fair ridesharing in Saskatoon. 0% commission for drivers, flat $1 fee for riders. Join Spinr today.',
+    'rideshare, saskatoon, saskatchewan, canadian rideshare, taxi, uber alternative',
     1.0,
     'daily',
     'https://cfrazforbupizntxvvtp.supabase.co/storage/v1/object/public/assets/og-home.jpg',
-    '{"@context": "https://schema.org", "@type": "LocalBusiness", "name": "Spinr", "description": "Saskatchewan''s fair rideshare platform", "address": {"@type": "PostalAddress", "addressRegion": "Saskatchewan", "addressCountry": "CA"}}'::jsonb
+    '{"@context": "https://schema.org", "@type": "LocalBusiness", "name": "Spinr", "description": "Canada''s fair rideshare platform", "address": {"@type": "PostalAddress", "addressRegion": "Saskatchewan", "addressCountry": "CA"}}'::jsonb
   ),
   (
     '/drive',
@@ -153,14 +153,14 @@ INSERT INTO public.faqs (id, question, answer, category, tags) VALUES
   (
     gen_random_uuid()::text,
     'What is Spinr?',
-    'Spinr is Saskatchewan''s own rideshare platform. We offer 0% commission for drivers and a flat $1 fee for riders - making ridesharing fair for everyone.',
+    'Spinr is Canada''s own rideshare platform, 100% Canadian owned and operated. We offer 0% commission for drivers and a flat $1 fee for riders - making ridesharing fair for everyone.',
     'general',
     ARRAY['about', 'getting-started']
   ),
   (
     gen_random_uuid()::text,
     'Where is Spinr available?',
-    'Spinr is currently available in Regina and Saskatoon, Saskatchewan. We plan to expand to more communities soon.',
+    'Spinr is currently available in Saskatoon, Saskatchewan. We plan to expand to more communities soon.',
     'general',
     ARRAY['locations', 'availability']
   ),

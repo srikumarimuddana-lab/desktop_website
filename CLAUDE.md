@@ -7,7 +7,7 @@
 
 ## What Is Spinr
 
-Spinr is a **Saskatchewan-based rideshare platform**. Drivers keep 100% of net fare (0% commission). Riders pay a flat $1 platform fee per trip. No surge pricing. Currently available **only in Saskatoon**. Regina launching soon. 100% Saskatchewan owned and operated.
+Spinr is a **Canadian owned and operated rideshare platform**. Drivers keep 100% of net fare (0% commission). Riders pay a flat $1 platform fee per trip. No surge pricing. Currently available **only in Saskatoon, Saskatchewan** — there is no planned launch in any other city, including Regina.
 
 ---
 
@@ -129,7 +129,7 @@ User Question → Rate Limit → Cache Check → Hybrid Retrieval → LLM Call �
 
 **Fallback chain:** Hybrid RAG → keyword search on faqs/help_articles tables → "contact support@spinr.ca"
 
-**Location guard:** Detects city names in queries and injects hard-negative context (Spinr is ONLY in Saskatoon).
+**Location guard:** Detects city names in queries and injects hard-negative context (Spinr is ONLY in Saskatoon). `NON_SASKATOON_CITIES` in `app/api/agent/search/route.js` is a deliberate not-served list — Regina is an entry there so the agent can never claim Regina service; it is not marketing copy.
 
 ### CMS → KB Auto-Sync
 When admin creates/updates/deletes FAQs or help articles, `lib/kb-sync.js` automatically:

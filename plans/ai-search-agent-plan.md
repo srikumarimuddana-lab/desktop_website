@@ -1285,9 +1285,9 @@ INSERT INTO public.knowledge_base (title, content, category, tags, source) VALUE
   ),
   (
     'Where Spinr is available',
-    'Spinr is currently available in Regina and Saskatoon, Saskatchewan. We plan to expand to more communities soon.',
+    'Spinr is currently available in Saskatoon, Saskatchewan. We plan to expand to more communities soon.',
     'general',
-    ARRAY['location', 'availability', 'cities', 'regina', 'saskatoon'],
+    ARRAY['location', 'availability', 'cities', 'saskatoon'],
     'faq_import'
   ),
   (

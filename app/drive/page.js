@@ -6,7 +6,7 @@ export async function generateMetadata() {
   return getSeoMetadata('/drive', {
     title: "Drive for Spinr - Keep 100% of Net Fare",
     description: "Become a Spinr driver in Saskatchewan. 0% commission forever, daily payouts, first 6 months free. Keep every dollar you earn.",
-    keywords: "drive Spinr, rideshare driver Saskatchewan, 0% commission driver, Regina driver jobs, Saskatoon driver"
+    keywords: "drive Spinr, rideshare driver Saskatoon, 0% commission driver, Saskatoon driver jobs, Canadian rideshare driver"
   })
 }
 

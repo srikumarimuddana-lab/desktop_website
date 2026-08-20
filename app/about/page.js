@@ -12,9 +12,9 @@ import { getSeoMetadata, getStructuredData } from '@/lib/seo'
 // Dynamic metadata from database
 export async function generateMetadata() {
   return getSeoMetadata('/about', {
-    title: "About Spinr - Saskatchewan's Rideshare",
-    description: "Learn about Spinr's mission to bring fair, transparent ridesharing to Saskatchewan. Local team, local values, community-driven.",
-    keywords: "about Spinr, Saskatchewan rideshare company, local rideshare, fair rideshare"
+    title: "About Spinr - Canada's Fair Rideshare",
+    description: "Learn about Spinr's mission to bring fair, transparent ridesharing to Canada. Canadian owned and operated, community-driven.",
+    keywords: "about Spinr, Canadian rideshare company, local rideshare, fair rideshare"
   })
 }
 
@@ -41,7 +41,7 @@ export default async function AboutPage() {
                 Forward
               </h1>
               <p className="text-xl text-gray-500 mb-8 leading-relaxed max-w-lg">
-                Innovation meets community in every ride. We're a Regina-based startup redefining urban mobility with <span className="text-gray-900 font-semibold">0% commission</span> for drivers and <span className="text-gray-900 font-semibold">100% net fare</span> for everyone.
+                Innovation meets community in every ride. We're a Canadian startup redefining urban mobility with <span className="text-gray-900 font-semibold">0% commission</span> for drivers and <span className="text-gray-900 font-semibold">100% net fare</span> for everyone.
               </p>
               <Link href="#mission">
                 <Button size="lg" className="rounded-full px-8 py-6 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-lg shadow-red-200">
@@ -70,7 +70,7 @@ export default async function AboutPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
             {[
-              { label: 'Saskatchewan', sub: 'Communities', value: 'Regina +' },
+              { label: 'Canadian', sub: 'Owned & Operated', value: '100%' },
               { label: 'Commission', sub: 'For Drivers', value: '0%' },
               { label: 'Fair Rides', sub: 'For Riders', value: '100%' },
               { label: 'Average Rating', sub: 'From our users', value: '4.9' },

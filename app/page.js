@@ -17,9 +17,9 @@ import { getSeoMetadata, getStructuredData } from '@/lib/seo'
 // Dynamic metadata from database
 export async function generateMetadata() {
   return getSeoMetadata('/', {
-    title: "Spinr - 0% Commission Rideshare in Saskatchewan",
-    description: "Saskatchewan's own rideshare platform. Drivers keep 100% of net fare, riders pay just $1. No surge pricing. Now serving Regina & Saskatoon.",
-    keywords: "rideshare Saskatchewan, 0% commission, Regina rideshare, Saskatoon rideshare"
+    title: "Spinr - 0% Commission Rideshare in Saskatoon",
+    description: "Canada's own rideshare platform. Drivers keep 100% of net fare, riders pay just $1. No surge pricing. Now serving Saskatoon.",
+    keywords: "rideshare Saskatoon, 0% commission, Canadian owned rideshare, Saskatoon rideshare"
   })
 }
 
@@ -35,7 +35,7 @@ export default async function Home() {
   const riderBenefits = [
     { icon: DollarSign, title: 'Flat $1 Fee', description: 'No surge pricing, no surprises.' },
     { icon: Shield, title: 'Safe & Local', description: 'Verified Saskatchewan drivers.' },
-    { icon: Clock, title: 'Fast Pickups', description: 'Reliable service across Regina & Saskatoon.' },
+    { icon: Clock, title: 'Fast Pickups', description: 'Reliable service across Saskatoon.' },
   ]
 
   return (
@@ -66,7 +66,7 @@ export default async function Home() {
             <div className="relative z-10 max-w-2xl">
               <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-2 mb-8 shadow-sm bg-white/80 backdrop-blur-sm">
                 <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                <span className="text-primary text-sm font-medium">100% Sask Owned | Serving Regina & Saskatoon</span>
+                <span className="text-primary text-sm font-medium">100% Canadian Owned | Serving Saskatoon</span>
               </div>
 
               <h1 className="text-[12vw] sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground mb-8 leading-[1.1] tracking-tight">
@@ -195,7 +195,7 @@ export default async function Home() {
                   <span className="text-primary">Saskatchewan</span>
                 </h2>
                 <p className="text-gray-600 mb-8 max-w-lg">
-                  We're tailoring our experience to the Land of Living Skies. From Regina to Saskatoon, enjoy localized perks that make commuting easier.
+                  We're tailoring our experience to Saskatoon riders, with localized perks that make commuting easier.
                 </p>
 
                 <ul className="space-y-4">
@@ -254,7 +254,7 @@ export default async function Home() {
                           Local Drivers
                         </p>
                         <p className="text-lg font-bold leading-tight">
-                          100% Sask owned
+                          100% Canadian owned
                         </p>
                       </div>
                     </div>

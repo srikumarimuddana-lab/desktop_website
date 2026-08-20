@@ -12,7 +12,7 @@ import SupportClient from './SupportClient'
 export async function generateMetadata() {
   return getSeoMetadata('/support', {
     title: "Spinr Support & FAQs",
-    description: "Get help with Spinr. Find answers to common questions about riding and driving. Local Saskatchewan support team.",
+    description: "Get help with Spinr. Find answers to common questions about riding and driving. Canadian support team, based in Saskatchewan.",
     keywords: "Spinr help, Spinr support, rideshare FAQ, contact Spinr"
   })
 }
