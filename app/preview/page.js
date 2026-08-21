@@ -5,7 +5,7 @@ import HowItWorks from './HowItWorks'
 import AiChat from './AiChat'
 import {
   Reveal, CountUp, Marquee, Tilt,
-  SplitText, ScrollProgress, StickyCta, RevealFooter,
+  SplitText, ScrollProgress, StickyCta, RevealFooter, Cursor,
 } from './Reveal'
 
 /*
@@ -111,6 +111,7 @@ export default function PreviewPage() {
     <main className={`sp ${display.variable} ${editorial.variable}`}>
       <style>{CSS}</style>
       <ScrollProgress />
+      <Cursor />
 
       <div className="sp-stage">
         {/* ── Floating pill nav ─────────────────────────────── */}
@@ -122,6 +123,7 @@ export default function PreviewPage() {
             <a href="#why">Why Spinr</a>
             <a href="#how">How it works</a>
             <a href="#math">The math</a>
+            <a href="#ai" className="sp-nav-ai"><span aria-hidden="true">&#10022;</span>AI assistant</a>
           </div>
           <div className="sp-nav-cta">
             <a className="sp-btn-ghost" href="#drive">Drive</a>
@@ -384,6 +386,10 @@ const CSS = `
 .sp-nav-links{display:none;gap:22px;margin-left:auto;font-size:14.5px;font-weight:600}
 .sp-nav-links a{color:var(--ink);opacity:.72;text-decoration:none}
 .sp-nav-links a:hover{opacity:1}
+.sp-nav-links a.sp-nav-ai{display:inline-flex;align-items:center;gap:7px;opacity:1;font-weight:800;
+  background:var(--sun);border:2px solid var(--ink);border-radius:999px;padding:5px 13px;
+  box-shadow:-2px 2px 0 var(--ink);transition:transform .16s var(--snap)}
+.sp-nav-links a.sp-nav-ai:hover{transform:translateY(-1px)}
 .sp-nav-cta{display:flex;align-items:center;gap:9px;margin-left:auto}
 .sp-nav-cta .sp-btn,.sp-nav-cta .sp-btn-ghost{padding:11px 20px;font-size:14px;box-shadow:-3px 3px 0 var(--ink)}
 .sp-nav-cta .sp-btn-ghost{box-shadow:none}
@@ -512,28 +518,39 @@ const CSS = `
 .sp-scr-go{margin-top:auto;text-align:center;background:var(--red);color:#fff;border:2px solid var(--ink);
   border-radius:999px;padding:12px;font-weight:800;font-size:13.5px}
 .sp-scr-go-ghost{background:#fff;color:var(--ink)}
-.sp-scr-map{position:relative;flex:1;min-height:0;border:2px solid var(--ink);border-radius:14px;
-  background:repeating-linear-gradient(0deg,#EFEADF 0 22px,#E6DCC9 22px 23px),repeating-linear-gradient(90deg,transparent 0 30px,rgba(11,11,11,.06) 30px 31px);
-  overflow:hidden}
-.sp-scr-route{position:absolute;left:16%;top:74%;width:64%;height:3px;background:var(--red);border-radius:999px;
-  transform:rotate(-38deg);transform-origin:left center}
-.sp-scr-car{position:absolute;left:16%;top:74%;width:13px;height:13px;border-radius:999px;background:var(--ink);
-  border:2px solid #fff;transform:translate(-50%,-50%)}
-.sp-scr-map-sm{flex:0 0 auto;height:34%}
+.sp-scr-mapwrap{position:relative;flex:1;min-height:0;border:2px solid var(--ink);border-radius:14px;overflow:hidden}
+.sp-scr-mapwrap-sm{flex:0 0 auto;height:38%}
+.sp-map{display:block;width:100%;height:100%}
+
+/* the phone reacts as you scroll through a step, not just between steps */
+.sp-caret{display:inline-block;width:2px;height:15px;margin-left:1px;background:var(--red);
+  vertical-align:-2px;animation:sp-caret 1s steps(2) infinite}
+@keyframes sp-caret{50%{opacity:0}}
+.sp-scr-list li,.sp-scr-row,.sp-scr-total{opacity:0;transform:translateY(7px);
+  transition:opacity .3s ease,transform .34s var(--snap)}
+.sp-scr-list li.in,.sp-scr-row.in,.sp-scr-total.in{opacity:1;transform:none}
+.sp-scr-bar{height:7px;border:2px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden}
+.sp-scr-bar i{display:block;height:100%;background:var(--red);transform-origin:0 50%;transition:transform .12s linear}
+@media(prefers-reduced-motion:reduce){
+  .sp-caret{animation:none}
+  .sp-scr-list li,.sp-scr-row,.sp-scr-total{opacity:1;transform:none;transition:none}
+}
 .sp-scr-driver{display:flex;align-items:center;gap:10px}
 .sp-scr-avatar{width:34px;height:34px;flex:0 0 auto;border-radius:999px;border:2px solid var(--ink);background:var(--sky)}
 .sp-scr-driver b{display:block;font-size:12.5px;line-height:1.2}
 .sp-scr-driver i{display:block;font-style:normal;font-size:11px;color:var(--ink-5);margin-top:2px}
 .sp-hiw-cta{margin-top:4px}
 
-/* unpinned fallback: plain stacked list, everything visible */
+/* unpinned: normal layout, but scroll still picks the step */
 .sp-hiw:not(.is-pinned) .sp-route li{opacity:1}
-.sp-hiw:not(.is-pinned) .sp-route-fill{height:100%}
-.sp-hiw:not(.is-pinned) .sp-route-dot{background:var(--sun)}
-.sp-hiw:not(.is-pinned) .sp-route-dot::after{background:var(--ink)}
-.sp-hiw:not(.is-pinned) .sp-scr{position:relative;opacity:1;transform:none}
-.sp-hiw:not(.is-pinned) .sp-scr:not(.on){display:none}
+.sp-hiw:not(.is-pinned) .sp-scr{position:absolute;transform:none}
 .sp-hiw:not(.is-pinned) .sp-hiw-stage{padding-block:clamp(56px,7vw,104px)}
+
+/* reduced motion: the whole trip is shown at rest, scrolling changes nothing */
+.sp-hiw.is-still .sp-route-fill{height:100%}
+.sp-hiw.is-still .sp-route-dot{background:var(--sun)}
+.sp-hiw.is-still .sp-route-dot::after{background:var(--ink)}
+.sp-hiw.is-still .sp-scr{transition:none}
 
 /* ── calculator ── */
 .sp-calc{background:#FFF3CF;border-bottom:2px solid var(--ink)}
@@ -691,7 +708,12 @@ const CSS = `
 @media(prefers-reduced-motion:reduce){.sp-mq-track{animation:none}}
 
 /* ── AI assistant ── */
-.sp-ai{background:var(--ink);color:var(--paper);border-block:2px solid var(--ink);overflow:hidden}
+.sp-ai{background:var(--ink);color:var(--paper);border-block:2px solid var(--ink);position:relative}
+.sp-ai.is-pinned{min-height:300vh;padding-block:0}
+.sp-ai-stage{display:flex;align-items:center}
+.sp-ai-stage > .sp-wrap{width:100%}
+.sp-ai.is-pinned .sp-ai-stage{position:sticky;top:0;height:100vh}
+.sp-ai:not(.is-pinned) .sp-ai-stage{padding-block:clamp(56px,7vw,104px)}
 .sp-ai-g{display:grid;gap:clamp(30px,5vw,72px);align-items:center}
 @media(min-width:900px){.sp-ai-g{grid-template-columns:1.05fr .95fr}}
 .sp-kick-light{color:var(--sun)}
@@ -711,7 +733,10 @@ const CSS = `
   color:var(--ink);border:2px solid var(--ink);display:grid;place-items:center;font-size:10px;font-weight:900}
 .sp-ai-fine{margin:0;font-size:12.5px;line-height:1.55;color:rgba(255,255,255,.5);max-width:44ch}
 
-.sp-ai-phone{display:flex;justify-content:center}
+.sp-ai-phone{position:relative;display:flex;justify-content:center}
+.sp-ai-sticker{position:absolute;top:-18px;right:clamp(0px,3vw,22px);z-index:4;transform:rotate(-9deg);
+  background:var(--sun);color:var(--ink);border:2px solid var(--ink);border-radius:999px;
+  padding:10px 17px;font-size:14.5px;letter-spacing:.03em;box-shadow:4px 4px 0 var(--ink)}
 .sp-ai-frame{position:relative;width:clamp(250px,26vw,310px);aspect-ratio:9/18.5;display:flex;flex-direction:column;
   border:3px solid var(--ink);border-radius:clamp(30px,3vw,42px);background:var(--paper-50);overflow:hidden;
   box-shadow:10px 12px 0 var(--sun)}
@@ -724,7 +749,9 @@ const CSS = `
 .sp-eyes i{width:8px;height:9px;border-radius:999px;background:#fff;border:1.5px solid var(--ink);
   display:grid;place-items:center}
 .sp-eyes b{width:4px;height:4px;border-radius:999px;background:var(--ink);transition:transform .1s linear}
-.sp-ai-thread{flex:1;min-height:0;display:flex;flex-direction:column;gap:9px;padding:14px 13px;overflow:hidden}
+.sp-ai-thread{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-end;
+  gap:9px;padding:14px 13px;overflow:hidden}
+.sp-caret-ai{background:var(--ink);height:12px;vertical-align:-1px}
 .sp-bub{max-width:88%;border:2px solid var(--ink);border-radius:14px;padding:9px 12px;font-size:12.5px;line-height:1.4;
   opacity:0;transform:translateY(10px) scale(.97);
   transition:opacity .32s ease,transform .4s var(--snap)}
@@ -751,21 +778,50 @@ const CSS = `
 /* ── docked CTA: rides up out of the page once the hero is behind you,
       and drops back down when the real CTA arrives ── */
 .sp-dock{position:fixed;left:50%;bottom:calc(clamp(14px,3vh,26px) + var(--dock-lift,0px));z-index:70;
-  display:inline-flex;align-items:center;gap:16px;padding:8px 8px 8px 22px;
+  display:inline-flex;align-items:center;gap:11px;padding:8px 10px;max-width:calc(100vw - 20px);
   border:2px solid var(--ink);border-radius:999px;background:var(--paper-50);
   box-shadow:5px 5px 0 var(--ink);
   transform:translate(-50%,130px);opacity:0;pointer-events:none;
   transition:transform .62s var(--spring),opacity .3s ease}
 .sp-dock.up{transform:translate(-50%,0);opacity:1;pointer-events:auto}
-.sp-dock-note{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+.sp-dock-ai{display:flex;align-items:center;gap:10px;padding:5px 14px 5px 6px;border-radius:999px;
+  color:var(--ink);text-decoration:none;transition:background .16s ease}
+.sp-dock-ai:hover{background:var(--red-1);color:var(--ink)}
+.sp-dock-spark{width:31px;height:31px;flex:0 0 auto;border-radius:999px;border:2px solid var(--ink);
+  background:var(--sky);display:grid;place-items:center;font-size:14px}
+.sp-dock-ai b{display:block;font-size:13px;line-height:1.15;white-space:nowrap}
+.sp-dock-ai i{display:block;font-style:normal;font-size:11px;color:var(--ink-5);white-space:nowrap}
+.sp-dock-rule{width:2px;height:30px;flex:0 0 auto;background:rgba(11,11,11,.15)}
+.sp-dock-note{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
   color:var(--ink-5);white-space:nowrap}
-.sp-dock-btn{padding:12px 22px;font-size:14px;box-shadow:-3px 3px 0 var(--ink)}
-@media(max-width:640px){
-  .sp-dock{gap:0;padding:0;border:0;background:transparent;box-shadow:none}
-  .sp-dock-note{display:none}
-  .sp-dock-btn{padding:15px 30px;font-size:16px;box-shadow:4px 4px 0 var(--ink)}
+.sp-dock-btn{padding:11px 18px;font-size:13px;box-shadow:-3px 3px 0 var(--ink);white-space:nowrap}
+.sp-dock .sp-btn-ghost.sp-dock-btn{box-shadow:none}
+@media(max-width:860px){
+  .sp-dock-note,.sp-dock-rule{display:none}
+  .sp-dock-ai i{display:none}
+  .sp-dock-ai{padding:4px 10px 4px 4px}
+}
+@media(max-width:560px){
+  .sp-dock{gap:7px;padding:6px}
+  .sp-dock-ai b{display:none}
+  .sp-dock-ai{padding:2px}
+  .sp-dock-btn{padding:11px 14px;font-size:12.5px}
 }
 @media(prefers-reduced-motion:reduce){.sp-dock{transition:none}}
+
+/* ── pointer: a dot on the tip, a ring that catches up ── */
+.sp-cursor-on,.sp-cursor-on *{cursor:none !important}
+.sp-cur{position:fixed;inset:0;z-index:200;pointer-events:none;opacity:0;transition:opacity .2s ease}
+.sp-cursor-live .sp-cur{opacity:1}
+.sp-cur i{position:absolute;top:0;left:0;display:block}
+.sp-cur-dot{width:9px;height:9px;margin:-6.5px 0 0 -6.5px;border-radius:999px;
+  background:var(--red);border:2px solid var(--ink)}
+.sp-cur-ring b{display:block;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:999px;
+  border:2px solid var(--ink);
+  transition:transform .22s var(--snap),background .22s ease}
+.sp-cur-ring.hot b{transform:scale(1.55);background:rgba(255,198,11,.34)}
+.sp-cur-ring.down b{transform:scale(.7);background:rgba(220,56,72,.2)}
+.sp-cur-ring.hot.down b{transform:scale(1.2)}
 
 /* ── the page rides over a footer pinned to the bottom of the viewport;
       RevealFooter drops back to a normal in-flow footer when it can't ── */

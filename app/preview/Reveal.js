@@ -1,6 +1,7 @@
 'use client'
 
 import { Fragment, useEffect, useRef, useState } from 'react'
+import { APP_URLS } from '@/lib/app-links'
 
 /* Shared scroll primitives for the sample page.
  * All of them no-op under prefers-reduced-motion: content is simply present. */
@@ -191,10 +192,11 @@ export function ScrollProgress() {
   )
 }
 
-/** Call-to-action docked to the bottom edge. Rides up out of the page once
- *  the hero is behind you, and drops back down when the real CTA arrives so
- *  the two never sit on screen together. */
-export function StickyCta({ href = '#get', label = 'Get Spinr', note = 'Flat $1 fee · no surge' }) {
+/** The bar docked to the bottom edge: the two app stores, and a way into the
+ *  in-app assistant. Rides up out of the page once the hero is behind you, and
+ *  drops back down when the real CTA arrives so the two never sit on screen
+ *  together. */
+export function StickyCta({ href = '#get' }) {
   const ref = useRef(null)
   const [show, setShow] = useState(false)
 
@@ -238,12 +240,93 @@ export function StickyCta({ href = '#get', label = 'Get Spinr', note = 'Flat $1 
     }
   }, [href])
 
+  const tab = show ? 0 : -1
   return (
     <div ref={ref} className={`sp-dock${show ? ' up' : ''}`}>
-      <span className="sp-dock-note">{note}</span>
-      <a className="sp-btn sp-dock-btn" href={href} tabIndex={show ? 0 : -1}>
-        {label}
+      <a className="sp-dock-ai" href="#ai" tabIndex={tab}>
+        <span className="sp-dock-spark" aria-hidden="true">&#10022;</span>
+        <span>
+          <b>Ask the assistant</b>
+          <i>Book, price, look up a trip</i>
+        </span>
       </a>
+      <span className="sp-dock-rule" aria-hidden="true" />
+      <span className="sp-dock-note">Get the app</span>
+      <a className="sp-btn sp-dock-btn" href={APP_URLS.rider.ios} tabIndex={tab}
+         target="_blank" rel="noopener noreferrer">App&nbsp;Store</a>
+      <a className="sp-btn-ghost sp-dock-btn" href={APP_URLS.rider.android} tabIndex={tab}
+         target="_blank" rel="noopener noreferrer">Google&nbsp;Play</a>
+    </div>
+  )
+}
+
+/** Replaces the system pointer with a dot and a ring that trails it, the ring
+ *  swelling over anything clickable. Desktop pointers only, and skipped
+ *  entirely under prefers-reduced-motion — hiding the real cursor is not
+ *  something to do to someone who has asked for less movement. */
+export function Cursor() {
+  const dotRef = useRef(null)
+  const ringRef = useRef(null)
+  const [on, setOn] = useState(false)
+
+  useEffect(() => {
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)')
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (!fine.matches || still.matches) return
+
+    const root = document.documentElement
+    root.classList.add('sp-cursor-on')
+    setOn(true)
+
+    let x = window.innerWidth / 2
+    let y = window.innerHeight / 2
+    let rx = x
+    let ry = y
+    let raf = 0
+    let seen = false
+
+    const onMove = (e) => {
+      x = e.clientX
+      y = e.clientY
+      if (!seen) { seen = true; rx = x; ry = y; root.classList.add('sp-cursor-live') }
+      if (dotRef.current) dotRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`
+      const hot = e.target instanceof Element
+        ? e.target.closest('a, button, summary, [role="button"], input, .sp-k')
+        : null
+      if (ringRef.current) ringRef.current.classList.toggle('hot', Boolean(hot))
+    }
+    const loop = () => {
+      rx += (x - rx) * 0.19
+      ry += (y - ry) * 0.19
+      if (ringRef.current) ringRef.current.style.transform = `translate3d(${rx}px, ${ry}px, 0)`
+      raf = requestAnimationFrame(loop)
+    }
+    const press = (v) => () => ringRef.current && ringRef.current.classList.toggle('down', v)
+    const leave = () => root.classList.remove('sp-cursor-live')
+    const enter = () => seen && root.classList.add('sp-cursor-live')
+
+    raf = requestAnimationFrame(loop)
+    window.addEventListener('pointermove', onMove, { passive: true })
+    window.addEventListener('pointerdown', press(true))
+    window.addEventListener('pointerup', press(false))
+    document.addEventListener('pointerleave', leave)
+    document.addEventListener('pointerenter', enter)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerdown', press(true))
+      window.removeEventListener('pointerup', press(false))
+      document.removeEventListener('pointerleave', leave)
+      document.removeEventListener('pointerenter', enter)
+      root.classList.remove('sp-cursor-on', 'sp-cursor-live')
+    }
+  }, [])
+
+  if (!on) return null
+  return (
+    <div className="sp-cur" aria-hidden="true">
+      <i ref={ringRef} className="sp-cur-ring"><b /></i>
+      <i ref={dotRef} className="sp-cur-dot" />
     </div>
   )
 }
