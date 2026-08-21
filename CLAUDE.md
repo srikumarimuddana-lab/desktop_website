@@ -7,7 +7,7 @@
 
 ## What Is Spinr
 
-Spinr is a **Canadian owned and operated rideshare platform**. Drivers keep 100% of net fare (0% commission). Riders pay a flat $1 platform fee per trip. No surge pricing. Currently available **only in Saskatoon, Saskatchewan** — there is no planned launch in any other city, including Regina.
+Spinr is a **100% Canadian owned and operated rideshare platform**. Drivers keep 100% of net fare (0% commission). Riders pay a flat $1 platform fee per trip. No surge pricing. Currently available **only in Saskatoon, Saskatchewan** — there is no planned launch in any other city, including Regina.
 
 ---
 

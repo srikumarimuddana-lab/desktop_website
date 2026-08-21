@@ -13,7 +13,7 @@ import { getSeoMetadata, getStructuredData } from '@/lib/seo'
 export async function generateMetadata() {
   return getSeoMetadata('/about', {
     title: "About Spinr - Canada's Fair Rideshare",
-    description: "Learn about Spinr's mission to bring fair, transparent ridesharing to Canada. Canadian owned and operated, community-driven.",
+    description: "Learn about Spinr's mission to bring fair, transparent ridesharing to Canada. 100% Canadian owned and operated, community-driven.",
     keywords: "about Spinr, Canadian rideshare company, local rideshare, fair rideshare"
   })
 }
@@ -41,7 +41,7 @@ export default async function AboutPage() {
                 Forward
               </h1>
               <p className="text-xl text-gray-500 mb-8 leading-relaxed max-w-lg">
-                Innovation meets community in every ride. We're a Canadian startup redefining urban mobility with <span className="text-gray-900 font-semibold">0% commission</span> for drivers and <span className="text-gray-900 font-semibold">100% net fare</span> for everyone.
+                Innovation meets community in every ride. We're 100% Canadian owned and operated, redefining urban mobility with <span className="text-gray-900 font-semibold">0% commission</span> for drivers and <span className="text-gray-900 font-semibold">100% net fare</span> for everyone.
               </p>
               <Link href="#mission">
                 <Button size="lg" className="rounded-full px-8 py-6 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-lg shadow-red-200">
