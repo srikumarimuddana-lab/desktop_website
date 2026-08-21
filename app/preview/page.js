@@ -2,6 +2,8 @@ import Image from 'next/image'
 import { Anton, Instrument_Serif } from 'next/font/google'
 import FareCalc from './FareCalc'
 import HowItWorks from './HowItWorks'
+import AiChat from './AiChat'
+import { Reveal, CountUp, Marquee, Tilt } from './Reveal'
 
 /*
  * DESIGN SAMPLE — /preview
@@ -20,10 +22,10 @@ export const metadata = {
 }
 
 const STATS = [
-  { n: '0%',   l: 'commission, forever' },
-  { n: '$1',   l: 'flat fee per trip' },
-  { n: '1.0×', l: 'surge, always' },
-  { n: '100%', l: 'of net fare to the driver' },
+  { to: 0,   suffix: '%',  l: 'commission, forever' },
+  { to: 1,   prefix: '$',  l: 'flat fee per trip' },
+  { to: 1,   suffix: '\u00D7', decimals: 1, l: 'surge, always' },
+  { to: 100, suffix: '%',  l: 'of net fare to the driver' },
 ]
 
 const WHY = [
@@ -167,11 +169,13 @@ export default function PreviewPage() {
       {/* ── Trust band ────────────────────────────────────── */}
       <section className="sp-band">
         <div className="sp-wrap sp-band-in">
-          {STATS.map((s) => (
-            <div className="sp-stat" key={s.n}>
-              <b className="sp-display">{s.n}</b>
+          {STATS.map((s, i) => (
+            <Reveal className="sp-stat" key={s.l} delay={i * 90}>
+              <b className="sp-display">
+                <CountUp to={s.to} prefix={s.prefix} suffix={s.suffix} decimals={s.decimals || 0} />
+              </b>
               <span>{s.l}</span>
-            </div>
+            </Reveal>
           ))}
           <span className="sp-band-lbl">verified by</span>
           <div className="sp-band-names">
@@ -180,12 +184,15 @@ export default function PreviewPage() {
         </div>
       </section>
 
+      {/* ── ticker ────────────────────────────────────────── */}
+      <Marquee items={['0% commission', 'flat $1 fee', 'no surge, ever', '100% Canadian owned and operated', 'Saskatoon']} />
+
       {/* ── Why Spinr — sticky stacking cards ─────────────── */}
       <section className="sp-sec" id="why">
         <div className="sp-wrap">
-          <h2 className="sp-display sp-h2">
+          <Reveal as="h2" className="sp-display sp-h2">
             Why ride with <span className="sp-accent">Spinr.</span>
-          </h2>
+          </Reveal>
           <div className="sp-roll">
             {WHY.map((c, i) => (
               <article
@@ -209,6 +216,9 @@ export default function PreviewPage() {
 
       {/* ── How it works — scroll-driven ─────────────────── */}
       <HowItWorks />
+
+      {/* ── AI assistant ──────────────────────────────────── */}
+      <AiChat />
 
 
       {/* ── The math / calculator ─────────────────────────── */}
@@ -245,14 +255,14 @@ export default function PreviewPage() {
             <span className="sp-faq-arrow" aria-hidden="true">↓</span>
           </div>
           <div className="sp-faq">
-            {FAQ.map(([q, a]) => (
-              <details key={q}>
+            {FAQ.map(([q, a], i) => (
+              <Reveal as="details" key={q} delay={i * 60}>
                 <summary>
                   <span className="sp-display">{q}</span>
                   <span className="sp-faq-ic" aria-hidden="true" />
                 </summary>
                 <div className="sp-faq-a">{a}</div>
-              </details>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -274,9 +284,9 @@ export default function PreviewPage() {
               <span className="sp-btn-ghost sp-btn-ghost-dark">Google Play</span>
             </div>
           </div>
-          <div className="sp-qr">
+          <Tilt className="sp-qr" max={5}>
             <Image src="/spinr_qr_code.png" alt="Scan to download Spinr" width={150} height={150} />
-          </div>
+          </Tilt>
         </div>
       </section>
 
@@ -396,7 +406,7 @@ const CSS = `
 .sp-band-in{display:flex;align-items:center;flex-wrap:wrap;gap:clamp(18px,3vw,40px);padding-block:clamp(22px,3vw,34px)}
 .sp-stat{display:flex;flex-direction:column;gap:3px}
 .sp-stat b{font-size:clamp(28px,3.2vw,44px);line-height:.88}
-.sp-stat span{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-5)}
+.sp-stat > span{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-5)}
 .sp-band-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.2em;color:var(--ink-4);margin-left:auto}
 .sp-band-names{display:flex;gap:clamp(12px,2vw,26px);flex-wrap:wrap}
 .sp-band-names i{font-style:normal;font-weight:800;font-size:13px;letter-spacing:.04em;color:var(--ink-6);
@@ -623,6 +633,78 @@ const CSS = `
 .sp-foot-flag{background:rgba(255,255,255,.1);border-radius:999px;padding:5px 12px}
 @media(max-width:820px){.sp-foot-in{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.sp-foot-in{grid-template-columns:1fr}}
+
+/* ── scroll primitives ── */
+.sp-rv{opacity:0;transform:translateY(26px);
+  transition:opacity .6s ease var(--rv-delay,0ms),transform .7s var(--snap) var(--rv-delay,0ms)}
+.sp-rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.sp-rv{opacity:1;transform:none;transition:none}}
+
+/* ── ticker: outlined wood-type, the neobrutalist staple ── */
+.sp-mq{overflow:hidden;background:var(--ink);border-bottom:2px solid var(--ink);padding-block:clamp(8px,1.2vw,14px)}
+.sp-mq-track{display:inline-flex;white-space:nowrap;animation:sp-mq 34s linear infinite;will-change:transform}
+.sp-mq-track.rev{animation-direction:reverse}
+.sp-mq:hover .sp-mq-track{animation-play-state:paused}
+.sp-mq-track span{display:inline-flex;align-items:center;font-size:clamp(26px,4vw,54px);line-height:1;
+  color:transparent;-webkit-text-stroke:2px var(--paper);padding-right:.35em}
+.sp-mq-track span:nth-child(even){color:var(--sun);-webkit-text-stroke:0}
+.sp-mq-dot{display:inline-block;width:.22em;height:.22em;border-radius:999px;background:var(--red);margin-left:.35em}
+@keyframes sp-mq{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.sp-mq-track{animation:none}}
+
+/* ── AI assistant ── */
+.sp-ai{background:var(--ink);color:var(--paper);border-block:2px solid var(--ink);overflow:hidden}
+.sp-ai-g{display:grid;gap:clamp(30px,5vw,72px);align-items:center}
+@media(min-width:900px){.sp-ai-g{grid-template-columns:1.05fr .95fr}}
+.sp-kick-light{color:var(--sun)}
+.sp-ai-h{font-size:clamp(30px,5vw,58px);margin:0 0 18px;color:#fff}
+.sp-ai-hl{color:var(--sun)}
+.sp-ai-lede{margin:0 0 clamp(22px,2.6vw,30px);font-size:clamp(15px,1.25vw,18px);line-height:1.6;
+  color:rgba(255,255,255,.78);max-width:46ch}
+.sp-ai-groups{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2vw,26px);
+  margin:0 0 clamp(20px,2.4vw,28px)}
+@media(max-width:620px){.sp-ai-groups{grid-template-columns:1fr}}
+.sp-ai-group{border:2px solid rgba(255,255,255,.22);border-radius:16px;padding:15px 16px;background:rgba(255,255,255,.04)}
+.sp-ai-gk{margin:0 0 10px;font-size:13px;letter-spacing:.1em;color:var(--sun)}
+.sp-ai-group ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.sp-ai-group li{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;line-height:1.4;
+  font-weight:600;color:rgba(255,255,255,.88)}
+.sp-ai-group li span{flex:0 0 auto;margin-top:1px;width:19px;height:19px;border-radius:999px;background:var(--sun);
+  color:var(--ink);border:2px solid var(--ink);display:grid;place-items:center;font-size:10px;font-weight:900}
+.sp-ai-fine{margin:0;font-size:12.5px;line-height:1.55;color:rgba(255,255,255,.5);max-width:44ch}
+
+.sp-ai-phone{display:flex;justify-content:center}
+.sp-ai-frame{position:relative;width:clamp(250px,26vw,310px);aspect-ratio:9/18.5;display:flex;flex-direction:column;
+  border:3px solid var(--ink);border-radius:clamp(30px,3vw,42px);background:var(--paper-50);overflow:hidden;
+  box-shadow:10px 12px 0 var(--sun)}
+.sp-ai-notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:32%;height:18px;
+  background:var(--ink);border-radius:999px;z-index:5}
+.sp-ai-head{display:flex;align-items:center;gap:9px;padding:40px 16px 12px;font-size:13px;font-weight:800;
+  color:var(--ink);border-bottom:2px solid var(--ink)}
+.sp-ai-dot{width:9px;height:9px;border-radius:999px;background:#3ADB76;flex:0 0 auto}
+.sp-ai-thread{flex:1;min-height:0;display:flex;flex-direction:column;gap:9px;padding:14px 13px;overflow:hidden}
+.sp-bub{max-width:88%;border:2px solid var(--ink);border-radius:14px;padding:9px 12px;font-size:12.5px;line-height:1.4;
+  opacity:0;transform:translateY(10px) scale(.97);
+  transition:opacity .32s ease,transform .4s var(--snap)}
+.sp-bub.in{opacity:1;transform:none}
+.sp-bub-you{align-self:flex-end;background:var(--red);color:#fff;border-bottom-right-radius:5px}
+.sp-bub-ai{align-self:flex-start;background:#fff;color:var(--ink);border-bottom-left-radius:5px;box-shadow:var(--hard-sm)}
+.sp-bub-tool{display:block;font-family:var(--sp-display),monospace;font-size:9.5px;letter-spacing:.06em;
+  color:var(--red);background:var(--red-1);border:1px solid var(--ink);border-radius:5px;
+  padding:2px 6px;margin-bottom:6px;width:fit-content}
+.sp-bub-typing{display:flex;gap:4px;padding:12px}
+.sp-bub-typing i{width:6px;height:6px;border-radius:999px;background:var(--ink-4);animation:sp-typ 1.1s infinite}
+.sp-bub-typing i:nth-child(2){animation-delay:.18s}
+.sp-bub-typing i:nth-child(3){animation-delay:.36s}
+@keyframes sp-typ{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+@media(prefers-reduced-motion:reduce){.sp-bub-typing{display:none}.sp-bub{opacity:1;transform:none}}
+.sp-ai-input{display:flex;align-items:center;margin:0 13px 14px;padding:10px 12px;background:#fff;
+  border:2px solid var(--ink);border-radius:999px;font-size:12.5px;color:var(--ink-4);font-weight:600}
+.sp-ai-send{margin-left:auto;width:24px;height:24px;border-radius:999px;background:var(--red);color:#fff;
+  display:grid;place-items:center;font-size:12px;font-weight:900}
+
+/* QR sticker rotates with scroll */
+.sp-qr{transition:transform .12s linear}
 
 /* ── sticky mobile CTA ── */
 .sp-sticky{position:fixed;left:50%;bottom:clamp(16px,3.2vh,28px);transform:translateX(-50%);z-index:70;
