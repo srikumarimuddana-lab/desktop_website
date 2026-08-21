@@ -3,7 +3,7 @@ INSERT INTO public.seo_pages (path, title, description, keywords, sitemap_priori
 VALUES (
   '/help',
   'Spinr Help Center',
-  'Get help with Spinr. Find answers to common questions about riding and driving. Local Saskatchewan support team.',
+  'Get help with Spinr. Find answers to common questions about riding and driving. Canadian support team, based in Saskatchewan.',
   'Spinr help, Spinr support, rideshare FAQ, contact Spinr, Saskatchewan rideshare help',
   0.8,
   'weekly',

@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { Anton, Instrument_Serif } from 'next/font/google'
 import FareCalc from './FareCalc'
+import HowItWorks from './HowItWorks'
 
 /*
  * DESIGN SAMPLE — /preview
@@ -37,7 +38,7 @@ const WHY = [
     bg: '#DBF3F1', ink: '#0F4C5C', border: '#2E7BA6', art: 'surge',
   },
   {
-    t: 'Canadian owned. Locally driven.',
+    t: '100% Canadian owned and operated',
     p: 'Every driver is background-checked and carries SGI-compliant commercial coverage for the whole trip.',
     bg: '#FFEFC9', ink: '#6E4E00', border: '#C79A1E', art: 'verify',
   },
@@ -91,12 +92,6 @@ function CardArt({ kind }) {
     </div>
   )
 }
-
-const STEPS = [
-  { n: '01', t: 'Download Spinr',      p: 'App Store or Google Play. Signing up takes about a minute.' },
-  { n: '02', t: 'Set your destination', p: 'The full price appears before you confirm — fare, fee and tax.' },
-  { n: '03', t: 'Ride',                 p: 'Track your driver live and share the trip with whoever you like.' },
-]
 
 const FAQ = [
   ['Where can I use Spinr?', 'Spinr is available in Saskatoon, Saskatchewan. There is no planned launch in any other city at this time.'],
@@ -212,39 +207,9 @@ export default function PreviewPage() {
         </div>
       </section>
 
-      {/* ── How it works ──────────────────────────────────── */}
-      <section className="sp-sec sp-how" id="how">
-        <div className="sp-wrap sp-how-g">
-          <div>
-            <span className="sp-kick">How it works</span>
-            <h2 className="sp-display sp-h2">Three taps and you&rsquo;re moving.</h2>
-            <ol className="sp-steps">
-              {STEPS.map((s) => (
-                <li key={s.n}>
-                  <span className="sp-display sp-step-n">{s.n}</span>
-                  <div>
-                    <b>{s.t}</b>
-                    <p>{s.p}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <a className="sp-btn" href="#get">Get Spinr</a>
-          </div>
-          <div className="sp-phone">
-            <div className="sp-phone-frame">
-              <span className="sp-phone-notch" />
-              <Image
-                src="/spinr_app_phone.png"
-                alt="The Spinr app"
-                width={620}
-                height={1280}
-                sizes="(max-width: 900px) 60vw, 300px"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ── How it works — scroll-driven ─────────────────── */}
+      <HowItWorks />
+
 
       {/* ── The math / calculator ─────────────────────────── */}
       <section className="sp-sec sp-calc" id="math">
@@ -302,7 +267,7 @@ export default function PreviewPage() {
               <br />hands out of the fare.
             </h2>
             <p className="sp-final-p">
-              Available in Saskatoon. <span className="sp-editorial">Canadian owned and operated.</span>
+              Available in Saskatoon. <span className="sp-editorial">100% Canadian owned and operated.</span>
             </p>
             <div className="sp-final-btns">
               <span className="sp-btn">App Store</span>
@@ -462,20 +427,89 @@ const CSS = `
 }
 @media(prefers-reduced-motion:reduce){.sp-rcard{position:static}}
 
-/* ── how it works ── */
-.sp-how{background:var(--paper-50);border-block:2px solid var(--ink)}
-.sp-how-g{display:grid;gap:clamp(28px,5vw,64px);align-items:center}
-@media(min-width:900px){.sp-how-g{grid-template-columns:1.05fr .95fr}}
-.sp-steps{list-style:none;margin:0 0 clamp(28px,3.4vw,40px);padding:0;display:flex;flex-direction:column;gap:20px;counter-reset:s}
-.sp-steps li{display:flex;gap:16px;align-items:flex-start;border-top:2px solid rgba(11,11,11,.14);padding-top:16px}
-.sp-step-n{font-size:20px;color:var(--red);flex:0 0 auto;width:38px}
-.sp-steps b{display:block;font-size:18px;font-weight:800}
-.sp-steps p{margin:4px 0 0;font-size:14.5px;line-height:1.55;color:var(--ink-6)}
-.sp-phone{display:flex;justify-content:center}
-.sp-phone-frame{position:relative;width:clamp(220px,26vw,300px);border:3px solid var(--ink);border-radius:clamp(30px,3vw,42px);
-  overflow:hidden;background:#fff;box-shadow:var(--hard-lg)}
-.sp-phone-frame img{display:block;width:100%;height:auto}
-.sp-phone-notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:32%;height:18px;background:var(--ink);border-radius:999px;z-index:3}
+/* ── how it works: pinned route + phone ── */
+.sp-hiw{background:var(--paper-50);border-block:2px solid var(--ink);position:relative}
+.sp-hiw.is-pinned{min-height:300vh;padding-block:0}
+.sp-hiw-stage{display:flex;align-items:center}
+.sp-hiw.is-pinned .sp-hiw-stage{position:sticky;top:0;height:100vh}
+.sp-hiw-g{display:grid;gap:clamp(28px,5vw,64px);align-items:center;width:100%}
+@media(min-width:900px){.sp-hiw-g{grid-template-columns:1.05fr .95fr}}
+
+/* route rail */
+.sp-route{position:relative;list-style:none;margin:clamp(22px,3vw,32px) 0 clamp(26px,3.2vw,38px);padding:0 0 0 46px;
+  display:flex;flex-direction:column;gap:clamp(18px,2.4vw,30px)}
+.sp-route-line{position:absolute;left:15px;top:10px;bottom:10px;width:3px;border-radius:999px;background:rgba(11,11,11,.14);overflow:hidden}
+.sp-route-fill{position:absolute;left:0;top:0;width:100%;border-radius:999px;background:var(--red);
+  height:calc(var(--p,0) * 100%);transition:height .18s linear}
+.sp-route li{position:relative;display:flex;gap:14px;align-items:flex-start;opacity:.42;transition:opacity .35s ease}
+.sp-route li.is-on,.sp-route li.is-done{opacity:1}
+.sp-route-dot{position:absolute;left:-46px;top:2px;width:32px;height:32px;border-radius:999px;
+  border:2px solid var(--ink);background:#fff;display:grid;place-items:center;
+  transition:background .3s ease,transform .3s var(--snap)}
+.sp-route-dot::after{content:"";width:10px;height:10px;border-radius:999px;background:rgba(11,11,11,.2);transition:background .3s ease}
+.sp-route li.is-done .sp-route-dot{background:var(--sun)}
+.sp-route li.is-done .sp-route-dot::after{background:var(--ink)}
+.sp-route li.is-on .sp-route-dot{background:var(--red);transform:scale(1.14)}
+.sp-route li.is-on .sp-route-dot::after{background:#fff}
+.sp-route-n{display:block;font-size:14px;color:var(--red);line-height:1;margin-bottom:4px}
+.sp-route-tx b{display:block;font-size:clamp(17px,1.6vw,20px);font-weight:800}
+.sp-route-tx p{margin:5px 0 0;font-size:14.5px;line-height:1.55;color:var(--ink-6);max-width:40ch}
+
+/* phone */
+.sp-hiw-phone{display:flex;justify-content:center}
+.sp-hiw-frame{position:relative;width:clamp(230px,25vw,300px);aspect-ratio:9/19;
+  border:3px solid var(--ink);border-radius:clamp(30px,3vw,42px);overflow:hidden;
+  background:var(--paper-50);box-shadow:var(--hard-lg)}
+.sp-hiw-notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:32%;height:18px;
+  background:var(--ink);border-radius:999px;z-index:5}
+.sp-hiw-screens{position:absolute;inset:0}
+.sp-scr{position:absolute;inset:0;padding:46px 16px 18px;display:flex;flex-direction:column;gap:11px;
+  opacity:0;transform:translateY(10px);transition:opacity .32s ease,transform .38s var(--snap);pointer-events:none}
+.sp-scr.on{opacity:1;transform:none}
+.sp-scr-k{margin:0;font-family:var(--sp-display),sans-serif;text-transform:uppercase;letter-spacing:.12em;
+  font-size:11px;color:var(--red)}
+.sp-scr-field{display:flex;align-items:center;gap:9px;background:#fff;border:2px solid var(--ink);border-radius:12px;
+  padding:12px 13px;font-size:14px;font-weight:700;box-shadow:var(--hard-sm)}
+.sp-scr-pin{width:10px;height:10px;border-radius:999px;background:var(--red);flex:0 0 auto}
+.sp-scr-list{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
+.sp-scr-list li{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--ink);
+  border-radius:12px;padding:9px 11px}
+.sp-scr-ic{width:26px;height:26px;flex:0 0 auto;border-radius:8px;border:2px solid var(--ink);background:var(--sun);
+  display:grid;place-items:center;font-size:12px}
+.sp-scr-list b{display:block;font-size:13px;line-height:1.15}
+.sp-scr-list i{display:block;font-style:normal;font-size:11px;color:var(--ink-5)}
+.sp-scr-card{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:12px 13px;box-shadow:var(--hard-sm)}
+.sp-scr-row{display:flex;align-items:center;font-size:12.5px;font-weight:600;color:var(--ink-6);padding:4px 0}
+.sp-scr-row b{margin-left:auto;font-family:var(--sp-display),sans-serif;font-weight:400;font-size:14px;color:var(--ink)}
+.sp-scr-row-flat b{color:var(--red)}
+.sp-scr-total{display:flex;align-items:center;margin-top:7px;padding-top:8px;border-top:1.5px dashed rgba(11,11,11,.3);
+  font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-5)}
+.sp-scr-total b{margin-left:auto;font-family:var(--sp-display),sans-serif;font-weight:400;font-size:19px;color:var(--ink);letter-spacing:0}
+.sp-scr-go{margin-top:auto;text-align:center;background:var(--red);color:#fff;border:2px solid var(--ink);
+  border-radius:999px;padding:12px;font-weight:800;font-size:13.5px}
+.sp-scr-go-ghost{background:#fff;color:var(--ink)}
+.sp-scr-map{position:relative;flex:1;min-height:0;border:2px solid var(--ink);border-radius:14px;
+  background:repeating-linear-gradient(0deg,#EFEADF 0 22px,#E6DCC9 22px 23px),repeating-linear-gradient(90deg,transparent 0 30px,rgba(11,11,11,.06) 30px 31px);
+  overflow:hidden}
+.sp-scr-route{position:absolute;left:16%;top:74%;width:64%;height:3px;background:var(--red);border-radius:999px;
+  transform:rotate(-38deg);transform-origin:left center}
+.sp-scr-car{position:absolute;left:16%;top:74%;width:13px;height:13px;border-radius:999px;background:var(--ink);
+  border:2px solid #fff;transform:translate(-50%,-50%)}
+.sp-scr-map-sm{flex:0 0 auto;height:34%}
+.sp-scr-driver{display:flex;align-items:center;gap:10px}
+.sp-scr-avatar{width:34px;height:34px;flex:0 0 auto;border-radius:999px;border:2px solid var(--ink);background:var(--sky)}
+.sp-scr-driver b{display:block;font-size:12.5px;line-height:1.2}
+.sp-scr-driver i{display:block;font-style:normal;font-size:11px;color:var(--ink-5);margin-top:2px}
+.sp-hiw-cta{margin-top:4px}
+
+/* unpinned fallback: plain stacked list, everything visible */
+.sp-hiw:not(.is-pinned) .sp-route li{opacity:1}
+.sp-hiw:not(.is-pinned) .sp-route-fill{height:100%}
+.sp-hiw:not(.is-pinned) .sp-route-dot{background:var(--sun)}
+.sp-hiw:not(.is-pinned) .sp-route-dot::after{background:var(--ink)}
+.sp-hiw:not(.is-pinned) .sp-scr{position:relative;opacity:1;transform:none}
+.sp-hiw:not(.is-pinned) .sp-scr:not(.on){display:none}
+.sp-hiw:not(.is-pinned) .sp-hiw-stage{padding-block:clamp(56px,7vw,104px)}
 
 /* ── calculator ── */
 .sp-calc{background:#FFF3CF;border-bottom:2px solid var(--ink)}

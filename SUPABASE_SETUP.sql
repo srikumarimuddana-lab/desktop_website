@@ -153,7 +153,7 @@ INSERT INTO public.faqs (id, question, answer, category, tags) VALUES
   (
     gen_random_uuid()::text,
     'What is Spinr?',
-    'Spinr is Canada''s own rideshare platform, 100% Canadian owned and operated. We offer 0% commission for drivers and a flat $1 fee for riders - making ridesharing fair for everyone.',
+    'Spinr is 100% Canadian owned and operated. We offer 0% commission for drivers and a flat $1 fee for riders - making ridesharing fair for everyone.',
     'general',
     ARRAY['about', 'getting-started']
   ),

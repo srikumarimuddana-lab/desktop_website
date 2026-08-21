@@ -18,8 +18,8 @@ import { getSeoMetadata, getStructuredData } from '@/lib/seo'
 export async function generateMetadata() {
   return getSeoMetadata('/', {
     title: "Spinr - 0% Commission Rideshare in Saskatoon",
-    description: "Canada's own rideshare platform. Drivers keep 100% of net fare, riders pay just $1. No surge pricing. Now serving Saskatoon.",
-    keywords: "rideshare Saskatoon, 0% commission, Canadian owned rideshare, Saskatoon rideshare"
+    description: "100% Canadian owned and operated. Drivers keep 100% of net fare, riders pay just $1. No surge pricing. Now serving Saskatoon.",
+    keywords: "rideshare Saskatoon, 0% commission, Canadian owned and operated rideshare, Saskatoon rideshare"
   })
 }
 
@@ -66,11 +66,11 @@ export default async function Home() {
             <div className="relative z-10 max-w-2xl">
               <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-2 mb-8 shadow-sm bg-white/80 backdrop-blur-sm">
                 <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                <span className="text-primary text-sm font-medium">100% Canadian Owned | Serving Saskatoon</span>
+                <span className="text-primary text-sm font-medium">100% Canadian owned and operated | Serving Saskatoon</span>
               </div>
 
               <h1 className="text-[12vw] sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground mb-8 leading-[1.1] tracking-tight">
-                Saskatchewan's<br />
+                Canada's<br />
                 <span className="text-primary">Own Ride.</span>
               </h1>
 
@@ -105,7 +105,7 @@ export default async function Home() {
                   </div>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground">Trusted by Saskatchewan</span><br />
+                  <span className="font-semibold text-foreground">Trusted in Saskatoon</span><br />
                   Growing community every day
                 </div>
               </div>
@@ -254,7 +254,7 @@ export default async function Home() {
                           Local Drivers
                         </p>
                         <p className="text-lg font-bold leading-tight">
-                          100% Canadian owned
+                          100% Canadian owned and operated
                         </p>
                       </div>
                     </div>

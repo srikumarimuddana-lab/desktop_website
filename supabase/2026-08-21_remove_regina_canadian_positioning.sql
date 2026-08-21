@@ -66,7 +66,7 @@ WHERE answer ILIKE '%Regina and Saskatoon%';
 
 -- 1b. "What is Spinr?" — Saskatchewan's own -> Canada's own
 UPDATE public.faqs
-SET answer = 'Spinr is Canada''s own rideshare platform, 100% Canadian owned and operated. We offer 0% commission for drivers and a flat $1 fee for riders - making ridesharing fair for everyone.'
+SET answer = 'Spinr is 100% Canadian owned and operated. We offer 0% commission for drivers and a flat $1 fee for riders - making ridesharing fair for everyone.'
 WHERE answer ILIKE '%Saskatchewan''s own rideshare platform%';
 
 -- 1c. Catch-all safety net: any remaining FAQ answer promising a Regina launch.
@@ -93,7 +93,7 @@ BEGIN;
 
 -- 1. Core identity: Saskatchewan owned -> Canadian owned; drop Regina launch.
 UPDATE public.knowledge_base
-SET content = 'Spinr is Canada''s own rideshare platform, currently available ONLY in Saskatoon, Saskatchewan. We are 100% Canadian owned and operated. Our core differentiator is that drivers keep 100% of net fare (0% commission forever), and riders pay just a flat $1 platform fee per trip. There is no surge pricing and no hidden charges. We have no announced launch dates for any other city.',
+SET content = 'Spinr is 100% Canadian owned and operated, currently available ONLY in Saskatoon, Saskatchewan. Our core differentiator is that drivers keep 100% of net fare (0% commission forever), and riders pay just a flat $1 platform fee per trip. There is no surge pricing and no hidden charges. We have no announced launch dates for any other city.',
     tags    = ARRAY['about', 'company', 'introduction', 'what is spinr']
 WHERE source = 'website_analysis'
   AND title  = 'What is Spinr';
@@ -107,7 +107,7 @@ WHERE source = 'website_analysis'
 
 -- 3. Contact: remove the 'headquartered in Regina' claim.
 UPDATE public.knowledge_base
-SET content = 'You can reach Spinr support at support@spinr.ca. Spinr is a Canadian owned and operated company, and rideshare service is currently available only in Saskatoon, Saskatchewan. For immediate assistance, use the in-app chat or email us.',
+SET content = 'You can reach Spinr support at support@spinr.ca. Spinr is 100% Canadian owned and operated, and rideshare service is currently available only in Saskatoon, Saskatchewan. For immediate assistance, use the in-app chat or email us.',
     tags    = ARRAY['contact', 'support', 'email', 'help', 'phone', 'reach']
 WHERE source = 'website_analysis'
   AND title  = 'Spinr Contact Information';
@@ -187,8 +187,8 @@ BEGIN;
 -- 4a. Home
 UPDATE public.seo_pages SET
   title       = 'Spinr - 0% Commission Rideshare in Saskatoon',
-  description = 'Canada''s own rideshare platform. Drivers keep 100% of net fare, riders pay just $1. No surge pricing. Now serving Saskatoon.',
-  keywords    = 'rideshare Saskatoon, 0% commission, Canadian owned rideshare, Saskatoon rideshare, Spinr, taxi alternative',
+  description = '100% Canadian owned and operated. Drivers keep 100% of net fare, riders pay just $1. No surge pricing. Now serving Saskatoon.',
+  keywords    = 'rideshare Saskatoon, 0% commission, Canadian owned and operated rideshare, Saskatoon rideshare, Spinr, taxi alternative',
   updated_at  = NOW()
 WHERE path = '/';
 
@@ -208,7 +208,7 @@ WHERE path = '/drive';
 -- 4d. About
 UPDATE public.seo_pages SET
   title       = 'About Spinr - Canada''s Fair Rideshare',
-  description = 'Learn about Spinr''s mission to bring fair, transparent ridesharing to Canada. Canadian owned and operated, community-driven.',
+  description = 'Learn about Spinr''s mission to bring fair, transparent ridesharing to Canada. 100% Canadian owned and operated, community-driven.',
   keywords    = 'about Spinr, Canadian rideshare company, local rideshare, fair rideshare',
   updated_at  = NOW()
 WHERE path = '/about';
@@ -237,7 +237,7 @@ UPDATE public.seo_pages
 SET structured_data = replace(
       structured_data::text,
       'Saskatchewan''s own rideshare platform',
-      'Canada''s own rideshare platform'
+      '100% Canadian owned and operated rideshare platform'
     )::jsonb,
     updated_at = NOW()
 WHERE structured_data::text ILIKE '%Saskatchewan''s own rideshare platform%';
@@ -246,7 +246,7 @@ UPDATE public.seo_pages
 SET structured_data = replace(
       structured_data::text,
       'Saskatchewan''s fair rideshare platform',
-      'Canada''s fair rideshare platform'
+      '100% Canadian owned and operated rideshare platform'
     )::jsonb,
     updated_at = NOW()
 WHERE structured_data::text ILIKE '%Saskatchewan''s fair rideshare platform%';

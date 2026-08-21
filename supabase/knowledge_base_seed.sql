@@ -18,7 +18,7 @@ DELETE FROM public.knowledge_base WHERE source = 'website_analysis';
 INSERT INTO public.knowledge_base (title, content, category, tags, source) VALUES
 (
     'What is Spinr',
-    'Spinr is Canada''s own rideshare platform, currently available ONLY in Saskatoon, Saskatchewan. We are 100% Canadian owned and operated. Our core differentiator is that drivers keep 100% of net fare (0% commission forever), and riders pay just a flat $1 platform fee per trip. There is no surge pricing and no hidden charges. We have no announced launch dates for any other city.',
+    'Spinr is 100% Canadian owned and operated, currently available ONLY in Saskatoon, Saskatchewan. Our core differentiator is that drivers keep 100% of net fare (0% commission forever), and riders pay just a flat $1 platform fee per trip. There is no surge pricing and no hidden charges. We have no announced launch dates for any other city.',
     'general',
     ARRAY['about', 'company', 'introduction', 'what is spinr'],
     'website_analysis'
@@ -32,7 +32,7 @@ INSERT INTO public.knowledge_base (title, content, category, tags, source) VALUE
 ),
 (
     'Spinr Contact Information',
-    'You can reach Spinr support at support@spinr.ca. Spinr is a Canadian owned and operated company, and rideshare service is currently available only in Saskatoon, Saskatchewan. For immediate assistance, use the in-app chat or email us.',
+    'You can reach Spinr support at support@spinr.ca. Spinr is 100% Canadian owned and operated, and rideshare service is currently available only in Saskatoon, Saskatchewan. For immediate assistance, use the in-app chat or email us.',
     'general',
     ARRAY['contact', 'support', 'email', 'help', 'phone', 'reach'],
     'website_analysis'
