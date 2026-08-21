@@ -140,7 +140,7 @@ export default function DriverRequirementsPage() {
                                     <AccordionItem value="vsc">
                                         <AccordionTrigger>Vulnerable Sector Check (VSC)</AccordionTrigger>
                                         <AccordionContent>
-                                            A police information check that includes a Vulnerable Sector Check. This can be obtained from your local police service (e.g., Regina Police Service, Saskatoon Police Service) or RCMP detachment. It must be dated within the last 3 months. Rideshare company name should be <b>"Spinr Mobility Inc"</b>.
+                                            A police information check that includes a Vulnerable Sector Check. This can be obtained from your local police service (e.g., Saskatoon Police Service) or RCMP detachment. It must be dated within the last 3 months. Rideshare company name should be <b>"Spinr Mobility Inc"</b>.
                                         </AccordionContent>
                                     </AccordionItem>
 

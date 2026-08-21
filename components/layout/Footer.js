@@ -17,7 +17,7 @@ export default function Footer() {
                 className="h-8 w-auto brightness-0 invert"
               />
             </Link>
-            <p className="text-gray-400 text-sm">Saskatchewan's own rideshare. Fair for drivers, affordable for riders.</p>
+            <p className="text-gray-400 text-sm">Canada's own rideshare. Fair for drivers, affordable for riders.</p>
           </div>
           <div>
             <h4 className="font-semibold mb-4">For Riders</h4>
@@ -48,7 +48,7 @@ export default function Footer() {
         </div>
         <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Regina & Saskatoon, SK</span>
+            <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Saskatoon, SK</span>
             <span className="flex items-center gap-2"><Mail className="w-4 h-4" /> <a href="mailto:support@spinr.ca" className="hover:text-primary">support@spinr.ca</a></span>
           </div>
           <p>© {new Date().getFullYear()} Spinr. All rights reserved.</p>

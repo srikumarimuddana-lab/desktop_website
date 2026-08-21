@@ -17,8 +17,8 @@ import { getSeoMetadata, getStructuredData } from '@/lib/seo'
 export async function generateMetadata() {
   return getSeoMetadata('/ride', {
     title: "Ride with Spinr - Affordable Local Rides",
-    description: "Get rides in Regina and Saskatoon for just $1 platform fee. No surge pricing, verified local drivers, fair transparent pricing.",
-    keywords: "ride Spinr, cheap rides Saskatchewan, Regina taxi, Saskatoon rides, no surge pricing"
+    description: "Get rides in Saskatoon for just $1 platform fee. No surge pricing, verified local drivers, fair transparent pricing.",
+    keywords: "ride Spinr, cheap rides Saskatoon, Saskatoon taxi, Saskatoon rides, no surge pricing"
   })
 }
 
@@ -29,7 +29,7 @@ export default async function RidePage() {
   const benefits = [
     { icon: DollarSign, title: 'Flat $1 Platform Fee', description: 'Just $1 per trip. No surge pricing, no hidden charges, no surprises.' },
     { icon: Shield, title: 'Verified Local Drivers', description: 'All drivers are Saskatchewan locals, background checked and fully insured.' },
-    { icon: Clock, title: 'Fast & Reliable', description: 'Get picked up in minutes. Available across Regina and Saskatoon.' },
+    { icon: Clock, title: 'Fast & Reliable', description: 'Get picked up in minutes. Available across Saskatoon.' },
     { icon: MapPin, title: 'Track Your Ride', description: 'Real-time GPS tracking. Share your trip with friends and family.' },
     { icon: CreditCard, title: 'Easy Payment', description: 'Pay with card or Apple Pay. No cash needed, automatic receipts.' },
     { icon: Smartphone, title: 'Easy to Use', description: 'Simple, intuitive app. Request a ride in just a few taps.' },

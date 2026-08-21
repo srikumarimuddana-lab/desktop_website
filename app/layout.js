@@ -9,8 +9,8 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Spinr | $0 Commission Rideshare in Saskatchewan',
-  description: 'Drivers keep 100% of net fare with 0% commission. Riders pay just $1 flat fee per trip. Saskatchewan\'s own rideshare.',
+  title: 'Spinr | $0 Commission Rideshare in Saskatoon',
+  description: 'Drivers keep 100% of net fare with 0% commission. Riders pay just $1 flat fee per trip. Canada\'s own rideshare.',
   icons: {
     icon: '/favicon.ico',
   },

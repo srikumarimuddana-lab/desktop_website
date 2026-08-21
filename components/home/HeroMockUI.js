@@ -6,11 +6,11 @@ export default function HeroMockUI() {
             {/* Main Container - The Map Surface */}
             <div className="absolute inset-0 bg-white rounded-3xl shadow-2xl overflow-hidden border-[8px] border-white ring-1 ring-gray-900/5">
 
-                {/* Map Background - Image of Regina */}
+                {/* Map Background - Service area city map */}
                 <div className="absolute inset-0">
                     <img
-                        src="/regina_map_bg.png"
-                        alt="Map of Regina"
+                        src="/city_map_bg.png"
+                        alt="Map of the Spinr service area"
                         className="w-full h-full object-cover"
                     />
                 </div>

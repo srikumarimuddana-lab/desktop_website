@@ -114,7 +114,7 @@ let demoFaqs = [
   {
     id: '1',
     question: 'What is Spinr?',
-    answer: "Spinr is Saskatchewan's own rideshare platform. We offer 0% commission for drivers and a flat $1 fee for riders - making ridesharing fair for everyone.",
+    answer: "Spinr is Canada's own rideshare platform, 100% Canadian owned and operated. We offer 0% commission for drivers and a flat $1 fee for riders - making ridesharing fair for everyone.",
     category: 'general',
     tags: ['about', 'getting-started'],
     created_at: new Date().toISOString()
@@ -122,7 +122,7 @@ let demoFaqs = [
   {
     id: '2',
     question: 'Where is Spinr available?',
-    answer: 'Spinr is currently available in Regina and Saskatoon, Saskatchewan. We plan to expand to more communities soon.',
+    answer: 'Spinr is currently available in Saskatoon, Saskatchewan. We plan to expand to more communities soon.',
     category: 'general',
     tags: ['locations', 'availability'],
     created_at: new Date().toISOString()
@@ -221,9 +221,9 @@ async function handleRoute(request, { params }) {
       const corePages = [
         {
           path: '/',
-          title: "Spinr - 0% Commission Rideshare in Saskatchewan",
-          description: "Saskatchewan's own rideshare platform. Drivers keep 100% of net fare, riders pay just $1. No surge pricing. Now serving Regina & Saskatoon.",
-          keywords: "rideshare Saskatchewan, 0% commission, Regina rideshare, Saskatoon rideshare, Spinr, taxi alternative",
+          title: "Spinr - 0% Commission Rideshare in Saskatoon",
+          description: "Canada's own rideshare platform. Drivers keep 100% of net fare, riders pay just $1. No surge pricing. Now serving Saskatoon.",
+          keywords: "rideshare Saskatoon, 0% commission, Canadian owned rideshare, Saskatoon rideshare, Spinr, taxi alternative",
           og_image: null,
           canonical: "https://spinr.ca/",
           sitemap_priority: 1.0,
@@ -234,8 +234,8 @@ async function handleRoute(request, { params }) {
             "name": "Spinr",
             "url": "https://spinr.ca",
             "logo": "https://spinr.ca/logo.webp",
-            "description": "Saskatchewan's own rideshare platform with 0% commission for drivers",
-            "areaServed": ["Regina", "Saskatoon", "Saskatchewan"],
+            "description": "Canada's own rideshare platform with 0% commission for drivers",
+            "areaServed": ["Saskatoon", "Saskatchewan"],
             "sameAs": []
           },
           no_index: false
@@ -243,8 +243,8 @@ async function handleRoute(request, { params }) {
         {
           path: '/ride',
           title: "Ride with Spinr - Affordable Local Rides",
-          description: "Get rides in Regina and Saskatoon for just $1 platform fee. No surge pricing, verified local drivers, fair transparent pricing.",
-          keywords: "ride Spinr, cheap rides Saskatchewan, Regina taxi, Saskatoon rides, no surge pricing",
+          description: "Get rides in Saskatoon for just $1 platform fee. No surge pricing, verified local drivers, fair transparent pricing.",
+          keywords: "ride Spinr, cheap rides Saskatoon, Saskatoon taxi, Saskatoon rides, no surge pricing",
           og_image: null,
           canonical: "https://spinr.ca/ride",
           sitemap_priority: 0.9,
@@ -258,7 +258,7 @@ async function handleRoute(request, { params }) {
               "name": "Spinr"
             },
             "description": "Affordable rideshare service with flat $1 platform fee",
-            "areaServed": ["Regina", "Saskatoon"]
+            "areaServed": ["Saskatoon"]
           },
           no_index: false
         },
@@ -266,7 +266,7 @@ async function handleRoute(request, { params }) {
           path: '/drive',
           title: "Drive for Spinr - Keep 100% of Net Fare",
           description: "Become a Spinr driver in Saskatchewan. 0% commission forever, daily payouts, first 6 months free. Keep every dollar you earn.",
-          keywords: "drive Spinr, rideshare driver Saskatchewan, 0% commission driver, Regina driver jobs, Saskatoon driver",
+          keywords: "drive Spinr, rideshare driver Saskatoon, 0% commission driver, Saskatoon driver jobs, Canadian rideshare driver",
           og_image: null,
           canonical: "https://spinr.ca/drive",
           sitemap_priority: 0.9,
@@ -294,9 +294,9 @@ async function handleRoute(request, { params }) {
         },
         {
           path: '/about',
-          title: "About Spinr - Saskatchewan's Rideshare",
-          description: "Learn about Spinr's mission to bring fair, transparent ridesharing to Saskatchewan. Local team, local values, community-driven.",
-          keywords: "about Spinr, Saskatchewan rideshare company, local rideshare, fair rideshare",
+          title: "About Spinr - Canada's Fair Rideshare",
+          description: "Learn about Spinr's mission to bring fair, transparent ridesharing to Canada. Canadian owned and operated, community-driven.",
+          keywords: "about Spinr, Canadian rideshare company, local rideshare, fair rideshare",
           og_image: null,
           canonical: "https://spinr.ca/about",
           sitemap_priority: 0.7,
@@ -307,8 +307,8 @@ async function handleRoute(request, { params }) {
             "mainEntity": {
               "@type": "Organization",
               "name": "Spinr",
-              "foundingLocation": "Saskatchewan, Canada",
-              "description": "Saskatchewan's own rideshare platform"
+              "foundingLocation": "Canada",
+              "description": "Canada's own rideshare platform"
             }
           },
           no_index: false
@@ -316,7 +316,7 @@ async function handleRoute(request, { params }) {
         {
           path: '/support',
           title: "Spinr Support & FAQs",
-          description: "Get help with Spinr. Find answers to common questions about riding and driving. Local Saskatchewan support team.",
+          description: "Get help with Spinr. Find answers to common questions about riding and driving. Canadian support team, based in Saskatchewan.",
           keywords: "Spinr help, Spinr support, rideshare FAQ, contact Spinr",
           og_image: null,
           canonical: "https://spinr.ca/support",

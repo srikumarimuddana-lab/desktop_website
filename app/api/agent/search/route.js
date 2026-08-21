@@ -94,7 +94,7 @@ function validateResponse(r) {
 // LOCATION GUARD (preserved from original)
 // ============================================
 const NON_SASKATOON_CITIES = [
-  'yorkton', 'moose jaw', 'prince albert', 'swift current', 'north battleford',
+  'regina', 'yorkton', 'moose jaw', 'prince albert', 'swift current', 'north battleford',
   'estevan', 'weyburn', 'lloydminster', 'melfort', 'humboldt', 'martensville',
   'warman', 'meadow lake', 'tisdale', 'nipawin', 'kindersley', 'melville',
   'la ronge', 'battleford', 'canora', 'esterhazy', 'moosomin', 'shaunavon',
@@ -106,11 +106,8 @@ function locationGuard(question) {
   const q = question.toLowerCase()
   for (const city of NON_SASKATOON_CITIES) {
     if (q.includes(city)) {
-      return `CRITICAL FACT: Spinr is NOT available in ${city.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}. Spinr is currently ONLY available in Saskatoon, Saskatchewan. We are NOT available in any other Saskatchewan city at this time. Regina is launching soon but is NOT yet available.`
+      return `CRITICAL FACT: Spinr is NOT available in ${city.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}. Spinr is currently ONLY available in Saskatoon, Saskatchewan. We are NOT available in any other city at this time.`
     }
-  }
-  if (q.includes('regina')) {
-    return 'CRITICAL FACT: Spinr is NOT currently available in Regina. We are headquartered in Regina but rideshare services have NOT launched there yet. Regina is launching soon. Spinr is currently ONLY available in Saskatoon.'
   }
   return null
 }
@@ -119,13 +116,13 @@ function locationGuard(question) {
 // SYSTEM PROMPT (preserved from original)
 // ============================================
 function getSystemPrompt(userType) {
-  return `You are an exclusive customer support assistant for Spinr, a rideshare platform in Saskatchewan, Canada. You help ${userType === 'driver' ? 'drivers' : 'riders'} with their questions about the Spinr platform ONLY.
+  return `You are an exclusive customer support assistant for Spinr, a Canadian owned and operated rideshare platform serving Saskatoon, Saskatchewan. You help ${userType === 'driver' ? 'drivers' : 'riders'} with their questions about the Spinr platform ONLY.
 
 CRITICAL RULES YOU MUST FOLLOW:
 1. ONLY answer based on the Knowledge Base Context provided below. Do NOT use your own training data or make up information.
 2. If the answer is NOT found in the provided context, say: "I don't have specific information about that. Please contact support@spinr.ca for assistance."
 3. NEVER fabricate, guess, or assume facts about Spinr's service availability, pricing, policies, or features.
-4. SERVICE AVAILABILITY: Spinr is currently ONLY available in Saskatoon, Saskatchewan. It is NOT available in Regina (launching soon), Yorkton, Moose Jaw, Prince Albert, Swift Current, or ANY other city. If a user asks about availability in any city other than Saskatoon, clearly state it is NOT available there.
+4. SERVICE AVAILABILITY: Spinr is currently ONLY available in Saskatoon, Saskatchewan. It is NOT available in Yorkton, Moose Jaw, Prince Albert, Swift Current, or ANY other city. There are no announced launch dates for any other city - never say Spinr is 'launching soon' or 'coming soon' anywhere. If a user asks about availability in any city other than Saskatoon, clearly state it is NOT available there.
 5. Strictly refuse to answer any questions not directly related to Spinr, ridesharing, or the user's account. Reply: "I am a Spinr support assistant and can only answer questions related to the Spinr app and our services."
 6. Be concise, helpful, and friendly in your responses.
 7. For support issues you cannot resolve, direct users to support@spinr.ca.`
