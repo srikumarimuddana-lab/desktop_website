@@ -3,7 +3,10 @@ import { Anton, Instrument_Serif } from 'next/font/google'
 import FareCalc from './FareCalc'
 import HowItWorks from './HowItWorks'
 import AiChat from './AiChat'
-import { Reveal, CountUp, Marquee, Tilt } from './Reveal'
+import {
+  Reveal, CountUp, Marquee, Tilt,
+  SplitText, ScrollProgress, StickyCta, RevealFooter,
+} from './Reveal'
 
 /*
  * DESIGN SAMPLE — /preview
@@ -107,213 +110,222 @@ export default function PreviewPage() {
   return (
     <main className={`sp ${display.variable} ${editorial.variable}`}>
       <style>{CSS}</style>
+      <ScrollProgress />
 
-      {/* ── Floating pill nav ─────────────────────────────── */}
-      <nav className="sp-nav">
-        <a href="#top" className="sp-nav-logo" aria-label="Spinr home">
-          <Image src="/logo.webp" alt="Spinr" width={92} height={30} priority />
-        </a>
-        <div className="sp-nav-links">
-          <a href="#why">Why Spinr</a>
-          <a href="#how">How it works</a>
-          <a href="#math">The math</a>
-        </div>
-        <div className="sp-nav-cta">
-          <a className="sp-btn-ghost" href="#drive">Drive</a>
-          <a className="sp-btn" href="#get">Get Spinr</a>
-        </div>
-      </nav>
+      <div className="sp-stage">
+        {/* ── Floating pill nav ─────────────────────────────── */}
+        <nav className="sp-nav">
+          <a href="#top" className="sp-nav-logo" aria-label="Spinr home">
+            <Image src="/logo.webp" alt="Spinr" width={92} height={30} priority />
+          </a>
+          <div className="sp-nav-links">
+            <a href="#why">Why Spinr</a>
+            <a href="#how">How it works</a>
+            <a href="#math">The math</a>
+          </div>
+          <div className="sp-nav-cta">
+            <a className="sp-btn-ghost" href="#drive">Drive</a>
+            <a className="sp-btn" href="#get">Get Spinr</a>
+          </div>
+        </nav>
 
-      {/* ── Hero ──────────────────────────────────────────── */}
-      <header className="sp-hero" id="top">
-        <div className="sp-hero-bg">
-          <Image
-            src="/happy_rider.png"
-            alt="A Spinr rider"
-            fill
-            priority
-            sizes="100vw"
-            style={{ objectFit: 'cover', objectPosition: 'center 35%' }}
-          />
-        </div>
-        <div className="sp-hero-scrim" />
+        {/* ── Hero ──────────────────────────────────────────── */}
+        <header className="sp-hero" id="top">
+          <div className="sp-hero-bg">
+            <Image
+              src="/happy_rider.png"
+              alt="A Spinr rider"
+              fill
+              priority
+              sizes="100vw"
+              style={{ objectFit: 'cover', objectPosition: 'center 35%' }}
+            />
+          </div>
+          <div className="sp-hero-scrim" />
 
-        <div className="sp-hero-copy">
-          <h1 className="sp-display sp-hero-h">
-            Every fare,
-            <br />
-            <span className="sp-hero-hl">straight to the driver.</span>
-          </h1>
-          <a className="sp-btn sp-hero-cta" href="#get">Get Spinr</a>
-        </div>
+          <div className="sp-hero-copy">
+            <h1 className="sp-display sp-hero-h">
+              <SplitText text="Every fare," start={120} />
+              <br />
+              <SplitText as="span" className="sp-hero-hl" text="straight to the driver." start={330} />
+            </h1>
+            <a className="sp-btn sp-hero-cta sp-ap" style={{ '--ap-delay': '900ms', '--ap-y': '30px' }} href="#get">
+              Get Spinr
+            </a>
+          </div>
 
-        {/* floating receipt chips */}
-        <div className="sp-chips" aria-hidden="true">
-          <div className="sp-chip sp-chip-fare">
-            <span className="sp-chip-k">This trip</span>
-            <div className="sp-chip-rows">
-              <div><span>Fare</span><b>$14.20</b></div>
-              <div><span>Platform fee</span><b>$1.00</b></div>
-              <div><span>Surge</span><b>None</b></div>
+          {/* floating receipt chips */}
+          <div className="sp-chips" aria-hidden="true">
+            <div className="sp-chip sp-chip-fare sp-ap" style={{ '--ap-delay': '1040ms', '--ap-y': '44px', '--ap-r': '-4deg' }}>
+              <span className="sp-chip-k">This trip</span>
+              <div className="sp-chip-rows">
+                <div><span>Fare</span><b>$14.20</b></div>
+                <div><span>Platform fee</span><b>$1.00</b></div>
+                <div><span>Surge</span><b>None</b></div>
+              </div>
+              <div className="sp-chip-total"><span>Total</span><b>$15.20</b></div>
             </div>
-            <div className="sp-chip-total"><span>Total</span><b>$15.20</b></div>
+            <div className="sp-chip sp-chip-keep sp-ap" style={{ '--ap-delay': '1220ms', '--ap-y': '44px', '--ap-r': '5deg' }}>
+              <span className="sp-chip-k">Driver keeps</span>
+              <b className="sp-chip-big">$14.20</b>
+              <span className="sp-chip-sub">100% of net fare</span>
+            </div>
           </div>
-          <div className="sp-chip sp-chip-keep">
-            <span className="sp-chip-k">Driver keeps</span>
-            <b className="sp-chip-big">$14.20</b>
-            <span className="sp-chip-sub">100% of net fare</span>
-          </div>
-        </div>
-      </header>
+        </header>
 
-      {/* ── Trust band ────────────────────────────────────── */}
-      <section className="sp-band">
-        <div className="sp-wrap sp-band-in">
-          {STATS.map((s, i) => (
-            <Reveal className="sp-stat" key={s.l} delay={i * 90}>
-              <b className="sp-display">
-                <CountUp to={s.to} prefix={s.prefix} suffix={s.suffix} decimals={s.decimals || 0} />
-              </b>
-              <span>{s.l}</span>
-            </Reveal>
-          ))}
-          <span className="sp-band-lbl">verified by</span>
-          <div className="sp-band-names">
-            <i>SGI</i><i>RCMP record check</i><i>Vulnerable sector check</i>
-          </div>
-        </div>
-      </section>
-
-      {/* ── ticker ────────────────────────────────────────── */}
-      <Marquee items={['0% commission', 'flat $1 fee', 'no surge, ever', '100% Canadian owned and operated', 'Saskatoon']} />
-
-      {/* ── Why Spinr — sticky stacking cards ─────────────── */}
-      <section className="sp-sec" id="why">
-        <div className="sp-wrap">
-          <Reveal as="h2" className="sp-display sp-h2">
-            Why ride with <span className="sp-accent">Spinr.</span>
-          </Reveal>
-          <div className="sp-roll">
-            {WHY.map((c, i) => (
-              <article
-                key={c.t}
-                className="sp-rcard"
-                style={{ '--i': i, '--pc': c.bg, '--tc': c.ink, '--bd': c.border }}
-              >
-                <div className="sp-rcard-copy">
-                  <span className="sp-rcard-n sp-display">{String(i + 1).padStart(2, '0')}</span>
-                  <h3 className="sp-display sp-rcard-h">{c.t}</h3>
-                  <p className="sp-rcard-p">{c.p}</p>
-                </div>
-                <div className="sp-rcard-art">
-                  <CardArt kind={c.art} />
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── How it works — scroll-driven ─────────────────── */}
-      <HowItWorks />
-
-      {/* ── AI assistant ──────────────────────────────────── */}
-      <AiChat />
-
-
-      {/* ── The math / calculator ─────────────────────────── */}
-      <section className="sp-sec sp-calc" id="math">
-        <div className="sp-wrap">
-          <FareCalc />
-        </div>
-      </section>
-
-      {/* ── Drivers ───────────────────────────────────────── */}
-      <section className="sp-sec sp-drive" id="drive">
-        <div className="sp-wrap sp-drive-g">
-          <div className="sp-drive-art">
-            <Image src="/driver_feature.png" alt="A Spinr driver" width={900} height={700} sizes="(max-width: 900px) 90vw, 520px" />
-          </div>
-          <div>
-            <span className="sp-kick">For drivers</span>
-            <h2 className="sp-display sp-h2">Keep every dollar you earn.</h2>
-            <ul className="sp-ticks">
-              <li>0% commission — permanently, not as a promotion</li>
-              <li>Set your own schedule, work when you want</li>
-              <li>See the fare before you accept the trip</li>
-            </ul>
-            <a className="sp-btn" href="#get">Start driving</a>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FAQ ───────────────────────────────────────────── */}
-      <section className="sp-sec" id="faq">
-        <div className="sp-wrap sp-faqwrap">
-          <div className="sp-faq-head">
-            <h2 className="sp-display sp-faq-h">FAQ</h2>
-            <span className="sp-faq-arrow" aria-hidden="true">↓</span>
-          </div>
-          <div className="sp-faq">
-            {FAQ.map(([q, a], i) => (
-              <Reveal as="details" key={q} delay={i * 60}>
-                <summary>
-                  <span className="sp-display">{q}</span>
-                  <span className="sp-faq-ic" aria-hidden="true" />
-                </summary>
-                <div className="sp-faq-a">{a}</div>
+        {/* ── Trust band ────────────────────────────────────── */}
+        <section className="sp-band">
+          <div className="sp-wrap sp-band-in">
+            {STATS.map((s, i) => (
+              <Reveal className="sp-stat" key={s.l} delay={i * 90}>
+                <b className="sp-display">
+                  <CountUp to={s.to} prefix={s.prefix} suffix={s.suffix} decimals={s.decimals || 0} />
+                </b>
+                <span>{s.l}</span>
               </Reveal>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Final CTA ─────────────────────────────────────── */}
-      <section className="sp-sec sp-final" id="get">
-        <div className="sp-wrap sp-final-in">
-          <div>
-            <h2 className="sp-display sp-final-h">
-              Ridesharing that keeps its
-              <br />hands out of the fare.
-            </h2>
-            <p className="sp-final-p">
-              Available in Saskatoon. <span className="sp-editorial">100% Canadian owned and operated.</span>
-            </p>
-            <div className="sp-final-btns">
-              <span className="sp-btn">App Store</span>
-              <span className="sp-btn-ghost sp-btn-ghost-dark">Google Play</span>
+            <span className="sp-band-lbl">verified by</span>
+            <div className="sp-band-names">
+              <i>SGI</i><i>RCMP record check</i><i>Vulnerable sector check</i>
             </div>
           </div>
-          <Tilt className="sp-qr" max={5}>
-            <Image src="/spinr_qr_code.png" alt="Scan to download Spinr" width={150} height={150} />
-          </Tilt>
-        </div>
-      </section>
+        </section>
+
+        {/* ── ticker ────────────────────────────────────────── */}
+        <Marquee items={['0% commission', 'flat $1 fee', 'no surge, ever', '100% Canadian owned and operated', 'Saskatoon']} />
+
+        {/* ── Why Spinr — sticky stacking cards ─────────────── */}
+        <section className="sp-sec" id="why">
+          <div className="sp-wrap">
+            <h2 className="sp-display sp-h2">
+              <SplitText text="Why ride with" />{' '}
+              <SplitText as="span" className="sp-accent" text="Spinr." start={230} />
+            </h2>
+            <div className="sp-roll">
+              {WHY.map((c, i) => (
+                <article
+                  key={c.t}
+                  className="sp-rcard"
+                  style={{ '--i': i, '--pc': c.bg, '--tc': c.ink, '--bd': c.border }}
+                >
+                  <div className="sp-rcard-copy">
+                    <span className="sp-rcard-n sp-display">{String(i + 1).padStart(2, '0')}</span>
+                    <h3 className="sp-display sp-rcard-h">{c.t}</h3>
+                    <p className="sp-rcard-p">{c.p}</p>
+                  </div>
+                  <div className="sp-rcard-art">
+                    <CardArt kind={c.art} />
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── How it works — scroll-driven ─────────────────── */}
+        <HowItWorks />
+
+        {/* ── AI assistant ──────────────────────────────────── */}
+        <AiChat />
+
+
+        {/* ── The math / calculator ─────────────────────────── */}
+        <section className="sp-sec sp-calc" id="math">
+          <div className="sp-wrap">
+            <FareCalc />
+          </div>
+        </section>
+
+        {/* ── Drivers ───────────────────────────────────────── */}
+        <section className="sp-sec sp-drive" id="drive">
+          <div className="sp-wrap sp-drive-g">
+            <div className="sp-drive-art">
+              <Image src="/driver_feature.png" alt="A Spinr driver" width={900} height={700} sizes="(max-width: 900px) 90vw, 520px" />
+            </div>
+            <div>
+              <span className="sp-kick">For drivers</span>
+              <h2 className="sp-display sp-h2">Keep every dollar you earn.</h2>
+              <ul className="sp-ticks">
+                <li>0% commission — permanently, not as a promotion</li>
+                <li>Set your own schedule, work when you want</li>
+                <li>See the fare before you accept the trip</li>
+              </ul>
+              <a className="sp-btn" href="#get">Start driving</a>
+            </div>
+          </div>
+        </section>
+
+        {/* ── FAQ ───────────────────────────────────────────── */}
+        <section className="sp-sec" id="faq">
+          <div className="sp-wrap sp-faqwrap">
+            <div className="sp-faq-head">
+              <h2 className="sp-display sp-faq-h">FAQ</h2>
+              <span className="sp-faq-arrow" aria-hidden="true">↓</span>
+            </div>
+            <div className="sp-faq">
+              {FAQ.map(([q, a], i) => (
+                <Reveal as="details" key={q} delay={i * 60}>
+                  <summary>
+                    <span className="sp-display">{q}</span>
+                    <span className="sp-faq-ic" aria-hidden="true" />
+                  </summary>
+                  <div className="sp-faq-a">{a}</div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Final CTA ─────────────────────────────────────── */}
+        <section className="sp-sec sp-final" id="get">
+          <div className="sp-wrap sp-final-in">
+            <div>
+              <h2 className="sp-display sp-final-h">
+                Ridesharing that keeps its
+                <br />hands out of the fare.
+              </h2>
+              <p className="sp-final-p">
+                Available in Saskatoon. <span className="sp-editorial">100% Canadian owned and operated.</span>
+              </p>
+              <div className="sp-final-btns">
+                <span className="sp-btn">App Store</span>
+                <span className="sp-btn-ghost sp-btn-ghost-dark">Google Play</span>
+              </div>
+            </div>
+            <Tilt className="sp-qr" max={5}>
+              <Image src="/spinr_qr_code.png" alt="Scan to download Spinr" width={150} height={150} />
+            </Tilt>
+          </div>
+        </section>
+
+      </div>
 
       {/* ── Footer ────────────────────────────────────────── */}
-      <footer className="sp-foot">
-        <div className="sp-wrap sp-foot-in">
-          <div className="sp-foot-lead">
-            <Image src="/logo.webp" alt="Spinr" width={120} height={38} className="sp-foot-logo" />
-            <p className="sp-display sp-foot-lock">Fair for drivers.</p>
-            <p>Canada&rsquo;s own rideshare. Serving Saskatoon.</p>
+      <RevealFooter>
+        <footer className="sp-foot">
+          <div className="sp-wrap sp-foot-in">
+            <div className="sp-foot-lead">
+              <Image src="/logo.webp" alt="Spinr" width={120} height={38} className="sp-foot-logo" />
+              <p className="sp-display sp-foot-lock">Fair for drivers.</p>
+              <p>Canada&rsquo;s own rideshare. Serving Saskatoon.</p>
+            </div>
+            <div>
+              <h4>Riders</h4>
+              <nav><a href="#how">How it works</a><a href="#math">The math</a><a href="#faq">FAQ</a></nav>
+            </div>
+            <div>
+              <h4>Drivers</h4>
+              <nav><a href="#drive">Start driving</a><a href="#drive">Requirements</a></nav>
+            </div>
           </div>
-          <div>
-            <h4>Riders</h4>
-            <nav><a href="#how">How it works</a><a href="#math">The math</a><a href="#faq">FAQ</a></nav>
+          <div className="sp-wrap sp-foot-base">
+            <span>Saskatoon, SK &middot; support@spinr.ca</span>
+            <span className="sp-foot-flag">Design sample &middot; /preview &middot; not linked from the live site</span>
           </div>
-          <div>
-            <h4>Drivers</h4>
-            <nav><a href="#drive">Start driving</a><a href="#drive">Requirements</a></nav>
-          </div>
-        </div>
-        <div className="sp-wrap sp-foot-base">
-          <span>Saskatoon, SK &middot; support@spinr.ca</span>
-          <span className="sp-foot-flag">Design sample &middot; /preview &middot; not linked from the live site</span>
-        </div>
-      </footer>
+        </footer>
+      </RevealFooter>
 
-      <a className="sp-sticky" href="#get">Get Spinr</a>
+      <StickyCta />
     </main>
   )
 }
@@ -332,6 +344,7 @@ const CSS = `
   --hard-sm:3px 3px 0 var(--ink);
   --hard-lg:8px 8px 0 var(--ink);
   --snap:cubic-bezier(.34,1.56,.64,1);
+  --spring:cubic-bezier(.2,1.1,.3,1);
   background:#FEFEFE; color:var(--ink);
   font-family:var(--font-inter,system-ui),system-ui,sans-serif;
 }
@@ -341,6 +354,7 @@ const CSS = `
 .sp-editorial{font-family:var(--sp-serif),Georgia,serif;font-style:italic;text-transform:none;letter-spacing:0}
 .sp-wrap{max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,44px)}
 .sp-sec{padding-block:clamp(56px,7vw,104px)}
+.sp-stage [id]{scroll-margin-top:clamp(92px,12vh,120px)}
 .sp-h2{font-size:clamp(30px,5vw,58px);margin:0 0 clamp(24px,3vw,42px);text-wrap:balance}
 .sp-accent{color:var(--red)}
 .sp-kick{display:inline-block;font-family:var(--sp-display),sans-serif;text-transform:uppercase;letter-spacing:.16em;font-size:13px;color:var(--red);margin-bottom:14px}
@@ -640,6 +654,30 @@ const CSS = `
 .sp-rv.in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.sp-rv{opacity:1;transform:none;transition:none}}
 
+/* ── letter-by-letter headline reveal; words stay whole so lines wrap ── */
+.sp-split{display:inline}
+.sp-split-w{display:inline-block;white-space:nowrap}
+.sp-split-c{display:inline-block;transform:translateY(26px);opacity:.001;
+  transition:transform .66s var(--spring) var(--c-delay,0ms),opacity .36s ease var(--c-delay,0ms)}
+.sp-split.in .sp-split-c{transform:none;opacity:1}
+@media(prefers-reduced-motion:reduce){
+  .sp-split-c{transform:none;opacity:1;transition:none}
+}
+
+/* ── on-load entrance ladder: each piece springs in behind the last ── */
+.sp-ap{animation:sp-ap .8s var(--spring) both;animation-delay:var(--ap-delay,0ms)}
+@keyframes sp-ap{
+  from{opacity:.001;transform:translateY(var(--ap-y,60px)) scale(var(--ap-s,1)) rotate(var(--ap-r,0deg))}
+  to{opacity:1;transform:none}
+}
+@media(prefers-reduced-motion:reduce){.sp-ap{animation:none}}
+
+/* ── scroll progress ── */
+.sp-progress{position:fixed;top:0;left:0;right:0;height:7px;z-index:90;
+  background:var(--paper-3);border-bottom:2px solid var(--ink);pointer-events:none}
+.sp-progress i{display:block;height:100%;background:var(--red);transform-origin:0 50%;
+  transform:scaleX(0);transition:transform .08s linear}
+
 /* ── ticker: outlined wood-type, the neobrutalist staple ── */
 .sp-mq{overflow:hidden;background:var(--ink);border-bottom:2px solid var(--ink);padding-block:clamp(8px,1.2vw,14px)}
 .sp-mq-track{display:inline-flex;white-space:nowrap;animation:sp-mq 34s linear infinite;will-change:transform}
@@ -681,7 +719,11 @@ const CSS = `
   background:var(--ink);border-radius:999px;z-index:5}
 .sp-ai-head{display:flex;align-items:center;gap:9px;padding:40px 16px 12px;font-size:13px;font-weight:800;
   color:var(--ink);border-bottom:2px solid var(--ink)}
-.sp-ai-dot{width:9px;height:9px;border-radius:999px;background:#3ADB76;flex:0 0 auto}
+.sp-eyes{width:26px;height:26px;flex:0 0 auto;border-radius:999px;border:2px solid var(--ink);
+  background:var(--sky);display:inline-flex;align-items:center;justify-content:center;gap:3px}
+.sp-eyes i{width:8px;height:9px;border-radius:999px;background:#fff;border:1.5px solid var(--ink);
+  display:grid;place-items:center}
+.sp-eyes b{width:4px;height:4px;border-radius:999px;background:var(--ink);transition:transform .1s linear}
 .sp-ai-thread{flex:1;min-height:0;display:flex;flex-direction:column;gap:9px;padding:14px 13px;overflow:hidden}
 .sp-bub{max-width:88%;border:2px solid var(--ink);border-radius:14px;padding:9px 12px;font-size:12.5px;line-height:1.4;
   opacity:0;transform:translateY(10px) scale(.97);
@@ -706,11 +748,27 @@ const CSS = `
 /* QR sticker rotates with scroll */
 .sp-qr{transition:transform .12s linear}
 
-/* ── sticky mobile CTA ── */
-.sp-sticky{position:fixed;left:50%;bottom:clamp(16px,3.2vh,28px);transform:translateX(-50%);z-index:70;
-  display:inline-flex;align-items:center;background:var(--red);color:#fff;font-family:var(--sp-display),sans-serif;
-  font-size:17px;letter-spacing:.02em;padding:15px 28px;border:2px solid var(--ink);border-radius:999px;
-  box-shadow:4px 4px 0 var(--ink);text-decoration:none}
-.sp-sticky:hover{color:#fff}
-@media(min-width:900px){.sp-sticky{display:none}}
+/* ── docked CTA: rides up out of the page once the hero is behind you,
+      and drops back down when the real CTA arrives ── */
+.sp-dock{position:fixed;left:50%;bottom:calc(clamp(14px,3vh,26px) + var(--dock-lift,0px));z-index:70;
+  display:inline-flex;align-items:center;gap:16px;padding:8px 8px 8px 22px;
+  border:2px solid var(--ink);border-radius:999px;background:var(--paper-50);
+  box-shadow:5px 5px 0 var(--ink);
+  transform:translate(-50%,130px);opacity:0;pointer-events:none;
+  transition:transform .62s var(--spring),opacity .3s ease}
+.sp-dock.up{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+.sp-dock-note{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-5);white-space:nowrap}
+.sp-dock-btn{padding:12px 22px;font-size:14px;box-shadow:-3px 3px 0 var(--ink)}
+@media(max-width:640px){
+  .sp-dock{gap:0;padding:0;border:0;background:transparent;box-shadow:none}
+  .sp-dock-note{display:none}
+  .sp-dock-btn{padding:15px 30px;font-size:16px;box-shadow:4px 4px 0 var(--ink)}
+}
+@media(prefers-reduced-motion:reduce){.sp-dock{transition:none}}
+
+/* ── the page rides over a footer pinned to the bottom of the viewport;
+      RevealFooter drops back to a normal in-flow footer when it can't ── */
+.sp-stage{position:relative;z-index:1;background:#FEFEFE}
+.sp-footlayer.pinned{position:fixed;left:0;right:0;bottom:0;z-index:0}
 `

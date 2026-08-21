@@ -45,6 +45,47 @@ const GROUPS = [
   },
 ]
 
+/* The assistant's eyes follow the pointer. Pure decoration — it sits behind
+ * aria-hidden, only runs on a fine pointer, and holds still under
+ * prefers-reduced-motion. */
+function Eyes() {
+  const ref = useRef(null)
+  const [d, setD] = useState({ x: 0, y: 0 })
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!window.matchMedia('(pointer: fine)').matches) return
+    let frame = 0
+    const onMove = (e) => {
+      if (frame) return
+      frame = requestAnimationFrame(() => {
+        frame = 0
+        const el = ref.current
+        if (!el) return
+        const r = el.getBoundingClientRect()
+        const dx = e.clientX - (r.left + r.width / 2)
+        const dy = e.clientY - (r.top + r.height / 2)
+        const dist = Math.hypot(dx, dy) || 1
+        const reach = Math.min(1, dist / 240)
+        setD({ x: (dx / dist) * 2.4 * reach, y: (dy / dist) * 2 * reach })
+      })
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    return () => {
+      if (frame) cancelAnimationFrame(frame)
+      window.removeEventListener('pointermove', onMove)
+    }
+  }, [])
+
+  const pupil = { transform: `translate(${d.x.toFixed(2)}px, ${d.y.toFixed(2)}px)` }
+  return (
+    <span ref={ref} className="sp-eyes" aria-hidden="true">
+      <i><b style={pupil} /></i>
+      <i><b style={pupil} /></i>
+    </span>
+  )
+}
+
 export default function AiChat() {
   const ref = useRef(null)
   const [shown, setShown] = useState(0)
@@ -107,7 +148,7 @@ export default function AiChat() {
           <div className="sp-ai-frame">
             <span className="sp-ai-notch" aria-hidden="true" />
             <div className="sp-ai-head">
-              <span className="sp-ai-dot" aria-hidden="true" />
+              <Eyes />
               Spinr Assistant
             </div>
             <div className="sp-ai-thread">
