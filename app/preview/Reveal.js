@@ -260,13 +260,14 @@ export function StickyCta({ href = '#get' }) {
   )
 }
 
-/** Replaces the system pointer with a dot and a ring that trails it, the ring
- *  swelling over anything clickable. Desktop pointers only, and skipped
- *  entirely under prefers-reduced-motion — hiding the real cursor is not
- *  something to do to someone who has asked for less movement. */
+/** Replaces the system pointer with a drawn arrow, which tilts and swells
+ *  over anything clickable and squashes on the press. It tracks exactly — a
+ *  pointer that lags behind your hand reads as broken, however nice it looks.
+ *  Desktop pointers only, and skipped entirely under prefers-reduced-motion:
+ *  hiding someone's real cursor is not a thing to do to a visitor who has
+ *  asked for less movement. */
 export function Cursor() {
-  const dotRef = useRef(null)
-  const ringRef = useRef(null)
+  const arrowRef = useRef(null)
   const [on, setOn] = useState(false)
 
   useEffect(() => {
@@ -278,41 +279,28 @@ export function Cursor() {
     root.classList.add('sp-cursor-on')
     setOn(true)
 
-    let x = window.innerWidth / 2
-    let y = window.innerHeight / 2
-    let rx = x
-    let ry = y
-    let raf = 0
     let seen = false
 
     const onMove = (e) => {
-      x = e.clientX
-      y = e.clientY
-      if (!seen) { seen = true; rx = x; ry = y; root.classList.add('sp-cursor-live') }
-      if (dotRef.current) dotRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`
+      const el = arrowRef.current
+      if (!el) return
+      if (!seen) { seen = true; root.classList.add('sp-cursor-live') }
+      el.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`
       const hot = e.target instanceof Element
         ? e.target.closest('a, button, summary, [role="button"], input, .sp-k')
         : null
-      if (ringRef.current) ringRef.current.classList.toggle('hot', Boolean(hot))
+      el.classList.toggle('hot', Boolean(hot))
     }
-    const loop = () => {
-      rx += (x - rx) * 0.19
-      ry += (y - ry) * 0.19
-      if (ringRef.current) ringRef.current.style.transform = `translate3d(${rx}px, ${ry}px, 0)`
-      raf = requestAnimationFrame(loop)
-    }
-    const press = (v) => () => ringRef.current && ringRef.current.classList.toggle('down', v)
+    const press = (v) => () => arrowRef.current && arrowRef.current.classList.toggle('down', v)
     const leave = () => root.classList.remove('sp-cursor-live')
     const enter = () => seen && root.classList.add('sp-cursor-live')
 
-    raf = requestAnimationFrame(loop)
     window.addEventListener('pointermove', onMove, { passive: true })
     window.addEventListener('pointerdown', press(true))
     window.addEventListener('pointerup', press(false))
     document.addEventListener('pointerleave', leave)
     document.addEventListener('pointerenter', enter)
     return () => {
-      cancelAnimationFrame(raf)
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerdown', press(true))
       window.removeEventListener('pointerup', press(false))
@@ -325,8 +313,14 @@ export function Cursor() {
   if (!on) return null
   return (
     <div className="sp-cur" aria-hidden="true">
-      <i ref={ringRef} className="sp-cur-ring"><b /></i>
-      <i ref={dotRef} className="sp-cur-dot" />
+      <i ref={arrowRef} className="sp-cur-arrow">
+        <svg viewBox="0 0 26 30" width="26" height="30">
+          <path
+            d="M4 2.8 L21.4 14.2 L13.1 15.9 L9.4 23.6 Z"
+            fill="#fff" stroke="var(--ink)" strokeWidth="2.6" strokeLinejoin="round"
+          />
+        </svg>
+      </i>
     </div>
   )
 }

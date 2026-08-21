@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import { Anton, Instrument_Serif } from 'next/font/google'
+import { APP_URLS } from '@/lib/app-links'
 import FareCalc from './FareCalc'
+import PhoneFan from './PhoneFan'
 import HowItWorks from './HowItWorks'
 import AiChat from './AiChat'
 import {
@@ -133,46 +135,28 @@ export default function PreviewPage() {
 
         {/* ── Hero ──────────────────────────────────────────── */}
         <header className="sp-hero" id="top">
-          <div className="sp-hero-bg">
-            <Image
-              src="/happy_rider.png"
-              alt="A Spinr rider"
-              fill
-              priority
-              sizes="100vw"
-              style={{ objectFit: 'cover', objectPosition: 'center 35%' }}
-            />
-          </div>
-          <div className="sp-hero-scrim" />
+          <span className="sp-hero-shelf" aria-hidden="true" />
 
           <div className="sp-hero-copy">
+            <span className="sp-hero-badge sp-ap" style={{ '--ap-delay': '620ms', '--ap-y': '18px' }}>
+              100% Canadian owned and operated &middot; Saskatoon
+            </span>
             <h1 className="sp-display sp-hero-h">
               <SplitText text="Every fare," start={120} />
               <br />
-              <SplitText as="span" className="sp-hero-hl" text="straight to the driver." start={330} />
+              <SplitText as="span" className="sp-hero-hl" text="straight to the driver." start={300} />
             </h1>
-            <a className="sp-btn sp-hero-cta sp-ap" style={{ '--ap-delay': '900ms', '--ap-y': '30px' }} href="#get">
-              Get Spinr
-            </a>
+            <div className="sp-hero-btns sp-ap" style={{ '--ap-delay': '740ms', '--ap-y': '26px' }}>
+              <a className="sp-btn" href={APP_URLS.rider.ios} target="_blank" rel="noopener noreferrer">
+                App Store
+              </a>
+              <a className="sp-btn-ghost" href={APP_URLS.rider.android} target="_blank" rel="noopener noreferrer">
+                Google Play
+              </a>
+            </div>
           </div>
 
-          {/* floating receipt chips */}
-          <div className="sp-chips" aria-hidden="true">
-            <div className="sp-chip sp-chip-fare sp-ap" style={{ '--ap-delay': '1040ms', '--ap-y': '44px', '--ap-r': '-4deg' }}>
-              <span className="sp-chip-k">This trip</span>
-              <div className="sp-chip-rows">
-                <div><span>Fare</span><b>$14.20</b></div>
-                <div><span>Platform fee</span><b>$1.00</b></div>
-                <div><span>Surge</span><b>None</b></div>
-              </div>
-              <div className="sp-chip-total"><span>Total</span><b>$15.20</b></div>
-            </div>
-            <div className="sp-chip sp-chip-keep sp-ap" style={{ '--ap-delay': '1220ms', '--ap-y': '44px', '--ap-r': '5deg' }}>
-              <span className="sp-chip-k">Driver keeps</span>
-              <b className="sp-chip-big">$14.20</b>
-              <span className="sp-chip-sub">100% of net fare</span>
-            </div>
-          </div>
+          <PhoneFan />
         </header>
 
         {/* ── Trust band ────────────────────────────────────── */}
@@ -396,30 +380,96 @@ const CSS = `
 @media(min-width:900px){.sp-nav-links{display:flex}.sp-nav-cta{margin-left:0}}
 @media(max-width:600px){.sp-nav-cta .sp-btn-ghost{display:none}}
 
-/* ── hero ── */
+/* ── hero: type on mint, a yellow shelf under it, phones straddling both ── */
 .sp-hero{position:relative;margin:clamp(12px,2vw,28px);border-radius:clamp(24px,2.8vw,40px);
-  overflow:hidden;border:2px solid var(--ink);min-height:min(84vh,760px);
-  display:flex;align-items:flex-end;margin-top:calc(-1 * clamp(52px,7vw,74px));padding-top:clamp(120px,16vh,180px)}
-.sp-hero-bg{position:absolute;inset:0}
-.sp-hero-scrim{position:absolute;inset:0;background:linear-gradient(0deg,rgba(11,11,11,.80) 0%,rgba(11,11,11,.46) 32%,rgba(11,11,11,.12) 60%,transparent 84%),linear-gradient(90deg,rgba(11,11,11,.62) 0%,rgba(11,11,11,.30) 38%,transparent 66%)}
-.sp-hero-copy{position:relative;z-index:2;padding:clamp(24px,4vw,56px);max-width:min(720px,86%)}
-.sp-hero-h{font-size:clamp(38px,6.4vw,88px);color:var(--paper-50);margin:0 0 clamp(22px,3vw,32px);text-shadow:0 2px 20px rgba(11,11,11,.5)}
-.sp-hero-hl{color:var(--sun)}
-.sp-hero-cta{font-size:clamp(15px,1.3vw,17px)}
-.sp-chips{position:absolute;right:clamp(16px,3vw,40px);top:clamp(90px,14vh,150px);z-index:3;display:none;flex-direction:column;gap:16px;align-items:flex-end}
-@media(min-width:1000px){.sp-chips{display:flex}}
-.sp-chip{background:rgba(255,255,255,.96);border:2px solid var(--ink);border-radius:16px;
-  box-shadow:-5px 5px 0 var(--ink);padding:14px 17px;backdrop-filter:blur(6px)}
-.sp-chip-k{display:block;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-5)}
-.sp-chip-fare{min-width:250px}
-.sp-chip-rows{margin-top:9px;display:flex;flex-direction:column;gap:6px}
-.sp-chip-rows div{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--ink-6)}
-.sp-chip-rows b{margin-left:auto;font-family:var(--sp-display),sans-serif;font-weight:400;font-size:15px;color:var(--ink)}
-.sp-chip-total{display:flex;align-items:center;margin-top:9px;padding-top:8px;border-top:1.5px dashed rgba(11,11,11,.28);font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-5)}
-.sp-chip-total b{margin-left:auto;font-family:var(--sp-display),sans-serif;font-weight:400;font-size:20px;color:var(--ink);letter-spacing:0}
-.sp-chip-keep{background:var(--sun)}
-.sp-chip-big{display:block;font-family:var(--sp-display),sans-serif;font-size:34px;line-height:.9;margin-top:6px}
-.sp-chip-sub{display:block;font-size:11.5px;font-weight:700;margin-top:5px}
+  overflow:hidden;border:2px solid var(--ink);background:var(--sky);
+  margin-top:calc(-1 * clamp(52px,7vw,74px));
+  padding:clamp(108px,15vh,166px) clamp(18px,4vw,44px) 0;text-align:center}
+.sp-hero-shelf{position:absolute;left:-2px;right:-2px;bottom:-2px;height:clamp(132px,19vw,250px);
+  background:#FFF6AE;border:2px solid var(--ink);border-bottom:0;
+  border-radius:clamp(26px,3vw,44px) clamp(26px,3vw,44px) 0 0}
+.sp-hero-copy{position:relative;z-index:2;max-width:1020px;margin:0 auto}
+.sp-hero-badge{display:inline-flex;align-items:center;background:#fff;border:2px solid var(--ink);
+  border-radius:999px;padding:8px 17px;font-size:11.5px;font-weight:800;letter-spacing:.06em;
+  text-transform:uppercase;box-shadow:var(--hard-sm)}
+.sp-hero-h{font-size:clamp(40px,8vw,102px);color:var(--ink);text-wrap:balance;
+  margin:clamp(16px,2.4vw,26px) 0 clamp(20px,3vw,30px)}
+.sp-hero-hl{color:var(--red)}
+.sp-hero-btns{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
+
+/* ── the phone fan ── */
+.sp-fan{position:relative;z-index:3;display:flex;justify-content:center;
+  height:clamp(292px,36vw,486px);margin-top:clamp(20px,3.4vw,42px)}
+.sp-fan-p{position:absolute;top:0;width:clamp(146px,15.5vw,214px);aspect-ratio:9/19;
+  border:3px solid var(--ink);border-radius:clamp(18px,2vw,28px);background:var(--paper-50);
+  box-shadow:6px 6px 0 var(--ink);overflow:hidden;transform-origin:50% 92%;
+  display:flex;flex-direction:column;
+  opacity:0;transition:opacity .55s ease var(--ap-delay,0ms)}
+.sp-fan.ready .sp-fan-p{opacity:1}
+.sp-fan-notch{position:absolute;top:7px;left:50%;margin-left:-17%;width:34%;height:8px;
+  background:var(--ink);border-radius:999px;z-index:5}
+.sp-fan-tag{position:absolute;z-index:6;right:clamp(2px,4vw,88px);top:clamp(-6px,1vw,18px);
+  background:var(--sun);color:var(--ink);border:2px solid var(--ink);
+  border-radius:999px;padding:9px 16px;font-size:15px;letter-spacing:.03em;box-shadow:4px 4px 0 var(--ink);
+  opacity:0;transform:rotate(-9deg) scale(.55);
+  transition:opacity .4s ease 1120ms,transform .5s var(--spring) 1120ms}
+.sp-fan.ready .sp-fan-tag{opacity:1;transform:rotate(-9deg) scale(1)}
+
+/* ── the little screens inside the fan ── */
+.sp-fs{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;padding:22px 9px 10px}
+.sp-fs-hi{margin:0;font-size:12px;letter-spacing:.05em;color:var(--red)}
+.sp-fs-field{display:flex;align-items:center;gap:6px;background:#fff;border:2px solid var(--ink);
+  border-radius:9px;padding:7px 8px;font-size:9.5px;font-weight:700}
+.sp-fs-pin{width:7px;height:7px;border-radius:999px;background:var(--red);flex:0 0 auto}
+.sp-fs-chips{display:flex;gap:5px}
+.sp-fs-chips span{flex:1;text-align:center;background:var(--sun);border:2px solid var(--ink);
+  border-radius:999px;padding:4px 0;font-size:8.5px;font-weight:800}
+.sp-fs-map{flex:1;min-height:34px;border:2px solid var(--ink);border-radius:10px;overflow:hidden}
+.sp-fs-go{text-align:center;background:var(--red);color:#fff;border:2px solid var(--ink);
+  border-radius:999px;padding:7px;font-weight:800;font-size:9.5px}
+.sp-fs-go-ghost{background:#fff;color:var(--ink)}
+.sp-fs-card{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:8px}
+.sp-fs-card-sun{background:var(--sun)}
+.sp-fs-k{font-size:7.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-5)}
+.sp-fs-big{display:block;font-size:22px;line-height:1;margin:3px 0 5px}
+.sp-fs-row{display:flex;align-items:center;font-size:9px;font-weight:600;color:var(--ink-6);padding:2px 0}
+.sp-fs-row b{margin-left:auto;font-family:var(--sp-display),sans-serif;font-weight:400;font-size:10.5px;color:var(--ink)}
+.sp-fs-row-red b{color:var(--red)}
+.sp-fs-tot{display:flex;align-items:center;margin-top:5px;padding-top:5px;
+  border-top:1.5px dashed rgba(11,11,11,.3);font-size:7.5px;font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-5)}
+.sp-fs-tot b{margin-left:auto;font-family:var(--sp-display),sans-serif;font-weight:400;font-size:14px;
+  color:var(--ink);letter-spacing:0}
+.sp-fs-keep{background:var(--sun);border:2px solid var(--ink);border-radius:10px;padding:7px 8px}
+.sp-fs-keep span{display:block;font-size:7.5px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-6)}
+.sp-fs-keep b{display:block;font-size:19px;line-height:1;margin-top:2px}
+.sp-fs-thread{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-end;
+  gap:5px;overflow:hidden}
+.sp-fs-bub{max-width:90%;border:2px solid var(--ink);border-radius:9px;padding:5px 7px;
+  font-size:8.5px;line-height:1.35}
+.sp-fs-bub-you{align-self:flex-end;background:var(--red);color:#fff}
+.sp-fs-bub-ai{align-self:flex-start;background:#fff}
+.sp-fs-typing{display:flex;gap:3px;padding:7px}
+.sp-fs-typing i{width:4px;height:4px;border-radius:999px;background:var(--ink-4);animation:sp-typ 1.1s infinite}
+.sp-fs-typing i:nth-child(2){animation-delay:.18s}
+.sp-fs-typing i:nth-child(3){animation-delay:.36s}
+.sp-fs-input{background:#fff;border:2px solid var(--ink);border-radius:999px;padding:6px 9px;
+  font-size:8.5px;color:var(--ink-4)}
+.sp-fs-toggle{display:flex;align-items:center;gap:6px;background:#D7F5E2;border:2px solid var(--ink);
+  border-radius:999px;padding:6px 9px;font-size:9px;font-weight:800}
+.sp-fs-toggle i{width:9px;height:9px;border-radius:999px;background:#12B76A;
+  border:1.5px solid var(--ink);flex:0 0 auto}
+.sp-fs-bars{display:flex;align-items:flex-end;gap:3px;height:34px;margin-top:6px}
+.sp-fs-bars i{flex:1;background:var(--red);border:1.5px solid var(--ink);border-radius:3px 3px 0 0}
+@media(max-width:700px){
+  /* no room beside the phones down here — the sticker sits above them */
+  .sp-fan-tag{top:-12px;right:4px;font-size:12.5px;padding:7px 12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .sp-fs-typing{display:none}
+  .sp-fan-p,.sp-fan-tag{transition:none}
+}
 
 /* ── trust band ── */
 .sp-band{border-block:2px solid var(--ink);background:var(--paper-50)}
@@ -809,19 +859,19 @@ const CSS = `
 }
 @media(prefers-reduced-motion:reduce){.sp-dock{transition:none}}
 
-/* ── pointer: a dot on the tip, a ring that catches up ── */
+/* ── pointer: a drawn arrow with the tip on the hotspot ── */
 .sp-cursor-on,.sp-cursor-on *{cursor:none !important}
 .sp-cur{position:fixed;inset:0;z-index:200;pointer-events:none;opacity:0;transition:opacity .2s ease}
 .sp-cursor-live .sp-cur{opacity:1}
-.sp-cur i{position:absolute;top:0;left:0;display:block}
-.sp-cur-dot{width:9px;height:9px;margin:-6.5px 0 0 -6.5px;border-radius:999px;
-  background:var(--red);border:2px solid var(--ink)}
-.sp-cur-ring b{display:block;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:999px;
-  border:2px solid var(--ink);
-  transition:transform .22s var(--snap),background .22s ease}
-.sp-cur-ring.hot b{transform:scale(1.55);background:rgba(255,198,11,.34)}
-.sp-cur-ring.down b{transform:scale(.7);background:rgba(220,56,72,.2)}
-.sp-cur-ring.hot.down b{transform:scale(1.2)}
+.sp-cur-arrow{position:absolute;top:0;left:0;display:block;margin:-3px 0 0 -3px}
+.sp-cur-arrow svg{display:block;transform-origin:4px 3px;
+  transition:transform .18s var(--snap)}
+.sp-cur-arrow svg path{transition:fill .18s ease}
+.sp-cur-arrow.hot svg{transform:rotate(-10deg) scale(1.28)}
+.sp-cur-arrow.hot svg path{fill:var(--sun)}
+.sp-cur-arrow.down svg path{fill:var(--red)}
+.sp-cur-arrow.down svg{transform:scale(.82)}
+.sp-cur-arrow.hot.down svg{transform:rotate(-10deg) scale(1.05)}
 
 /* ── the page rides over a footer pinned to the bottom of the viewport;
       RevealFooter drops back to a normal in-flow footer when it can't ── */
