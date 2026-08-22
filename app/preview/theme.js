@@ -1083,8 +1083,20 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 .sp-pass-offer{display:inline-block;background:var(--ink);color:var(--sun);border-radius:999px;
   padding:5px 13px;font-size:12.5px;letter-spacing:.06em;align-self:flex-start}
 .sp-pass-free{font-size:clamp(34px,4.4vw,56px);line-height:1;margin:10px 0 6px}
-.sp-pass-then{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;
-  color:rgba(11,11,11,.72);margin-bottom:9px}
+.sp-pass-tiers{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  max-width:760px;margin-bottom:clamp(30px,4vw,46px)}
+.sp-pass-name{display:block;font-size:15px;letter-spacing:.08em;color:var(--ink-5);margin-bottom:6px}
+.sp-pass-tier{position:relative;background:#fff;border:2px solid var(--ink);border-radius:16px;
+  padding:clamp(18px,2.2vw,24px);box-shadow:var(--hard-sm)}
+.sp-pass-tier.is-intro{background:var(--paper-50);box-shadow:var(--hard);padding-top:clamp(26px,3vw,32px)}
+.sp-pass-badge{position:absolute;top:-13px;left:16px;background:var(--red);color:#fff;
+  border:2px solid var(--ink);border-radius:999px;padding:5px 12px;font-size:12px;letter-spacing:.05em;
+  box-shadow:2px 2px 0 var(--ink)}
+.sp-pass-tier b{display:flex;align-items:baseline;gap:3px;font-size:clamp(30px,3.4vw,42px);line-height:1}
+.sp-pass-tier b i{font-style:normal;font-size:15px;opacity:.7}
+.sp-pass-rides{display:block;margin-top:9px;font-size:13.5px;font-weight:700;color:var(--ink-6)}
+.sp-pass-after{display:block;margin-top:8px;padding-top:8px;border-top:1.5px dashed rgba(11,11,11,.25);
+  font-size:11.5px;font-weight:700;color:var(--ink-5)}
 .sp-pass-note{font-size:12.5px;font-weight:700;color:rgba(11,11,11,.7)}
 /* an unfilled fact, marked so it can never be mistaken for a real number */
 .sp-todo{background:repeating-linear-gradient(45deg,#fff,#fff 5px,#FFE7EA 5px,#FFE7EA 10px);

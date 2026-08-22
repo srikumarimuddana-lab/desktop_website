@@ -21,9 +21,19 @@
 > - **To riders:** "$1 per ride — that is what Spinr takes from a fare."
 >   Do not mention the Pass on rider-facing surfaces; it is not their charge.
 > - **To drivers:** "0% commission — no share of your fare, ever. Access to
->   the app is a Spinr Pass. New drivers get 6 months free."
+>   the app is a monthly Spinr Pass. New drivers get 6 months free."
 > - **Nowhere:** a combined "here is how we make money" reveal, revenue-leg
 >   lists, or corporate accounts as a revenue source.
+>
+> **Spinr Pass tiers** — three monthly plans, separated by rides allowed per
+> day: **Basic $19.99 (introductory)**, **Pro $49.99**, **Ultra [price TBC]**.
+> Still unset: Ultra's price and the rides-a-day limit on all three; these
+> render as `.sp-todo` bracketed slots on `/preview/drive`.
+>
+> **$19.99 must always be labelled an introductory rate** wherever it appears.
+> Advertising a promotional price without saying it is promotional is
+> misleading, and this number reaches drivers through the FAQ and — via
+> `lib/kb-sync.js` → `knowledge_base` — through the AI assistant's answers.
 >
 > **The line that holds:** Spinr never takes a **percentage of the fare**.
 > That is true now and stays true with a Pass, because a Pass is a flat,

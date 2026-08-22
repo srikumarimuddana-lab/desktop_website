@@ -15,25 +15,40 @@ import { useEffect, useRef, useState } from 'react'
  * The bars are drawn to scale from the numbers below, so the shape of the
  * claim is honest even while the price itself is still a placeholder.
  *
- * The 6-month free offer for new drivers is a real, current offer and leads
- * the card. Price and billing period after that are NOT yet set and render as
- * visibly bracketed slots — never invent a number here. The same wording flows
- * into the FAQ and, through lib/kb-sync.js, into the AI assistant's retrieval
- * corpus, so a made-up price would be quoted to drivers as fact.
+ * Pricing: three monthly tiers — Basic, Pro, Ultra — separated by how many
+ * rides a day they allow. New drivers get 6 months free first.
+ *
+ * KNOWN: Basic $19.99 (introductory), Pro $49.99.
+ * NOT KNOWN, rendered as bracketed slots: Ultra's price, and the rides-a-day
+ * limit on all three.
+ *
+ * `introductory: true` renders a visible badge. That label is not decoration —
+ * advertising a promotional price without saying it is promotional is
+ * misleading, and this number also reaches drivers through the FAQ and, via
+ * lib/kb-sync.js, through the AI assistant's answers. Never fill a bracketed
+ * slot with a guess for the same reason.
  *
  * No promo end date is stated, because none was given. Do not add one.
  */
 
 const TYPICAL_COMMISSION = 0.25
+const PASS_STANDARD = 49.99
 
-const WEEKS = [
-  { k: 'A quiet week', gross: 420 },
-  { k: 'A normal week', gross: 1204 },
-  { k: 'A big week', gross: 1860 },
+/* Monthly, to compare like with like against a monthly subscription. */
+const MONTHS = [
+  { k: 'A quiet month', gross: 1800 },
+  { k: 'A steady month', gross: 5200 },
+  { k: 'A big month', gross: 8000 },
+]
+
+const TIERS = [
+  { name: 'Basic', price: '19.99', introductory: true, rides: '[N]' },
+  { name: 'Pro', price: '49.99', introductory: false, rides: '[N]' },
+  { name: 'Ultra', price: null, introductory: false, rides: '[N]' },
 ]
 
 const money = (v) => '$' + v.toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-const MAX_TAKE = Math.max(...WEEKS.map((w) => w.gross * TYPICAL_COMMISSION))
+const MAX_TAKE = Math.max(...MONTHS.map((m) => m.gross * TYPICAL_COMMISSION))
 
 export default function SpinrPass() {
   const ref = useRef(null)
@@ -64,21 +79,37 @@ export default function SpinrPass() {
         <div className="sp-pass-price">
           <span className="sp-pass-offer sp-display">New drivers</span>
           <b className="sp-display sp-pass-free">6 months free</b>
-          <span className="sp-pass-then">
-            then <mark className="sp-todo">[PRICE]</mark> / <mark className="sp-todo">[PERIOD]</mark>
-          </span>
-          <span className="sp-pass-note">Flat either way. The same whether you drive ten trips or a hundred.</span>
+          <span className="sp-pass-note">Then pick a plan. Flat monthly either way — never a share of a fare.</span>
+        </div>
+
+        <div className="sp-pass-tiers">
+          {TIERS.map((t) => (
+            <div className={`sp-pass-tier${t.introductory ? ' is-intro' : ''}`} key={t.name}>
+              {t.introductory && <span className="sp-pass-badge sp-display">Introductory offer</span>}
+              <span className="sp-pass-name sp-display">{t.name}</span>
+              <b className="sp-display">
+                {t.price ? <>${t.price}</> : <mark className="sp-todo">[PRICE]</mark>}
+                <i>/month</i>
+              </b>
+              <span className="sp-pass-rides">
+                Up to <mark className="sp-todo">[N]</mark> rides a day
+              </span>
+              {t.introductory && (
+                <span className="sp-pass-after">Introductory rate &mdash; not the standard price.</span>
+              )}
+            </div>
+          ))}
         </div>
 
         <h3 className="sp-display sp-pass-h3">What a percentage would have cost you</h3>
         <div className={`sp-pass-bars${on ? ' in' : ''}`}>
-          {WEEKS.map((w, i) => {
-            const take = w.gross * TYPICAL_COMMISSION
+          {MONTHS.map((m, i) => {
+            const take = m.gross * TYPICAL_COMMISSION
             return (
-              <div className="sp-pass-row" key={w.k} style={{ '--d': `${i * 120}ms` }}>
+              <div className="sp-pass-row" key={m.k} style={{ '--d': `${i * 120}ms` }}>
                 <div className="sp-pass-row-head">
-                  <span>{w.k}</span>
-                  <b>{money(w.gross)} earned</b>
+                  <span>{m.k}</span>
+                  <b>{money(m.gross)} earned</b>
                 </div>
                 <div className="sp-pass-track">
                   <i className="sp-pass-fill" style={{ '--w': `${(take / MAX_TAKE) * 100}%` }} />
@@ -86,7 +117,7 @@ export default function SpinrPass() {
                 </div>
                 <div className="sp-pass-vs">
                   <span className="sp-pass-flat" />
-                  Spinr Pass: <mark className="sp-todo">[PRICE]</mark>, whatever you earned
+                  Spinr Pass (Pro): ${PASS_STANDARD} &mdash; the same, whatever you earned
                 </div>
               </div>
             )
