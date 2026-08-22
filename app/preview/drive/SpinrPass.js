@@ -19,8 +19,9 @@ import { useEffect, useRef, useState } from 'react'
  * ladder — Part-time and Full-time — separated by how many rides a day they
  * allow. New drivers get 6 months free first.
  *
- * KNOWN: Part-time $19.99 (introductory), Full-time $49.99.
- * NOT KNOWN, rendered as a bracketed slot: the rides-a-day limit on each.
+ * KNOWN: Part-time $19.99 (introductory), 4 rides a day. Full-time $49.99.
+ * NOT KNOWN, rendered as a bracketed slot: Full-time's rides-a-day limit.
+ * Do not write "unlimited" there on a hunch — it is a promise, not a guess.
  *
  * `introductory: true` renders a visible badge. That label is not decoration —
  * advertising a promotional price without saying it is promotional is
@@ -42,8 +43,20 @@ const MONTHS = [
 ]
 
 const TIERS = [
-  { name: 'Part-time', price: '19.99', introductory: true, blurb: 'For driving around a job, school or a shift somewhere else.' },
-  { name: 'Full-time', price: '49.99', introductory: false, blurb: 'For driving as the main thing you do.' },
+  {
+    name: 'Part-time',
+    price: '19.99',
+    introductory: true,
+    rides: '4',
+    blurb: 'For driving around a job, school or a shift somewhere else.',
+  },
+  {
+    name: 'Full-time',
+    price: '49.99',
+    introductory: false,
+    rides: null,
+    blurb: 'For driving as the main thing you do.',
+  },
 ]
 
 const money = (v) => '$' + v.toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
@@ -91,7 +104,7 @@ export default function SpinrPass() {
                 <i>/month</i>
               </b>
               <span className="sp-pass-rides">
-                Up to <mark className="sp-todo">[N]</mark> rides a day
+                Up to {t.rides ? t.rides : <mark className="sp-todo">[N]</mark>} rides a day
               </span>
               <span className="sp-pass-blurb">{t.blurb}</span>
               {t.introductory && (

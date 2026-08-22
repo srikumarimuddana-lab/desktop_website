@@ -26,9 +26,11 @@
 >   lists, or corporate accounts as a revenue source.
 >
 > **Spinr Pass tiers** — two monthly plans, separated by rides allowed per
-> day: **Part-time $19.99 (introductory)** and **Full-time $49.99**. Still
-> unset: the rides-a-day limit on each, rendered as a `.sp-todo` bracketed
-> slot on `/preview/drive`.
+> day: **Part-time $19.99 (introductory), up to 4 rides a day** and
+> **Full-time $49.99**. Still unset: Full-time's rides-a-day limit, rendered
+> as a `.sp-todo` bracketed slot on `/preview/drive` — do not write
+> "unlimited" there unless that is confirmed; it is a promise, not a guess.
+> Also unanswered: what happens when a Part-time driver hits 4 rides in a day.
 >
 > **$19.99 must always be labelled an introductory rate** wherever it appears.
 > Advertising a promotional price without saying it is promotional is
