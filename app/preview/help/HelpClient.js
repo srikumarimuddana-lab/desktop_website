@@ -29,6 +29,82 @@ const RAIL = [
   { id: 'contact', label: 'Contact us' },
 ]
 
+/* The ask box talks to the same /api/agent/search the chat widget uses, so
+ * the help page and the assistant answer from one knowledge base. The
+ * rider/driver toggle is not cosmetic — it is sent as user_type and steers
+ * retrieval, so the two audiences get different sources for the same words. */
+function AskBox() {
+  const [audience, setAudience] = useState('rider')
+  const [q, setQ] = useState('')
+  const [state, setState] = useState({ status: 'idle' })
+
+  const ask = async (e) => {
+    e.preventDefault()
+    const question = q.trim()
+    if (!question || state.status === 'loading') return
+    setState({ status: 'loading' })
+    try {
+      const res = await fetch('/api/agent/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, user_type: audience }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data?.error || 'Search failed')
+      setState({ status: 'done', answer: data.answer, sources: data.sources || [], source: data.source })
+    } catch (err) {
+      setState({ status: 'error', message: err.message })
+    }
+  }
+
+  return (
+    <form className="sp-ask" onSubmit={ask}>
+      <div className="sp-ask-who" role="group" aria-label="I am a">
+        <span>I am a</span>
+        {['rider', 'driver'].map((a) => (
+          <button
+            key={a}
+            type="button"
+            className={audience === a ? 'on' : ''}
+            aria-pressed={audience === a}
+            onClick={() => setAudience(a)}
+          >
+            {a}
+          </button>
+        ))}
+      </div>
+      <div className="sp-ask-row">
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={audience === 'driver' ? 'When do I get paid?' : 'What does a ride cost?'}
+          aria-label="Ask a question"
+        />
+        <button className="sp-btn" type="submit" disabled={state.status === 'loading' || !q.trim()}>
+          {state.status === 'loading' ? 'Asking…' : 'Ask'}
+        </button>
+      </div>
+
+      {state.status === 'done' && (
+        <div className="sp-ask-out">
+          <p>{state.answer}</p>
+          {state.sources?.length > 0 && (
+            <p className="sp-ask-src">
+              Answered from: {state.sources.map((s) => s.title).join(' · ')}
+            </p>
+          )}
+        </div>
+      )}
+      {state.status === 'error' && (
+        <div className="sp-ask-out sp-ask-err">
+          <p>Couldn&rsquo;t reach the assistant just now — the topics below still cover most of it,
+          or email support@spinr.ca.</p>
+        </div>
+      )}
+    </form>
+  )
+}
+
 export default function HelpClient() {
   const bodyRef = useRef(null)
   const [active, setActive] = useState('assistant')
@@ -73,6 +149,7 @@ export default function HelpClient() {
           <p className="sp-help-lede">
             Everything about riding, driving and your account — in one place.
           </p>
+          <AskBox />
         </div>
       </header>
 
@@ -93,9 +170,10 @@ export default function HelpClient() {
               <div>
                 <b>Ask the AI assistant</b>
                 <p>
-                  In the app, or the chat bubble in the corner of this page. It can
-                  price a trip, book or schedule a ride, pull up a past receipt —
-                  and it hands you to a human when it should.
+                  The box at the top of this page, the chat bubble in the corner, or
+                  the app. It searches the same help material you see below and
+                  answers in plain language — and in the app it can price a trip,
+                  book or schedule a ride, and pull up a past receipt.
                 </p>
               </div>
             </div>

@@ -1046,4 +1046,29 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 .sp-help-contact-card p{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink-6)}
 .sp-help-legal-links{margin:0;font-size:14px;color:var(--ink-5)}
 .sp-help-legal-links a{color:var(--ink);font-weight:700}
+
+/* ── help: ask the AI assistant ── */
+.sp-ask{margin-top:clamp(20px,2.6vw,30px);max-width:680px}
+.sp-ask-who{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;
+  font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(11,11,11,.65)}
+.sp-ask-who button{appearance:none;font:inherit;text-transform:uppercase;cursor:pointer;
+  border:2px solid var(--ink);border-radius:999px;padding:5px 13px;background:#fff;color:var(--ink);
+  transition:transform .14s var(--snap),background .14s ease,box-shadow .14s}
+.sp-ask-who button:hover{transform:translateY(-1px);box-shadow:2px 2px 0 var(--ink)}
+.sp-ask-who button:active{transform:translateY(1px);box-shadow:none}
+.sp-ask-who button.on{background:var(--ink);color:var(--sun)}
+.sp-ask-row{display:flex;gap:10px}
+.sp-ask-row input{flex:1;min-width:0;font:inherit;font-weight:600;font-size:15px;
+  border:2px solid var(--ink);border-radius:999px;padding:13px 20px;background:#fff;color:var(--ink);
+  box-shadow:var(--hard-sm)}
+.sp-ask-row input::placeholder{color:var(--ink-4)}
+.sp-ask-row input:focus-visible{outline:none;box-shadow:var(--hard)}
+.sp-ask-row .sp-btn:disabled{background:var(--ink-4);cursor:not-allowed;transform:none;
+  box-shadow:-4px 4px 0 var(--ink)}
+.sp-ask-out{margin-top:14px;background:#fff;border:2px solid var(--ink);border-radius:16px;
+  padding:16px 18px;box-shadow:var(--hard-sm)}
+.sp-ask-out p{margin:0;font-size:15px;line-height:1.65;color:var(--ink)}
+.sp-ask-src{margin-top:10px !important;font-size:11.5px !important;font-weight:800;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-4) !important}
+.sp-ask-err{background:var(--red-1)}
 `
