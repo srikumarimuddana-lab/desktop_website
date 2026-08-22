@@ -432,7 +432,7 @@ export const CSS = `
 
 /* ── footer ── */
 .sp-foot{background:var(--ink);color:var(--paper)}
-.sp-foot-in{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:clamp(20px,3vw,40px);padding-block:clamp(38px,5vw,64px)}
+.sp-foot-in{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:clamp(20px,3vw,40px);padding-block:clamp(38px,5vw,64px)}
 .sp-foot-logo{height:30px;width:auto;filter:brightness(0) invert(1)}
 .sp-foot-lock{margin:14px 0 8px;font-family:var(--sp-display),sans-serif;font-size:clamp(20px,2vw,26px);color:var(--sun)}
 .sp-foot-lead p:last-child{margin:0;font-size:15px;line-height:1.5;opacity:.72;max-width:30ch}
@@ -459,9 +459,6 @@ export const CSS = `
 .sp-split-w{display:inline-block;white-space:nowrap}
 .sp-split-c{display:inline-block;transform:translateY(26px);opacity:.001;
   transition:transform .66s var(--spring) var(--c-delay,0ms),opacity .36s ease var(--c-delay,0ms)}
-/* cascade finished: back to ordinary inline text so selection paints sanely */
-.sp-split.done .sp-split-c{display:inline;transition:none}
-.sp-split.done .sp-split-w{display:inline}
 .sp-split.in .sp-split-c{transform:none;opacity:1}
 @media(prefers-reduced-motion:reduce){
   .sp-split-c{transform:none;opacity:1;transition:none}
@@ -967,4 +964,111 @@ div.fixed.bottom-6.right-6 button[class*="h-8"]:active{transform:scale(.85)}
 .sp-home-card{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:22px;box-shadow:var(--hard-sm)}
 .sp-home-card h3{margin:0 0 10px;font-size:21px}
 .sp-home-card p{margin:0;font-size:14px;line-height:1.6;color:var(--ink-6)}
+
+/* ════════════════ legal pages ════════════════ */
+
+.sp-legal-hero{position:relative;background:var(--paper-3);border-bottom:2px solid var(--ink);
+  margin-top:calc(-1 * clamp(52px,7vw,74px));padding:clamp(118px,16vh,170px) 0 clamp(36px,5vw,56px)}
+.sp-legal-h{font-size:clamp(34px,5.6vw,72px);margin:clamp(14px,2vw,22px) 0 10px;text-wrap:balance}
+.sp-legal-updated{margin:0 0 18px;font-size:14px;font-weight:600;color:var(--ink-5)}
+.sp-legal-draft{display:inline-block;background:var(--red);color:#fff;border:2px solid var(--ink);
+  border-radius:999px;padding:8px 16px;font-size:14px;letter-spacing:.04em;
+  box-shadow:3px 3px 0 var(--ink);transform:rotate(-2deg)}
+.sp-legal-g{display:grid;gap:clamp(24px,4vw,64px);padding-block:clamp(36px,5vw,64px);align-items:start}
+@media(min-width:980px){.sp-legal-g{grid-template-columns:250px minmax(0,1fr)}}
+.sp-legal-rail{position:sticky;top:clamp(86px,12vh,110px);display:none;flex-direction:column;gap:2px;
+  border-left:3px solid var(--ink);padding-left:0;max-height:calc(100vh - 140px);overflow-y:auto}
+@media(min-width:980px){.sp-legal-rail{display:flex}}
+.sp-legal-rail-k{font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-4);padding:0 0 8px 14px}
+.sp-legal-rail a{font-size:13px;font-weight:600;color:var(--ink-6);text-decoration:none;
+  padding:5px 10px 5px 14px;border-left:3px solid transparent;margin-left:-3px;
+  text-transform:capitalize;transition:color .15s ease,border-color .15s ease,background .15s ease}
+.sp-legal-rail a:hover{color:var(--ink)}
+.sp-legal-rail a.is-on{color:var(--ink);border-left-color:var(--red);background:var(--red-1)}
+.sp-legal-body{max-width:70ch}
+.sp-legal-lede{font-size:clamp(15.5px,1.35vw,18px);line-height:1.75;color:var(--ink)}
+.sp-legal-body section{margin-top:clamp(26px,3.4vw,40px)}
+.sp-legal-body h2{font-size:clamp(20px,2.1vw,27px);margin:0 0 12px;text-transform:capitalize;
+  scroll-margin-top:clamp(96px,13vh,124px);padding-bottom:8px;border-bottom:2px solid var(--ink)}
+.sp-legal-body p{margin:0 0 14px;font-size:15px;line-height:1.75;color:var(--ink-6)}
+.sp-legal-next{display:flex;gap:12px;flex-wrap:wrap;margin-top:clamp(30px,4vw,44px);
+  padding-top:22px;border-top:2px dashed rgba(11,11,11,.3)}
+
+/* ════════════════ help page ════════════════ */
+
+.sp-help-hero{position:relative;background:var(--sky);border-bottom:2px solid var(--ink);
+  margin-top:calc(-1 * clamp(52px,7vw,74px));padding:clamp(118px,16vh,170px) 0 clamp(40px,5vw,60px)}
+.sp-help-h{font-size:clamp(40px,6.4vw,84px);margin:clamp(14px,2vw,22px) 0 10px}
+.sp-help-lede{margin:0;font-size:clamp(15.5px,1.4vw,18.5px);color:rgba(11,11,11,.72);font-weight:600}
+.sp-help-g{display:grid;gap:clamp(24px,4vw,64px);padding-block:clamp(36px,5vw,64px);align-items:start}
+@media(min-width:980px){.sp-help-g{grid-template-columns:250px minmax(0,1fr)}}
+.sp-help-body{max-width:780px;display:flex;flex-direction:column;gap:clamp(34px,4.6vw,56px)}
+.sp-help-body h2{font-size:clamp(23px,2.6vw,34px);margin:0 0 10px;
+  scroll-margin-top:clamp(96px,13vh,124px)}
+.sp-help-ai-card{display:flex;gap:16px;align-items:flex-start;background:var(--sun);
+  border:2px solid var(--ink);border-radius:18px;padding:clamp(16px,2.2vw,24px);
+  box-shadow:var(--hard)}
+.sp-help-ai-spark{display:grid;place-items:center;width:42px;height:42px;flex:0 0 auto;
+  border-radius:999px;border:2px solid var(--ink);background:var(--sky);font-size:19px}
+.sp-help-ai-card b{display:block;font-size:17px;margin-bottom:6px}
+.sp-help-ai-card p{margin:0;font-size:14.5px;line-height:1.6;color:rgba(11,11,11,.75)}
+.sp-help-cat-p{margin:0 0 16px;font-size:14.5px;color:var(--ink-5)}
+.sp-help-art{background:var(--paper-50);border:2px solid var(--ink);border-radius:16px;
+  overflow:hidden;box-shadow:var(--hard-sm);margin-bottom:10px}
+.sp-help-art[open]{background:#fff}
+.sp-help-art summary{list-style:none;display:flex;align-items:center;gap:16px;cursor:pointer;
+  padding:15px 18px;transition:transform .1s ease}
+.sp-help-art summary::-webkit-details-marker{display:none}
+.sp-help-art summary:active{transform:translateY(1px)}
+.sp-help-art summary .sp-display{font-size:clamp(15px,1.5vw,19px)}
+.sp-help-art summary .sp-faq-ic{margin-left:auto}
+.sp-help-art[open] .sp-faq-ic{transform:rotate(135deg);background:var(--sun)}
+.sp-help-art-body{padding:0 18px 18px;font-size:14.5px;line-height:1.7;color:var(--ink-6)}
+.sp-help-art-body h2,.sp-help-art-body h3{font-family:var(--sp-display),sans-serif;font-weight:400;
+  text-transform:uppercase;letter-spacing:.01em;color:var(--ink);margin:16px 0 6px;font-size:16px}
+.sp-help-art-body h2{font-size:18px}
+.sp-help-art-body ol,.sp-help-art-body ul{padding-left:20px;margin:8px 0}
+.sp-help-art-body li{margin-bottom:5px}
+.sp-help-links{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:7px 18px;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.sp-help-links a{display:inline-block;font-size:14px;font-weight:600;color:var(--ink-6);
+  text-decoration:none;padding:3px 0;
+  background:linear-gradient(var(--red),var(--red)) no-repeat left 100%/0 2px;
+  transition:color .15s ease,background-size .25s var(--snap)}
+.sp-help-links a:hover{color:var(--ink);background-size:100% 2px}
+.sp-help-contact-g{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin-bottom:18px}
+.sp-help-contact-card{display:block;background:#fff;border:2px solid var(--ink);border-radius:16px;
+  padding:18px;box-shadow:var(--hard-sm);color:var(--ink);text-decoration:none;
+  transition:transform .15s var(--snap),box-shadow .15s}
+a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.sp-help-contact-card .sp-display{display:block;font-size:18px;margin-bottom:6px}
+.sp-help-contact-card p{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink-6)}
+.sp-help-legal-links{margin:0;font-size:14px;color:var(--ink-5)}
+.sp-help-legal-links a{color:var(--ink);font-weight:700}
+
+/* ── help: ask the AI assistant ── */
+.sp-ask{margin-top:clamp(20px,2.6vw,30px);max-width:680px}
+.sp-ask-who{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;
+  font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(11,11,11,.65)}
+.sp-ask-who button{appearance:none;font:inherit;text-transform:uppercase;cursor:pointer;
+  border:2px solid var(--ink);border-radius:999px;padding:5px 13px;background:#fff;color:var(--ink);
+  transition:transform .14s var(--snap),background .14s ease,box-shadow .14s}
+.sp-ask-who button:hover{transform:translateY(-1px);box-shadow:2px 2px 0 var(--ink)}
+.sp-ask-who button:active{transform:translateY(1px);box-shadow:none}
+.sp-ask-who button.on{background:var(--ink);color:var(--sun)}
+.sp-ask-row{display:flex;gap:10px}
+.sp-ask-row input{flex:1;min-width:0;font:inherit;font-weight:600;font-size:15px;
+  border:2px solid var(--ink);border-radius:999px;padding:13px 20px;background:#fff;color:var(--ink);
+  box-shadow:var(--hard-sm)}
+.sp-ask-row input::placeholder{color:var(--ink-4)}
+.sp-ask-row input:focus-visible{outline:none;box-shadow:var(--hard)}
+.sp-ask-row .sp-btn:disabled{background:var(--ink-4);cursor:not-allowed;transform:none;
+  box-shadow:-4px 4px 0 var(--ink)}
+.sp-ask-out{margin-top:14px;background:#fff;border:2px solid var(--ink);border-radius:16px;
+  padding:16px 18px;box-shadow:var(--hard-sm)}
+.sp-ask-out p{margin:0;font-size:15px;line-height:1.65;color:var(--ink)}
+.sp-ask-src{margin-top:10px !important;font-size:11.5px !important;font-weight:800;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-4) !important}
+.sp-ask-err{background:var(--red-1)}
 `

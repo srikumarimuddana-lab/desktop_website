@@ -3,6 +3,8 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { getLLM } from '@/lib/langchain'
 import { hybridRetrieve } from '@/lib/hybrid-retriever'
 import { buildStructuredContext, formatUserMessage } from '@/lib/context-builder'
+import { audienceNote } from '@/lib/audience'
+import { polishAnswer } from '@/lib/polish'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
 
 // ============================================
@@ -132,35 +134,49 @@ CRITICAL RULES YOU MUST FOLLOW:
 // NEW: LangChain-powered RAG search
 // ============================================
 async function searchWithLangChainRAG(question, userType) {
-  // 1. Hybrid retrieval (BM25 + vector via Supabase RPC)
-  console.log('[RAG] Starting hybrid retrieval for:', question)
-  const entries = await hybridRetrieve(question, 3)
+  // 1. Hybrid retrieval (BM25 + vector via Supabase RPC), re-ranked for the
+  //    audience — a rider and a driver asking the same words want different
+  //    sources, so audience belongs in retrieval, not just in the prompt.
+  console.log('[RAG] Starting hybrid retrieval for:', question, '| audience:', userType)
+  const entries = await hybridRetrieve(question, 4, { audience: userType })
   console.log('[RAG] Retrieved entries:', entries.length, entries.map(e => e.title))
 
   // 2. Build structured context
   let context = buildStructuredContext(entries, userType)
 
-  // 3. Inject location guard if needed
+  // 3. Tell the model who is asking, so audience survives shared-category rows
+  const note = audienceNote(userType)
+  if (note) context = note + '\n\n' + context
+
+  // 4. Inject location guard if needed
   const locGuard = locationGuard(question)
   if (locGuard) {
     context = locGuard + '\n\n' + context
   }
 
-  // 4. Format messages for LLM
+  // 5. Format messages for LLM
   const systemPrompt = getSystemPrompt(userType)
   const userMessage = formatUserMessage(context, question)
 
-  // 5. Call LLM via LangChain
+  // 6. Call LLM via LangChain — this answer is the grounded one
   const llm = getLLM()
   const response = await llm.invoke([
     new SystemMessage(systemPrompt),
     new HumanMessage(userMessage)
   ])
+  const draft = typeof response.content === 'string' ? response.content : String(response.content || '')
+
+  // 7. Optional light-model rewrite for tone. Rejected automatically if it
+  //    changes any fact — see lib/polish.js.
+  const polished = await polishAnswer(draft, { question, audience: userType })
 
   return {
     success: true,
-    answer: response.content,
+    answer: polished.text,
     model_used: llm.model,
+    polished: polished.polished,
+    polish_reason: polished.reason,
+    sources: entries.map(e => ({ title: e.title, category: e.category, affinity: e._affinity })),
     tokens_used: response.usage_metadata?.total_tokens || 0
   }
 }
@@ -197,7 +213,7 @@ async function searchWithHybridApproach(q, ut, uid) {
       const aiResult = await searchWithLangChainRAG(sa, ut)
       if (aiResult.success) {
         const v = validateResponse(aiResult.answer)
-        const r = { answer: v, source: 'ai_agent', model_used: aiResult.model_used, response_time_ms: Date.now() - st, tokens_used: aiResult.tokens_used }
+        const r = { answer: v, source: 'ai_agent', model_used: aiResult.model_used, polished: aiResult.polished, sources: aiResult.sources, response_time_ms: Date.now() - st, tokens_used: aiResult.tokens_used }
         setCachedResponse(sa, ut, r)
         return r
       }
@@ -261,6 +277,8 @@ export async function POST(request) {
     const sr = await searchWithHybridApproach(question, ut, user_id)
     const cnv = await storeConversation(question, sr.answer, sr.source, sr.model_used, sr.tokens_used, sr.response_time_ms, ut, user_id)
     const res = { answer: sr.answer, source: sr.source, model_used: sr.model_used, conversation_id: cnv?.id || null, response_time_ms: sr.response_time_ms }
+    if (sr.sources) res.sources = sr.sources
+    if (typeof sr.polished === 'boolean') res.polished = sr.polished
     if (sr.related_articles && sr.related_articles.length > 0) {
       res.related_articles = sr.related_articles.map(a => ({ id: a.id, title: a.title, slug: a.slug }))
     }
@@ -275,13 +293,15 @@ export async function GET(request) {
   return handleCORS(NextResponse.json({
     service: 'AI Agent Search',
     status: 'healthy',
-    version: 'langchain-hybrid-v1',
+    version: 'langchain-hybrid-v2-audience',
     timestamp: new Date().toISOString(),
     config: {
       ai_enabled: process.env.AI_AGENT_ENABLED !== 'false',
       fallback_enabled: process.env.FALLBACK_TO_KEYWORD_SEARCH !== 'false',
       llm_provider: 'langchain-openai-compatible',
       llm_model: process.env.LLM_MODEL_NAME || 'qwen-vl-max-2025-04-08',
+      audience_aware_retrieval: true,
+      polish_model: process.env.POLISH_MODEL_NAME || null,
       rate_limit: RL_MAX + ' requests/minute'
     }
   }), request)

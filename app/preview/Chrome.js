@@ -13,6 +13,7 @@ const LINKS = [
   ['/preview/ride', 'Ride'],
   ['/preview/drive', 'Drive'],
   ['/preview/about', 'About'],
+  ['/preview/help', 'Help'],
 ]
 
 export function SiteNav() {
@@ -87,6 +88,14 @@ export function SiteFooter() {
           <nav>
             <Link href="/preview/drive">Start driving</Link>
             <Link href="/preview/about">About Spinr</Link>
+          </nav>
+        </div>
+        <div>
+          <h4>Support</h4>
+          <nav>
+            <Link href="/preview/help">Help centre</Link>
+            <Link href="/preview/legal/terms">Terms of service</Link>
+            <Link href="/preview/legal/privacy">Privacy policy</Link>
           </nav>
         </div>
       </div>

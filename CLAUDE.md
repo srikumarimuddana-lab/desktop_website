@@ -68,8 +68,11 @@ desktop_website/
 │   ├── ui/                       # 60+ Shadcn components + CookieBanner, SafeHtml, SmartAppLink
 │   └── RichTextEditor.js         # Tiptap editor for admin
 ├── lib/
-│   ├── langchain.js              # LangChain singletons (getEmbeddings, getLLM) — lazy init
-│   ├── hybrid-retriever.js       # hybridRetrieve() — calls Supabase hybrid_search RPC
+│   ├── langchain.js              # LangChain singletons (getEmbeddings, getLLM, getPolishLLM) — lazy init
+│   ├── hybrid-retriever.js       # hybridRetrieve(q, topK, {audience}) — hybrid_search RPC + re-rank
+│   ├── audience.js               # rider/driver affinity weighting for retrieval
+│   ├── polish.js                 # optional light-model tone pass over a grounded answer
+│   ├── fact-guard.js             # pure fact-token comparison policing the polish pass
 │   ├── context-builder.js        # XML-bounded context formatting for LLM prompts
 │   ├── kb-sync.js                # syncToKB(), deleteFromKB() — CMS auto-sync to KB
 │   ├── supabase.js               # Supabase client + mock fallback for dev
@@ -115,17 +118,38 @@ Protected by Supabase Auth. Super admin email: `admin@spinr.ca` (hardcoded). Man
 The `ChatWidget.js` component POSTs to `/api/agent/search`. The pipeline:
 
 ```
-User Question → Rate Limit → Cache Check → Hybrid Retrieval → LLM Call → Response
-                                               ↓
-                                    Supabase hybrid_search RPC
-                                    (BM25 keyword + pgvector semantic)
-                                    Reciprocal Rank Fusion → Top 3
-                                               ↓
-                                    LangChain ChatOpenAI (Qwen via DashScope)
-                                    XML-bounded context + system prompt
-                                               ↓
-                                    Validate → Store conversation → Return
+User Question + user_type → Rate Limit → Cache (keyed by audience) → Retrieval → LLM → Polish → Response
+                                                                        ↓
+                                              Supabase hybrid_search RPC (BM25 + pgvector, RRF)
+                                              match_count = topK*4 when audience is known
+                                                                        ↓
+                                              lib/audience.js re-rank: own ×1.4 / shared ×1.0 /
+                                              other-audience ×0.4  → top 4
+                                                                        ↓
+                                              LangChain ChatOpenAI (Qwen via DashScope)
+                                              audience note + XML-bounded context + system prompt
+                                                                        ↓
+                                              OPTIONAL lib/polish.js — light model rewrites for tone
+                                              only; rejected unless fact-identical (lib/fact-guard.js)
+                                                                        ↓
+                                              Validate → Store conversation → Return
 ```
+
+**Audience-aware retrieval.** `user_type` used to reach only the system prompt, so a
+rider and a driver asking the same words got the same sources. Retrieval now honours
+it: the `knowledge_base.category` already carries `rider` / `driver` / `general` /
+`safety` / `pricing`, so a wider candidate pool is fetched and re-ranked by audience
+affinity. Cross-audience rows are demoted, never dropped — a rider asking how driver
+pay works still reaches that answer, just below rider-facing material. Anonymous
+queries keep plain RRF order. No migration was needed.
+
+**Polish stage (off by default).** Set `POLISH_MODEL_NAME` to run a second, cheaper
+model over the grounded answer for tone. It is treated as untrusted: `lib/fact-guard.js`
+compares fact-shaped tokens (money, percentages, decimals, multi-digit numbers, emails,
+URLs) before and after, and the rewrite is discarded unless the set is identical, or if
+it grows past 1.5× the draft. Falling back to the draft is silent and safe. Bare single
+digits are excluded from the comparison on purpose — they are list numbering far more
+often than facts, and guarding them rejected every honest rewrite.
 
 **Fallback chain:** Hybrid RAG → keyword search on faqs/help_articles tables → "contact support@spinr.ca"
 
@@ -223,6 +247,18 @@ AI_AGENT_ENABLED=true
 FALLBACK_TO_KEYWORD_SEARCH=true
 AGENT_RATE_LIMIT=10
 AGENT_MAX_TOKENS=500
+
+# OPTIONAL — light-model polish pass over the grounded answer.
+# Unset (the default) ships the RAG answer as written.
+# Same provider, cheaper model:
+#   POLISH_MODEL_NAME=qwen-turbo
+# Real OpenAI — all three are required, because OPENAI_API_KEY above is the
+# DashScope key and a bare OpenAI model name would otherwise be sent there:
+#   POLISH_MODEL_NAME=gpt-4o-mini
+#   POLISH_API_URL=https://api.openai.com/v1
+#   POLISH_API_KEY=sk-...
+# POLISH_MAX_TOKENS=400
+# POLISH_TIMEOUT_MS=6000
 ```
 
 ---
