@@ -140,10 +140,23 @@ export function Tilt({ children, max = 3, className = '' }) {
 export function SplitText({ text, as: Tag = 'span', className = '', step = 16, start = 0 }) {
   const ref = useRef(null)
   const inView = useInView(ref, { threshold: 0.05 })
+  /* Once the cascade lands, the letters drop back to plain inline text.
+   * Atomic inline-blocks break text-selection painting (the line's band
+   * hides their glyphs); ordinary inline text selects normally. */
+  const [done, setDone] = useState(false)
+  const chars = String(text).replace(/ /g, '').length
+
+  useEffect(() => {
+    if (!inView) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setDone(true); return }
+    const t = setTimeout(() => setDone(true), start + chars * step + 750)
+    return () => clearTimeout(t)
+  }, [inView, start, step, chars])
+
   const words = String(text).split(' ')
   let n = -1
   return (
-    <Tag ref={ref} className={`sp-split${inView ? ' in' : ''} ${className}`.trim()} aria-label={text}>
+    <Tag ref={ref} className={`sp-split${inView ? ' in' : ''}${done ? ' done' : ''} ${className}`.trim()} aria-label={text}>
       {words.map((w, wi) => (
         <Fragment key={wi}>
           <span className="sp-split-w" aria-hidden="true">
@@ -246,7 +259,7 @@ export function StickyCta({ href = '#get' }) {
       <a className="sp-dock-ai" href="#ai" tabIndex={tab}>
         <span className="sp-dock-spark" aria-hidden="true">&#10022;</span>
         <span>
-          <b>Ask the assistant</b>
+          <b>Ask the AI assistant</b>
           <i>Book, price, look up a trip</i>
         </span>
       </a>

@@ -50,7 +50,7 @@ export function FinalCta({ title, sub, store = 'rider' }) {
         <div>
           <h2 className="sp-display sp-final-h">{title}</h2>
           <p className="sp-final-p">
-            {sub} <span className="sp-editorial">Proudly Canadian.</span>
+            {sub} <span className="sp-editorial">Proudly Canadian. Fair, both ways.</span>
           </p>
           <div className="sp-final-btns">
             <a className="sp-btn" href={urls.ios} target="_blank" rel="noopener noreferrer">App Store</a>
@@ -71,7 +71,7 @@ export function SiteFooter() {
       <div className="sp-wrap sp-foot-in">
         <div className="sp-foot-lead">
           <Image src="/logo.webp" alt="Spinr" width={120} height={38} className="sp-foot-logo" />
-          <p className="sp-display sp-foot-lock">Fair for drivers.</p>
+          <p className="sp-display sp-foot-lock">Fair, both ways.</p>
           <p>Canada&rsquo;s own rideshare. Serving Saskatoon.</p>
         </div>
         <div>

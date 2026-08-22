@@ -288,7 +288,7 @@ export default function DrivePageClient({ structuredData }) {
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2">Keep more of what you earn</h3>
                     <p className="text-gray-600 leading-relaxed">
-                      Our platform fee is one of the lowest in the industry, meaning more money in your pocket for every mile.
+                      Spinr takes 0% commission \u2014 the platform runs on the rider\u2019s flat $1 booking fee, so every dollar of your fare stays yours.
                     </p>
                   </div>
                 </div>
