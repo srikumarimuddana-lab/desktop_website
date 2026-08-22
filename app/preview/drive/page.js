@@ -1,3 +1,4 @@
+import { previewMetadata } from '@/lib/preview-content'
 import { APP_URLS } from '@/lib/app-links'
 import { FinalCta } from '../Chrome'
 import { Reveal, SplitText } from '../Reveal'
@@ -11,7 +12,14 @@ import Payday from './Payday'
  * Uses the DRIVER app store links, not the rider ones.
  */
 
-export const metadata = { title: 'Drive | Spinr Design Sample' }
+export const revalidate = 0
+
+export async function generateMetadata() {
+  return previewMetadata('/preview/drive', {
+    title: 'Drive | Spinr Design Sample',
+    description: 'Keep 100% of the fare. Design sample.',
+  })
+}
 
 const COMPARE = {
   typical: [

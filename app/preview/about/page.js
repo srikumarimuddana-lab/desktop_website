@@ -1,3 +1,4 @@
+import { previewMetadata } from '@/lib/preview-content'
 import { FinalCta } from '../Chrome'
 import { Reveal, SplitText, Marquee } from '../Reveal'
 import Manifesto from './Manifesto'
@@ -12,7 +13,14 @@ import DollarSplit from './DollarSplit'
  * ride totals — everything here is a stated position, not a claimed fact.
  */
 
-export const metadata = { title: 'About | Spinr Design Sample' }
+export const revalidate = 0
+
+export async function generateMetadata() {
+  return previewMetadata('/preview/about', {
+    title: 'About | Spinr Design Sample',
+    description: 'Why Spinr is built the way it is. Design sample.',
+  })
+}
 
 const HOME = [
   ['Saskatoon first', 'One city, properly served, before anywhere else. There is no planned launch in another city — including Regina.'],

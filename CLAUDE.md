@@ -155,6 +155,37 @@ often than facts, and guarding them rejected every honest rewrite.
 
 **Location guard:** Detects city names in queries and injects hard-negative context (Spinr is ONLY in Saskatoon). `NON_SASKATOON_CITIES` in `app/api/agent/search/route.js` is a deliberate not-served list — Regina is an entry there so the agent can never claim Regina service; it is not marketing copy.
 
+### Admin edits must reach the front end — no hardcoded CMS content
+
+**Rule: anything editable in `/spinr-internal` is READ AT REQUEST TIME, never
+baked into a page.** A FAQ, help article, legal doc or SEO row added in the
+admin dashboard has to appear on the site without a deploy — that is the point
+of the CMS, and it is also what keeps the AI assistant correct, since
+`lib/kb-sync.js` pushes the same row into `knowledge_base` for retrieval.
+Hardcode the copy and you silently break both at once: the page goes stale and
+the assistant answers from a row nobody can see on the site.
+
+What that means in practice for any new page:
+
+| Requirement | How |
+|---|---|
+| Fresh on every request | `export const revalidate = 0` |
+| SEO from the `seo_pages` table | `generateMetadata()` → `getSeoMetadata(path, defaults)` |
+| JSON-LD from the CMS | `getStructuredData(path)` → `<JsonLdInjector>` |
+| FAQs / help articles | fetch from Supabase in the server component, pass as props |
+| Offline / unconfigured Supabase | every reader takes a `fallback` so the page still renders |
+
+`lib/preview-content.js` provides these readers for the `/preview` pages
+(`getFaqs`, `getHelpArticles`, `previewMetadata`). Note `previewMetadata`
+merges the CMS row but then **forces `robots: noindex` back on** — the design
+sample must never be indexed, and that is not left to a CMS row someone could
+edit. When a preview page is promoted to production, drop that override and
+use `getSeoMetadata` directly.
+
+Adding a new FAQ in the admin dashboard therefore lands in three places with
+no further work: the FAQ list on the page, the help centre, and the
+assistant's retrieval corpus.
+
 ### CMS → KB Auto-Sync
 When admin creates/updates/deletes FAQs or help articles, `lib/kb-sync.js` automatically:
 - Generates an embedding via DashScope

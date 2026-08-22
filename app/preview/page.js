@@ -5,6 +5,7 @@ import PhoneFan from './PhoneFan'
 import HowItWorks from './HowItWorks'
 import AiChat from './AiChat'
 import { FinalCta } from './Chrome'
+import { getFaqs, previewMetadata } from '@/lib/preview-content'
 import { Reveal, CountUp, Marquee, SplitText } from './Reveal'
 
 /*
@@ -87,7 +88,9 @@ function CardArt({ kind }) {
   )
 }
 
-const FAQ = [
+/* Fallback only — the live list comes from the faqs table so admin edits
+ * show up without a deploy. */
+const FAQ_FALLBACK = [
   ['Where can I use Spinr?', 'Spinr is available in Saskatoon, Saskatchewan. There is no planned launch in any other city at this time.'],
   ['What does a ride actually cost?', 'The ride fare, a flat $1 booking fee \u2014 the only fee Spinr keeps \u2014 plus pass-through charges where they apply (insurance, city or airport fees) and tax, each shown by name before you book. No surge multiplier, ever, and no fee that is not on the receipt.'],
   ['How do drivers keep 100%?', 'Spinr takes 0% commission on consumer rides. The platform is funded by the flat rider fee and by corporate accounts — never by a cut of the driver’s fare.'],
@@ -95,7 +98,19 @@ const FAQ = [
   ['Is Spinr Canadian?', 'Yes — proudly Canadian, with a support team based in Saskatchewan.'],
 ]
 
-export default function PreviewPage() {
+/* revalidate 0: an FAQ added in /spinr-internal must appear on the next
+ * request, not after the next build. */
+export const revalidate = 0
+
+export async function generateMetadata() {
+  return previewMetadata('/preview', {
+    title: 'Design Sample | Spinr',
+    description: 'Internal design sample. Not a live page.',
+  })
+}
+
+export default async function PreviewPage() {
+  const faq = await getFaqs({ categories: ['general', 'rider'], limit: 5, fallback: FAQ_FALLBACK })
   return (
     <>
         {/* ── Hero ──────────────────────────────────────────── */}
@@ -241,7 +256,7 @@ export default function PreviewPage() {
               <span className="sp-faq-arrow" aria-hidden="true">↓</span>
             </div>
             <div className="sp-faq">
-              {FAQ.map(([q, a], i) => (
+              {faq.map(([q, a], i) => (
                 <Reveal as="details" key={q} delay={i * 60}>
                   <summary>
                     <span className="sp-display">{q}</span>
