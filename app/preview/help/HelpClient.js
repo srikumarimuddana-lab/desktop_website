@@ -13,21 +13,21 @@ import { HELP_CATEGORIES, ARTICLE_CONTENT } from '@/constants/helpTopics'
  * articles that only exist there.
  */
 
-const FAQ = [
-  ['What does a ride actually cost?', 'The ride fare, a flat $1 booking fee — the only fee Spinr keeps — plus pass-through charges where they apply (insurance, city or airport fees) and tax, each shown by name before you book. No surge multiplier, ever.'],
-  ['Which fees does Spinr keep?', 'One: the $1 booking fee. The fare goes to your driver, the insurance fee to the insurer, city and airport fees to the city and airport, tax to the government — collected and passed through, never marked up.'],
-  ['How does 0% commission work?', 'Drivers keep 100% of the net fare. The platform runs on the rider’s flat $1 booking fee and corporate accounts — never on a cut of the driver’s money.'],
-  ['Where can I use Spinr?', 'Spinr is available in Saskatoon, Saskatchewan. There is no planned launch in any other city at this time.'],
-  ['Who is driving me?', 'Every driver passes a criminal record check with vulnerable sector screening, holds a full driver’s licence with at least three years of experience, and carries commercial ride-share insurance.'],
-  ['Can the AI assistant book for me?', 'Yes — ask it to price a trip, book or schedule a ride, pull up a past receipt, or check your wallet. It hands you to a human when it should.'],
-]
-
 const RAIL = [
   { id: 'assistant', label: 'Ask the AI assistant' },
   ...HELP_CATEGORIES.map((c) => ({ id: c.id, label: c.title })),
   { id: 'faq', label: 'Quick answers' },
   { id: 'contact', label: 'Contact us' },
 ]
+
+/* Articles the admin dashboard added that the static category lists don't
+ * know about. Matched by slug so an admin edit of an existing article does
+ * not produce a duplicate row on the page. */
+function extraArticlesFor(categoryId, articles, staticSlugs) {
+  return (articles || []).filter(
+    (a) => (a.category || '').toLowerCase() === categoryId && !staticSlugs.has(a.slug)
+  )
+}
 
 /* The ask box talks to the same /api/agent/search the chat widget uses, so
  * the help page and the assistant answer from one knowledge base. The
@@ -105,8 +105,9 @@ function AskBox() {
   )
 }
 
-export default function HelpClient() {
+export default function HelpClient({ faq = [], articles = [] }) {
   const bodyRef = useRef(null)
+  const staticSlugs = new Set(HELP_CATEGORIES.flatMap((c) => c.articles.map((a) => a.slug)))
   const [active, setActive] = useState('assistant')
 
   /* The active section is the LAST heading above the reading line — an
@@ -200,6 +201,11 @@ export default function HelpClient() {
                     <Link href={`/help/article/${a.slug}`}>{a.title}</Link>
                   </li>
                 ))}
+                {extraArticlesFor(cat.id, articles, staticSlugs).map((a) => (
+                  <li key={a.id}>
+                    <Link href={`/help/article/${a.slug}`}>{a.title}</Link>
+                  </li>
+                ))}
               </ul>
             </section>
           ))}
@@ -207,7 +213,7 @@ export default function HelpClient() {
           <section id="faq" className="sp-help-cat">
             <h2 className="sp-display" data-sec="faq">Quick answers</h2>
             <div className="sp-faq">
-              {FAQ.map(([q, a]) => (
+              {faq.map(([q, a]) => (
                 <details key={q}>
                   <summary>
                     <span className="sp-display">{q}</span>

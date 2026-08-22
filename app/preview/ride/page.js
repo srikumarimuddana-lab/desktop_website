@@ -1,5 +1,6 @@
 import { APP_URLS } from '@/lib/app-links'
 import { FinalCta } from '../Chrome'
+import { getFaqs, previewMetadata } from '@/lib/preview-content'
 import { Reveal, SplitText } from '../Reveal'
 import RideJourney from './RideJourney'
 
@@ -10,7 +11,14 @@ import RideJourney from './RideJourney'
  * the page stays quieter so the journey owns the middle.
  */
 
-export const metadata = { title: 'Ride | Spinr Design Sample' }
+export const revalidate = 0
+
+export async function generateMetadata() {
+  return previewMetadata('/preview/ride', {
+    title: 'Ride | Spinr Design Sample',
+    description: 'See the full fare before you book. Design sample.',
+  })
+}
 
 const LINES = [
   {
@@ -65,7 +73,8 @@ const SAFETY = [
   ['Help on hand', 'An SOS button alerts your emergency contacts and our safety team, and offers one-tap 911 — it never replaces calling 911.'],
 ]
 
-const FAQ = [
+/* Fallback only — rider FAQs are read from the CMS at request time. */
+const FAQ_FALLBACK = [
   ['What fees can appear on my receipt?', 'The ride fare, the flat $1 booking fee, and pass-through charges where they apply: an insurance fee, city or infrastructure fees, and an airport surcharge \u2014 each named on the estimate before you book. Tax (GST, and PST where it applies) is shown on its own line.'],
   ['Which of these fees does Spinr keep?', 'One: the $1 booking fee. The fare goes to your driver, the insurance fee to the insurer, city and airport fees to the city and airport, tax to the government \u2014 collected and passed through, never marked up. There is no \u201cservice fee\u201d and nothing hidden: if a line is not on the receipt, we cannot charge it.'],
   ['What if my driver takes a longer route?', 'The price you accepted is the price you pay. A detour is our problem to sort out with the driver, not a surprise on your receipt.'],
@@ -73,7 +82,8 @@ const FAQ = [
   ['Do I need cash for a tip?', 'Tips are in the app and optional. 100% of a tip goes to the driver, always.'],
 ]
 
-export default function RidePage() {
+export default async function RidePage() {
+  const faq = await getFaqs({ categories: ['rider'], limit: 6, fallback: FAQ_FALLBACK })
   return (
     <>
       {/* ── hero ── */}
@@ -179,7 +189,7 @@ export default function RidePage() {
             <span className="sp-faq-arrow" aria-hidden="true">&darr;</span>
           </div>
           <div className="sp-faq">
-            {FAQ.map(([q, a], i) => (
+            {faq.map(([q, a], i) => (
               <Reveal as="details" key={q} delay={i * 60}>
                 <summary>
                   <span className="sp-display">{q}</span>

@@ -5,6 +5,7 @@ import PhoneFan from './PhoneFan'
 import HowItWorks from './HowItWorks'
 import AiChat from './AiChat'
 import { FinalCta } from './Chrome'
+import { getFaqs, previewMetadata } from '@/lib/preview-content'
 import { Reveal, CountUp, Marquee, SplitText } from './Reveal'
 
 /*
@@ -87,15 +88,29 @@ function CardArt({ kind }) {
   )
 }
 
-const FAQ = [
+/* Fallback only — the live list comes from the faqs table so admin edits
+ * show up without a deploy. */
+const FAQ_FALLBACK = [
   ['Where can I use Spinr?', 'Spinr is available in Saskatoon, Saskatchewan. There is no planned launch in any other city at this time.'],
   ['What does a ride actually cost?', 'The ride fare, a flat $1 booking fee \u2014 the only fee Spinr keeps \u2014 plus pass-through charges where they apply (insurance, city or airport fees) and tax, each shown by name before you book. No surge multiplier, ever, and no fee that is not on the receipt.'],
-  ['How do drivers keep 100%?', 'Spinr takes 0% commission on consumer rides. The platform is funded by the flat rider fee and by corporate accounts — never by a cut of the driver’s fare.'],
+  ['How do drivers keep 100%?', 'Spinr takes 0% commission — no share of the fare, ever. Drivers subscribe to the app with a monthly Spinr Pass instead: 6 months free for every driver right now, then Part-time at $19.99 a month as an introductory rate, covering up to 4 rides a day, or Full-time at $49.99 with unlimited rides.'],
   ['Who is driving me?', 'Every driver passes a criminal record check with vulnerable sector screening, holds a full driver\u2019s licence with at least three years of experience, and carries commercial ride-share insurance.'],
   ['Is Spinr Canadian?', 'Yes — proudly Canadian, with a support team based in Saskatchewan.'],
 ]
 
-export default function PreviewPage() {
+/* revalidate 0: an FAQ added in /spinr-internal must appear on the next
+ * request, not after the next build. */
+export const revalidate = 0
+
+export async function generateMetadata() {
+  return previewMetadata('/preview', {
+    title: 'Design Sample | Spinr',
+    description: 'Internal design sample. Not a live page.',
+  })
+}
+
+export default async function PreviewPage() {
+  const faq = await getFaqs({ categories: ['general', 'rider'], limit: 5, fallback: FAQ_FALLBACK })
   return (
     <>
         {/* ── Hero ──────────────────────────────────────────── */}
@@ -213,19 +228,20 @@ export default function PreviewPage() {
                 <b className="sp-display">$14.20</b>
               </div>
               <span className="sp-dt-stamp sp-display" aria-hidden="true">
-                Spinr&rsquo;s cut: $0.00
+                0% of your fare
               </span>
             </Reveal>
             <div>
               <span className="sp-kick">For drivers</span>
               <h2 className="sp-display sp-h2">The fare is yours. All of it.</h2>
               <p className="sp-drive-p">
-                Other platforms take a slice of every trip. Spinr runs on the rider&rsquo;s
-                flat $1 fee instead — so the fare you see is the money you keep.
+                Other platforms take a percentage of every trip, so the more you earn
+                the more they take. Spinr never takes a share of your fare — the number
+                you accept is the number you are paid.
               </p>
               <ul className="sp-ticks">
                 <li>See what a trip pays before you accept it</li>
-                <li>$0.00 commission — permanent, not a launch promo</li>
+                <li>0% commission — permanent, not a launch promo</li>
                 <li>Drive when it suits you. No shifts, no quotas.</li>
               </ul>
               <a className="sp-btn" href="/preview/drive">Driving with Spinr</a>
@@ -241,7 +257,7 @@ export default function PreviewPage() {
               <span className="sp-faq-arrow" aria-hidden="true">↓</span>
             </div>
             <div className="sp-faq">
-              {FAQ.map(([q, a], i) => (
+              {faq.map(([q, a], i) => (
                 <Reveal as="details" key={q} delay={i * 60}>
                   <summary>
                     <span className="sp-display">{q}</span>

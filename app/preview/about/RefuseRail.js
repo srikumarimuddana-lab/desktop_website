@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from 'react'
 /*
  * "Things we refuse to build" — a horizontal rail. The section pins and
  * scroll slides the cards across, one refusal at a time. These come from the
- * product's actual guardrails, not marketing: no commission, no surge, no
- * hidden fees, no data harvesting, and no pretending SOS replaces 911.
+ * product's actual guardrails, not marketing: no commission on the fare, no
+ * surge, no hidden fees, and no pretending SOS replaces 911.
  *
  * Narrow viewports and reduced motion get the cards stacked vertically.
  */
@@ -15,8 +15,8 @@ const clamp01 = (v) => Math.min(1, Math.max(0, v))
 
 const REFUSALS = [
   {
-    n: '01', t: 'A commission',
-    p: 'Drivers keep 100% of the net fare. The platform is funded by the rider’s flat $1 fee and by corporate accounts — never by a cut of the driver’s money.',
+    n: '01', t: 'A cut of the fare',
+    p: 'Drivers keep 100% of the net fare. Whatever Spinr charges is a flat, disclosed amount — never a percentage that grows as the driver earns more.',
   },
   {
     n: '02', t: 'Surge pricing',
@@ -27,11 +27,7 @@ const REFUSALS = [
     p: 'Every charge on the receipt is a disclosed line item: fare, flat fee, tax, tip. If a number can’t be explained, it can’t be charged.',
   },
   {
-    n: '04', t: 'Data harvesting',
-    p: 'No ad SDKs, no behavioural retargeting, no selling profiles. Trip data exists to run rides and keep people safe — that’s the whole job.',
-  },
-  {
-    n: '05', t: 'False comfort',
+    n: '04', t: 'False comfort',
     p: 'The SOS button alerts your emergency contacts and our safety team, and offers one-tap 911. It never claims to replace calling 911 — nothing should.',
   },
 ]

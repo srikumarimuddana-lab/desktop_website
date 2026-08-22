@@ -288,7 +288,7 @@ export default function DrivePageClient({ structuredData }) {
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2">Keep more of what you earn</h3>
                     <p className="text-gray-600 leading-relaxed">
-                      Spinr takes 0% commission \u2014 the platform runs on the rider\u2019s flat $1 booking fee, so every dollar of your fare stays yours.
+                      Spinr takes 0% commission — you subscribe to the app with a monthly Spinr Pass instead, so every dollar you earn on a trip stays yours. Every driver gets 6 months free right now, then Part-time at $19.99/month as an introductory rate (up to 4 rides a day), or Full-time at $49.99/month with unlimited rides.
                     </p>
                   </div>
                 </div>

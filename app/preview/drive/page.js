@@ -1,8 +1,10 @@
+import { previewMetadata } from '@/lib/preview-content'
 import { APP_URLS } from '@/lib/app-links'
 import { FinalCta } from '../Chrome'
 import { Reveal, SplitText } from '../Reveal'
 import PhoneFan from '../PhoneFan'
 import Payday from './Payday'
+import SpinrPass from './SpinrPass'
 
 /*
  * DESIGN SAMPLE — /preview/drive
@@ -11,7 +13,14 @@ import Payday from './Payday'
  * Uses the DRIVER app store links, not the rider ones.
  */
 
-export const metadata = { title: 'Drive | Spinr Design Sample' }
+export const revalidate = 0
+
+export async function generateMetadata() {
+  return previewMetadata('/preview/drive', {
+    title: 'Drive | Spinr Design Sample',
+    description: 'Keep 100% of the fare. Design sample.',
+  })
+}
 
 const COMPARE = {
   typical: [
@@ -55,8 +64,8 @@ export default function DrivePage() {
               <SplitText as="span" className="sp-dhero-hl" text="You keep it." start={300} />
             </h1>
             <p className="sp-dhero-p sp-ap" style={{ '--ap-delay': '760ms', '--ap-y': '22px' }}>
-              Spinr takes $0.00 of your fare — the platform runs on the rider&rsquo;s
-              flat $1 fee. Independent, on your own schedule, in Saskatoon.
+              Spinr never takes a percentage of your fare — the number you accept is
+              the number you are paid. Independent, on your own schedule, in Saskatoon.
             </p>
             <div className="sp-hero-btns sp-dhero-btns sp-ap" style={{ '--ap-delay': '880ms', '--ap-y': '26px' }}>
               <a className="sp-btn" href={APP_URLS.driver.ios} target="_blank" rel="noopener noreferrer">
@@ -75,6 +84,9 @@ export default function DrivePage() {
 
       {/* ── the payday ── */}
       <Payday />
+
+      {/* ── what Spinr actually charges ── */}
+      <SpinrPass />
 
       {/* ── side by side ── */}
       <section className="sp-sec sp-cmp" id="compare">
