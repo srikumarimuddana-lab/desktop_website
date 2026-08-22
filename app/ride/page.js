@@ -27,7 +27,7 @@ export default async function RidePage() {
   const structuredData = await getStructuredData('/ride')
 
   const benefits = [
-    { icon: DollarSign, title: 'Flat $1 Platform Fee', description: 'Just $1 per trip, plus tax \u2014 and an airport or city fee only where one applies, always shown by name before you book. No surge, ever.' },
+    { icon: DollarSign, title: 'Flat $1 Platform Fee', description: 'The only fee Spinr keeps. Insurance, city and airport fees are pass-throughs \u2014 shown by name before you book and handed straight on. No surge, ever.' },
     { icon: Shield, title: 'Verified Local Drivers', description: 'All drivers are Saskatchewan locals, background checked and fully insured.' },
     { icon: Clock, title: 'Fast & Reliable', description: 'Get picked up in minutes. Available across Saskatoon.' },
     { icon: MapPin, title: 'Track Your Ride', description: 'Real-time GPS tracking. Share your trip with friends and family.' },

@@ -16,23 +16,32 @@ const LINES = [
   {
     k: 'Ride fare (12.4 km)',
     v: '$14.20',
+    to: 'your driver', toCls: 'drv',
     note: 'Base + distance + time. All of it goes to your driver.',
   },
   {
     k: 'Booking fee',
     v: '$1.00',
-    note: 'The flat platform fee — the only thing Spinr charges. It never scales with the fare.',
+    to: 'Spinr', toCls: 'us',
+    note: 'The only line on this receipt Spinr keeps. Flat, forever.',
+  },
+  {
+    k: 'Insurance fee',
+    v: '$0.50*',
+    to: 'the insurer', toCls: 'thru',
+    note: 'Commercial ride-share coverage for the whole trip — collected and passed straight through.',
+  },
+  {
+    k: 'City & infrastructure fees',
+    v: '$0.30*',
+    to: 'your city', toCls: 'thru',
+    note: 'Charged only where your city sets one — at the city\u2019s rate, under the city\u2019s name.',
   },
   {
     k: 'Airport surcharge',
     v: '\u2014',
+    to: 'the airport', toCls: 'thru',
     note: 'Only when a trip touches the airport — named on the estimate before you book.',
-    dim: true,
-  },
-  {
-    k: 'City & area fees',
-    v: '\u2014',
-    note: 'If your city charges a per-trip fee, it appears here by name. Never bundled, never renamed.',
     dim: true,
   },
   {
@@ -43,7 +52,8 @@ const LINES = [
   },
   {
     k: 'GST (5%)',
-    v: '$0.76',
+    v: '$0.80',
+    to: 'the government', toCls: 'thru',
     note: 'Tax on its own line, the way a receipt should.',
   },
 ]
@@ -56,8 +66,8 @@ const SAFETY = [
 ]
 
 const FAQ = [
-  ['What fees can appear on my receipt?', 'Four kinds, and no others: the ride fare itself, the flat $1 booking fee, an airport surcharge when a trip touches the airport, and any per-trip fee your city charges — each named on the estimate before you book. Tax (GST, and PST where it applies) is shown on its own line.'],
-  ['Is there an insurance fee or service fee?', 'No. Commercial ride-share insurance and licensing are costs Spinr and its drivers carry inside the fare. There is no insurance fee, no infrastructure fee, no \u201cservice fee\u201d \u2014 if a line is not on the receipt above, we cannot charge it.'],
+  ['What fees can appear on my receipt?', 'The ride fare, the flat $1 booking fee, and pass-through charges where they apply: an insurance fee, city or infrastructure fees, and an airport surcharge \u2014 each named on the estimate before you book. Tax (GST, and PST where it applies) is shown on its own line.'],
+  ['Which of these fees does Spinr keep?', 'One: the $1 booking fee. The fare goes to your driver, the insurance fee to the insurer, city and airport fees to the city and airport, tax to the government \u2014 collected and passed through, never marked up. There is no \u201cservice fee\u201d and nothing hidden: if a line is not on the receipt, we cannot charge it.'],
   ['What if my driver takes a longer route?', 'The price you accepted is the price you pay. A detour is our problem to sort out with the driver, not a surprise on your receipt.'],
   ['Can I book ahead?', 'Yes — schedule a ride for later and we dispatch it when the time comes. Scheduled rides are never surge-priced, because nothing is.'],
   ['Do I need cash for a tip?', 'Tips are in the app and optional. 100% of a tip goes to the driver, always.'],
@@ -106,6 +116,7 @@ export default function RidePage() {
                 <Reveal key={l.k} delay={i * 110} className="sp-anat-line">
                   <div className={`sp-anat-row${l.red ? ' is-red' : ''}${l.dim ? ' is-dim' : ''}`}>
                     <span>{l.k}</span>
+                    {l.to && <em className={`sp-anat-to ${l.toCls}`}>&rarr; {l.to}</em>}
                     <i aria-hidden="true" />
                     <b className="sp-display">{l.v}</b>
                   </div>
@@ -116,20 +127,26 @@ export default function RidePage() {
                 <div className="sp-anat-row sp-anat-total">
                   <span>Total</span>
                   <i aria-hidden="true" />
-                  <b className="sp-display">$15.96</b>
+                  <b className="sp-display">$16.80</b>
                 </div>
-                <p className="sp-anat-note sp-editorial">Of which $14.20 — the whole ride fare — goes to the driver.</p>
+                <p className="sp-anat-note sp-editorial">*Sample amounts — your estimate shows the exact fees for your trip before you book.</p>
+              </Reveal>
+              <Reveal delay={640} className="sp-anat-line">
+                <div className="sp-anat-keep" aria-label="Of this receipt, Spinr keeps $1.00">
+                  <span>Of all this, Spinr keeps</span>
+                  <b className="sp-display">$1.00</b>
+                </div>
               </Reveal>
               <span className="sp-anat-tear" aria-hidden="true" />
             </div>
           </div>
           <Reveal delay={120}>
             <p className="sp-anat-vow">
-              If a fee isn&rsquo;t on this list, we can&rsquo;t charge it. There is no
-              insurance fee, no infrastructure fee, no &ldquo;service fee&rdquo; —
-              commercial insurance and licensing are costs Spinr and its drivers carry
-              inside the fare, not lines added at checkout. Anything a city or airport
-              does charge is shown <em className="sp-editorial">by name, before you book</em>.
+              Spinr keeps exactly one line of this receipt: the $1 booking fee.
+              Every other charge is collected for someone else — the fare for your
+              driver, insurance for the insurer, city fees for your city, tax for the
+              government — and passed straight through, <em className="sp-editorial">never marked up</em>.
+              If a fee isn&rsquo;t on this list, we can&rsquo;t charge it.
             </p>
           </Reveal>
         </div>

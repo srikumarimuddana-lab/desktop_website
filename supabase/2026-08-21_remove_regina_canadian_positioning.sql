@@ -142,13 +142,13 @@ WHERE source = 'website_analysis'
 -- answer, category, tags, created_at - no is_active, no updated_at. The CMS
 -- API generates ids with uuidv4(), so the insert does the same in SQL.
 UPDATE public.faqs
-SET answer = 'Spinr charges four kinds of fees and no others: the ride fare itself (100% of it goes to your driver), a flat $1 booking fee, an airport surcharge when a trip touches the airport, and any per-trip fee your city charges - each shown by name on the fare estimate before you book. GST (and PST where it applies) appears as its own line. There is no surge pricing, no insurance fee, no infrastructure fee and no "service fee" - insurance and licensing are costs Spinr and its drivers carry inside the fare. If a fee is not on your receipt, Spinr cannot charge it.'
+SET answer = 'Every fee on a Spinr receipt is shown by name before you book: the ride fare (100% of it goes to your driver), a flat $1 booking fee - the only fee Spinr keeps - and pass-through charges where they apply: an insurance fee that goes to the insurer, city or infrastructure fees that go to your city, an airport surcharge that goes to the airport, and GST (PST where applicable) that goes to the government. Pass-through fees are collected and handed straight on, never marked up. There is no surge pricing and no hidden "service fee" - if a fee is not on your receipt, Spinr cannot charge it.'
 WHERE question = 'What fees does Spinr charge?';
 
 INSERT INTO public.faqs (id, question, answer, category)
 SELECT gen_random_uuid()::text,
        'What fees does Spinr charge?',
-       'Spinr charges four kinds of fees and no others: the ride fare itself (100% of it goes to your driver), a flat $1 booking fee, an airport surcharge when a trip touches the airport, and any per-trip fee your city charges - each shown by name on the fare estimate before you book. GST (and PST where it applies) appears as its own line. There is no surge pricing, no insurance fee, no infrastructure fee and no "service fee" - insurance and licensing are costs Spinr and its drivers carry inside the fare. If a fee is not on your receipt, Spinr cannot charge it.',
+       'Every fee on a Spinr receipt is shown by name before you book: the ride fare (100% of it goes to your driver), a flat $1 booking fee - the only fee Spinr keeps - and pass-through charges where they apply: an insurance fee that goes to the insurer, city or infrastructure fees that go to your city, an airport surcharge that goes to the airport, and GST (PST where applicable) that goes to the government. Pass-through fees are collected and handed straight on, never marked up. There is no surge pricing and no hidden "service fee" - if a fee is not on your receipt, Spinr cannot charge it.',
        'pricing'
 WHERE NOT EXISTS (SELECT 1 FROM public.faqs WHERE question = 'What fees does Spinr charge?');
 
@@ -156,13 +156,13 @@ WHERE NOT EXISTS (SELECT 1 FROM public.faqs WHERE question = 'What fees does Spi
 -- same way. Embedding left NULL on insert - regenerate with the other rows
 -- this patch touches (BM25 still matches it meanwhile).
 UPDATE knowledge_base
-SET content = 'Spinr fee transparency: riders pay the ride fare (drivers keep 100% of it), a flat $1 booking fee, an airport surcharge only when a trip touches the airport, and any per-trip fee the city charges - every fee is shown by name on the estimate before booking and itemised on the receipt. GST and PST (where applicable) are separate tax lines. Spinr has NO surge pricing, NO insurance fee, NO infrastructure fee and NO service fee: commercial insurance and licensing costs are carried inside the fare, never added at checkout.',
+SET content = 'Spinr fee transparency: riders pay the ride fare (drivers keep 100% of it), a flat $1 booking fee which is the ONLY fee Spinr keeps, and pass-through charges where they apply - an insurance fee (goes to the insurer), city or infrastructure fees (go to the city), an airport surcharge (goes to the airport). GST and PST (where applicable) are separate tax lines that go to the government. Every fee is shown by name on the estimate before booking and itemised on the receipt; pass-through fees are never marked up. Spinr has NO surge pricing and NO hidden service fee.',
     is_active = true
 WHERE title = 'Fees and charges';
 
 INSERT INTO knowledge_base (title, content, category, source, is_active)
 SELECT 'Fees and charges',
-       'Spinr fee transparency: riders pay the ride fare (drivers keep 100% of it), a flat $1 booking fee, an airport surcharge only when a trip touches the airport, and any per-trip fee the city charges - every fee is shown by name on the estimate before booking and itemised on the receipt. GST and PST (where applicable) are separate tax lines. Spinr has NO surge pricing, NO insurance fee, NO infrastructure fee and NO service fee: commercial insurance and licensing costs are carried inside the fare, never added at checkout.',
+       'Spinr fee transparency: riders pay the ride fare (drivers keep 100% of it), a flat $1 booking fee which is the ONLY fee Spinr keeps, and pass-through charges where they apply - an insurance fee (goes to the insurer), city or infrastructure fees (go to the city), an airport surcharge (goes to the airport). GST and PST (where applicable) are separate tax lines that go to the government. Every fee is shown by name on the estimate before booking and itemised on the receipt; pass-through fees are never marked up. Spinr has NO surge pricing and NO hidden service fee.',
        'pricing',
        'website_analysis',
        true
