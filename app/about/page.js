@@ -86,7 +86,10 @@ export default async function AboutPage() {
       </section>
 
       {/* Mission Section */}
-      <section id="mission" className="py-24 bg-white">
+      {/* overflow-x-clip: the decorative circles below are positioned outside
+          the image on purpose, and without clipping they widened every
+          viewport from 320 to 1280 */}
+      <section id="mission" className="py-24 bg-white overflow-x-clip">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
 

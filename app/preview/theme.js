@@ -840,8 +840,12 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-anat-head{font-size:clamp(19px,2.2vw,27px);margin:0 0 clamp(16px,2.4vw,26px);
   padding-bottom:14px;border-bottom:2px solid var(--ink)}
 .sp-anat-line{display:block;margin-bottom:clamp(14px,2vw,20px)}
-.sp-anat-row{display:flex;align-items:baseline;gap:12px;font-size:clamp(13.5px,1.25vw,15.5px);font-weight:700}
-.sp-anat-row i{flex:1;border-bottom:2px dotted rgba(11,11,11,.35);transform:translateY(-4px)}
+/* a receipt line is label + pill + leader + amount; on a narrow phone that is
+   more than one line's worth, so let it wrap rather than push the page wide */
+.sp-anat-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;row-gap:2px;
+  font-size:clamp(13.5px,1.25vw,15.5px);font-weight:700}
+.sp-anat-row>span{min-width:0}
+.sp-anat-row i{flex:1;min-width:18px;border-bottom:2px dotted rgba(11,11,11,.35);transform:translateY(-4px)}
 .sp-anat-row b{font-size:clamp(19px,2vw,26px);font-weight:400}
 .sp-anat-row.is-red b{color:var(--red)}
 .sp-anat-to{flex:0 0 auto;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.07em;
@@ -900,6 +904,10 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-pd.is-pinned .sp-pd-stage{position:sticky;top:0;height:100vh}
 .sp-pd:not(.is-pinned) .sp-pd-stage{padding-block:clamp(56px,7vw,104px)}
 .sp-pd-in{display:grid;gap:clamp(28px,4vw,64px);align-items:center;width:100%}
+/* grid items default to min-width:auto, so the ledger's own min-content (its
+   route lines) was widening the whole track past the viewport on a 320px
+   screen. Let them shrink; the ledger's rows already truncate. */
+.sp-pd-in>*{min-width:0}
 @media(min-width:900px){.sp-pd-in{grid-template-columns:.9fr 1.1fr}}
 .sp-pd-lede{max-width:420px;margin:0 0 22px;font-size:clamp(15px,1.3vw,17.5px);line-height:1.6;color:var(--ink-6)}
 .sp-pd-keep{display:inline-block;background:var(--sun);border:2px solid var(--ink);border-radius:16px;
