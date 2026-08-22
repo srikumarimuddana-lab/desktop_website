@@ -43,7 +43,7 @@ export default function AboutPage() {
         <span className="sp-ahero-rule" aria-hidden="true" />
       </header>
 
-      <Marquee items={['Proudly Canadian', 'Saskatoon', '0% commission', 'flat $1 fee', 'no surge, ever']} />
+      <Marquee items={['Proudly Canadian', 'fair, both ways', 'Saskatoon', '0% commission', 'flat $1 fee', 'no surge, ever']} />
 
       {/* ── manifesto ── */}
       <Manifesto />
