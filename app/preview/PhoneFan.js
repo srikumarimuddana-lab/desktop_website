@@ -119,7 +119,7 @@ function RiderHome() {
 function RiderAi() {
   return (
     <>
-      <p className="sp-fs-hi sp-display">Assistant</p>
+      <p className="sp-fs-hi sp-display">AI Assistant</p>
       <div className="sp-fs-thread">
         <span className="sp-fs-bub sp-fs-bub-you">book me 6am to the airport</span>
         <span className="sp-fs-bub sp-fs-bub-ai">Done — 6:00am, $28.40 all in.</span>
@@ -137,7 +137,7 @@ function RiderReceipt() {
       <p className="sp-fs-hi sp-display">Receipt</p>
       <div className="sp-fs-card">
         <div className="sp-fs-row"><span>Fare</span><b>$14.20</b></div>
-        <div className="sp-fs-row"><span>Platform fee</span><b>$1.00</b></div>
+        <div className="sp-fs-row"><span>Booking fee</span><b>$1.00</b></div>
         <div className="sp-fs-row"><span>GST</span><b>$0.76</b></div>
         <div className="sp-fs-row sp-fs-row-red"><span>Surge</span><b>None</b></div>
         <div className="sp-fs-tot"><span>Total</span><b>$15.96</b></div>

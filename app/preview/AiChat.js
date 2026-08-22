@@ -22,7 +22,7 @@ import { useEffect, useRef, useState } from 'react'
 
 const THREAD = [
   { who: 'you', text: 'how much to the airport from Broadway?' },
-  { who: 'ai',  text: 'About $28.40 — fare, the $1 platform fee and GST. No surge.', tool: 'get_fare_quote' },
+  { who: 'ai',  text: 'About $28.40 all-in — ride fare, the $1 booking fee, the airport surcharge and GST. No surge.', tool: 'get_fare_quote' },
   { who: 'you', text: 'book it for 6am tomorrow' },
   { who: 'ai',  text: 'Scheduled for 6:00am. I’ll send the driver details the night before.', tool: 'propose_ride_booking' },
   { who: 'you', text: 'what did my trip last Friday cost?' },
@@ -205,7 +205,7 @@ export default function AiChat() {
               <span className="sp-ai-hl">Just ask.</span>
             </h2>
             <p className="sp-ai-lede">
-              Spinr&rsquo;s assistant is built into the app. Ask it to price a trip, book
+              Spinr&rsquo;s AI assistant is built into the app. Ask it to price a trip, book
               or schedule the ride, or pull up what you paid three Fridays ago —
               in plain language, no menus.
             </p>
@@ -236,7 +236,7 @@ export default function AiChat() {
               <span className="sp-ai-notch" aria-hidden="true" />
               <div className="sp-ai-head">
                 <Eyes />
-                Spinr Assistant
+                Spinr AI Assistant
               </div>
               <div className="sp-ai-thread" ref={threadRef}>
                 {THREAD.map((m, i) => {

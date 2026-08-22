@@ -40,7 +40,7 @@ const WHY = [
 
 const RECEIPT = [
   ['Fare', '$14.20', false],
-  ['Platform fee', '$1.00', false],
+  ['Booking fee', '$1.00', false],
   ['Surge', 'None', false],
   ['Driver keeps', '$14.20', true],
 ]
@@ -89,7 +89,7 @@ function CardArt({ kind }) {
 
 const FAQ = [
   ['Where can I use Spinr?', 'Spinr is available in Saskatoon, Saskatchewan. There is no planned launch in any other city at this time.'],
-  ['What does a ride actually cost?', 'The fare, plus a flat $1 platform fee. That fee does not scale with your distance, your fare, or the time of day, and there is no surge multiplier on top of it.'],
+  ['What does a ride actually cost?', 'The ride fare, a flat $1 booking fee, and tax \u2014 plus an airport surcharge or a city per-trip fee only where one applies, each shown by name before you book. No surge multiplier, ever, and no fee that is not on the receipt.'],
   ['How do drivers keep 100%?', 'Spinr takes 0% commission on consumer rides. The platform is funded by the flat rider fee and by corporate accounts — never by a cut of the driver’s fare.'],
   ['Who is driving me?', 'Every driver passes a criminal record check with vulnerable sector screening, holds a full driver\u2019s licence with at least three years of experience, and carries commercial ride-share insurance.'],
   ['Is Spinr Canadian?', 'Yes — proudly Canadian, with a support team based in Saskatchewan.'],
@@ -150,7 +150,7 @@ export default function PreviewPage() {
         </section>
 
         {/* ── ticker ────────────────────────────────────────── */}
-        <Marquee items={['0% commission', 'flat $1 fee', 'no surge, ever', 'Proudly Canadian', 'Saskatoon']} />
+        <Marquee items={['fair, both ways', '0% commission', 'flat $1 fee', 'no surge, ever', 'Proudly Canadian', 'Saskatoon']} />
 
         {/* ── Why Spinr — sticky stacking cards ─────────────── */}
         <section className="sp-sec" id="why">

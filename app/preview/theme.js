@@ -455,10 +455,13 @@ export const CSS = `
 @media(prefers-reduced-motion:reduce){.sp-rv{opacity:1;transform:none;transition:none}}
 
 /* ── letter-by-letter headline reveal; words stay whole so lines wrap ── */
-.sp-split{display:inline}
+.sp-split{display:inline;line-height:1.05}
 .sp-split-w{display:inline-block;white-space:nowrap}
 .sp-split-c{display:inline-block;transform:translateY(26px);opacity:.001;
   transition:transform .66s var(--spring) var(--c-delay,0ms),opacity .36s ease var(--c-delay,0ms)}
+/* cascade finished: back to ordinary inline text so selection paints sanely */
+.sp-split.done .sp-split-c{display:inline;transition:none}
+.sp-split.done .sp-split-w{display:inline}
 .sp-split.in .sp-split-c{transform:none;opacity:1}
 @media(prefers-reduced-motion:reduce){
   .sp-split-c{transform:none;opacity:1;transition:none}
@@ -623,10 +626,52 @@ div.fixed.bottom-6.right-6 > button:active{transform:translate(-4px,4px) scale(.
 @keyframes sp-chatin{from{opacity:0;transform:translateY(30px) scale(.5)}to{opacity:1;transform:none}}
 
 
+/* the OPEN chat window, same treatment — scoped by the widget's fixed shell,
+   colors literal because the widget sits outside .sp */
+div.fixed.bottom-6.right-6 > div[class*="rounded"]{
+  border:2px solid #0B0B0B !important;border-radius:18px !important;
+  box-shadow:-7px 7px 0 #0B0B0B !important;background:#FAF7EF !important;
+  animation:sp-chatopen .4s cubic-bezier(.2,1.1,.3,1) both}
+@keyframes sp-chatopen{from{opacity:0;transform:translateY(22px) scale(.94)}to{opacity:1;transform:none}}
+div.fixed.bottom-6.right-6 [class*="border-b"]{border-bottom:2px solid #0B0B0B !important}
+div.fixed.bottom-6.right-6 [class*="border-t"]{border-top:2px solid #0B0B0B !important}
+div.fixed.bottom-6.right-6 .bg-gray-50{background:#FFF3CF !important}
+div.fixed.bottom-6.right-6 [class*="CardTitle"],
+div.fixed.bottom-6.right-6 h3{font-weight:800 !important;letter-spacing:.02em}
+/* controls inside: pill input, hard-shadow send, bordered select */
+div.fixed.bottom-6.right-6 input{
+  border:2px solid #0B0B0B !important;border-radius:999px !important;background:#fff !important;
+  box-shadow:none !important;padding-left:14px !important}
+div.fixed.bottom-6.right-6 input:focus-visible{outline:none !important;box-shadow:2px 2px 0 #0B0B0B !important}
+div.fixed.bottom-6.right-6 button[class*="h-10"],
+div.fixed.bottom-6.right-6 .flex.gap-2 > button{
+  border:2px solid #0B0B0B !important;border-radius:999px !important;background:#DC3848 !important;
+  box-shadow:-3px 3px 0 #0B0B0B !important;color:#fff !important;
+  transition:transform .13s cubic-bezier(.34,1.56,.64,1),box-shadow .13s !important}
+div.fixed.bottom-6.right-6 .flex.gap-2 > button:hover{transform:translate(-1px,1px);box-shadow:-2px 2px 0 #0B0B0B !important}
+div.fixed.bottom-6.right-6 .flex.gap-2 > button:active{transform:translate(-3px,3px);box-shadow:0 0 0 #0B0B0B !important}
+div.fixed.bottom-6.right-6 .flex.gap-2 > button:disabled{background:#C9C4B8 !important;box-shadow:-3px 3px 0 #0B0B0B !important;transform:none}
+div.fixed.bottom-6.right-6 button[role="combobox"]{
+  border:2px solid #0B0B0B !important;border-radius:999px !important;background:#fff !important;font-weight:700 !important}
+/* message bubbles */
+div.fixed.bottom-6.right-6 .bg-primary.text-primary-foreground,
+div.fixed.bottom-6.right-6 [class*="bg-primary"][class*="rounded-lg"]{
+  background:#DC3848 !important;border:2px solid #0B0B0B !important;border-radius:14px !important}
+div.fixed.bottom-6.right-6 .bg-gray-100[class*="rounded-lg"]{
+  background:#fff !important;border:2px solid #0B0B0B !important;border-radius:14px !important}
+/* header icon buttons stay quiet but press */
+div.fixed.bottom-6.right-6 button[class*="h-8"]{transition:transform .1s ease !important}
+div.fixed.bottom-6.right-6 button[class*="h-8"]:active{transform:scale(.85)}
+
 @media(prefers-reduced-motion:reduce){
   .sp-nav,.sp-nav-links a{animation:none}
   div.fixed.bottom-6.right-6 > button{animation:none}
+  div.fixed.bottom-6.right-6 > div[class*="rounded"]{animation:none}
 }
+
+/* text selection carries the brand instead of browser blue */
+.sp ::selection{background:rgba(255,198,11,.55);color:var(--ink)}
+.sp ::-moz-selection{background:rgba(255,198,11,.55);color:var(--ink)}
 
 /* ════════════════ ride page ════════════════ */
 
@@ -722,6 +767,11 @@ div.fixed.bottom-6.right-6 > button:active{transform:translate(-4px,4px) scale(.
 .sp-anat-row i{flex:1;border-bottom:2px dotted rgba(11,11,11,.35);transform:translateY(-4px)}
 .sp-anat-row b{font-size:clamp(19px,2vw,26px);font-weight:400}
 .sp-anat-row.is-red b{color:var(--red)}
+.sp-anat-row.is-dim{color:var(--ink-4)}
+.sp-anat-row.is-dim b{color:var(--ink-4);font-size:clamp(16px,1.6vw,20px)}
+.sp-anat-vow{max-width:680px;margin:clamp(22px,3vw,32px) auto 0;text-align:center;
+  font-size:clamp(14px,1.3vw,16.5px);line-height:1.7;color:var(--ink-6)}
+.sp-anat-vow .sp-editorial{color:var(--ink)}
 .sp-anat-total{padding-top:12px;border-top:2px solid var(--ink)}
 .sp-anat-total b{font-size:clamp(24px,2.6vw,34px)}
 .sp-anat-note{margin:5px 0 0;font-size:clamp(14px,1.3vw,17px);color:var(--ink-5)}

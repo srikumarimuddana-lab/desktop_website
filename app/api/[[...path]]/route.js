@@ -130,9 +130,17 @@ let demoFaqs = [
   {
     id: '3',
     question: 'How much does a ride cost?',
-    answer: "You pay the driver's rate plus a flat $1 platform fee. There's no surge pricing - the price you see is the price you pay.",
+    answer: "You pay the ride fare plus a flat $1 booking fee and tax. An airport surcharge or a city per-trip fee applies only where one exists, and is shown by name on the estimate before you book. There's no surge pricing - the price you see is the price you pay.",
     category: 'rider',
     tags: ['pricing', 'costs'],
+    created_at: new Date().toISOString()
+  },
+  {
+    id: '3b',
+    question: 'What fees does Spinr charge?',
+    answer: "Four kinds, and no others: the ride fare itself (100% goes to your driver), a flat $1 booking fee, an airport surcharge when a trip touches the airport, and any per-trip fee your city charges - each shown by name before you book. GST (and PST where it applies) is its own line. No surge pricing, no insurance fee, no infrastructure fee, no service fee - if it isn't on the receipt, we can't charge it.",
+    category: 'rider',
+    tags: ['pricing', 'fees'],
     created_at: new Date().toISOString()
   },
   {

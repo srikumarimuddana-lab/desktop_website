@@ -133,6 +133,41 @@ SET content = 'Spinr is currently ONLY available in one city: Saskatoon, Saskatc
 WHERE source = 'website_analysis'
   AND title  = 'Which Cities is Spinr Available In';
 
+-- 6b. Fee transparency FAQ — customers should learn every possible fee from
+-- the FAQ, not from a receipt. Idempotent: updates by question if present,
+-- inserts otherwise. Amounts beyond the $1 booking fee are deliberately not
+-- hard-coded here (airport/city fees are admin-configured per service area);
+-- revisit this row if those change.
+-- faqs schema (SUPABASE_SETUP.sql): id TEXT PK with NO default, question,
+-- answer, category, tags, created_at - no is_active, no updated_at. The CMS
+-- API generates ids with uuidv4(), so the insert does the same in SQL.
+UPDATE public.faqs
+SET answer = 'Spinr charges four kinds of fees and no others: the ride fare itself (100% of it goes to your driver), a flat $1 booking fee, an airport surcharge when a trip touches the airport, and any per-trip fee your city charges - each shown by name on the fare estimate before you book. GST (and PST where it applies) appears as its own line. There is no surge pricing, no insurance fee, no infrastructure fee and no "service fee" - insurance and licensing are costs Spinr and its drivers carry inside the fare. If a fee is not on your receipt, Spinr cannot charge it.'
+WHERE question = 'What fees does Spinr charge?';
+
+INSERT INTO public.faqs (id, question, answer, category)
+SELECT gen_random_uuid()::text,
+       'What fees does Spinr charge?',
+       'Spinr charges four kinds of fees and no others: the ride fare itself (100% of it goes to your driver), a flat $1 booking fee, an airport surcharge when a trip touches the airport, and any per-trip fee your city charges - each shown by name on the fare estimate before you book. GST (and PST where it applies) appears as its own line. There is no surge pricing, no insurance fee, no infrastructure fee and no "service fee" - insurance and licensing are costs Spinr and its drivers carry inside the fare. If a fee is not on your receipt, Spinr cannot charge it.',
+       'pricing'
+WHERE NOT EXISTS (SELECT 1 FROM public.faqs WHERE question = 'What fees does Spinr charge?');
+
+-- Matching knowledge_base entry so the AI assistant answers fee questions the
+-- same way. Embedding left NULL on insert - regenerate with the other rows
+-- this patch touches (BM25 still matches it meanwhile).
+UPDATE knowledge_base
+SET content = 'Spinr fee transparency: riders pay the ride fare (drivers keep 100% of it), a flat $1 booking fee, an airport surcharge only when a trip touches the airport, and any per-trip fee the city charges - every fee is shown by name on the estimate before booking and itemised on the receipt. GST and PST (where applicable) are separate tax lines. Spinr has NO surge pricing, NO insurance fee, NO infrastructure fee and NO service fee: commercial insurance and licensing costs are carried inside the fare, never added at checkout.',
+    is_active = true
+WHERE title = 'Fees and charges';
+
+INSERT INTO knowledge_base (title, content, category, source, is_active)
+SELECT 'Fees and charges',
+       'Spinr fee transparency: riders pay the ride fare (drivers keep 100% of it), a flat $1 booking fee, an airport surcharge only when a trip touches the airport, and any per-trip fee the city charges - every fee is shown by name on the estimate before booking and itemised on the receipt. GST and PST (where applicable) are separate tax lines. Spinr has NO surge pricing, NO insurance fee, NO infrastructure fee and NO service fee: commercial insurance and licensing costs are carried inside the fare, never added at checkout.',
+       'pricing',
+       'website_analysis',
+       true
+WHERE NOT EXISTS (SELECT 1 FROM knowledge_base WHERE title = 'Fees and charges');
+
 -- 7. Uber/Lyft comparison: Canadian owned.
 UPDATE public.knowledge_base
 SET content = 'Spinr differs from other rideshare services like Uber and Lyft in several key ways: 1) 0% commission for drivers — they keep 100% of the fare (Uber/Lyft take 20-30%). 2) Flat $1 platform fee for riders — no surge pricing ever. 3) Proudly Canadian — supporting a homegrown business. 4) Local Canadian support team. 5) Community-focused approach. 6) Full SGI compliance for Saskatchewan safety standards. 7) Designed specifically for Saskatchewan conditions including winter.',

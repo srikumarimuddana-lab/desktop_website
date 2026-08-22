@@ -217,7 +217,7 @@ function Screen1({ on, t }) {
 
 const PRICE = [
   ['Fare', '$14.20'],
-  ['Platform fee', '$1.00'],
+  ['Booking fee', '$1.00'],
   ['GST (5%)', '$0.76'],
   ['Surge', 'None'],
 ]

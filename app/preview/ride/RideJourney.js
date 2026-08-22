@@ -21,7 +21,7 @@ const STAGES = [
   {
     k: 'Ask',
     t: 'Say where you’re going',
-    p: 'Type it, tap a saved place, or just ask the assistant.',
+    p: 'Type it, tap a saved place, or just ask the AI assistant.',
     ty: '-136vh',
   },
   {
@@ -173,7 +173,7 @@ function StageExtra({ i, local }) {
     )
   }
   if (i === 1) {
-    const rows = [['Fare', '$14.20'], ['Platform fee', '$1.00'], ['GST (5%)', '$0.76']]
+    const rows = [['Ride fare', '$14.20'], ['Booking fee', '$1.00'], ['GST (5%)', '$0.76']]
     return (
       <div className="sp-jn-receipt">
         {rows.map(([k, v], r) => (

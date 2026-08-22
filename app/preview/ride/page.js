@@ -14,25 +14,37 @@ export const metadata = { title: 'Ride | Spinr Design Sample' }
 
 const LINES = [
   {
-    k: 'Base + distance + time',
+    k: 'Ride fare (12.4 km)',
     v: '$14.20',
-    note: 'What the trip itself costs. All of it goes to your driver.',
+    note: 'Base + distance + time. All of it goes to your driver.',
   },
   {
-    k: 'Platform fee',
+    k: 'Booking fee',
     v: '$1.00',
-    note: 'Flat. The only thing Spinr charges — it never scales with the fare.',
+    note: 'The flat platform fee — the only thing Spinr charges. It never scales with the fare.',
   },
   {
-    k: 'GST (5%)',
-    v: '$0.76',
-    note: 'Shown as its own line, the way a receipt should.',
+    k: 'Airport surcharge',
+    v: '\u2014',
+    note: 'Only when a trip touches the airport — named on the estimate before you book.',
+    dim: true,
+  },
+  {
+    k: 'City & area fees',
+    v: '\u2014',
+    note: 'If your city charges a per-trip fee, it appears here by name. Never bundled, never renamed.',
+    dim: true,
   },
   {
     k: 'Surge',
     v: 'None',
     note: 'Not discounted. Not waived this week. Not a thing here.',
     red: true,
+  },
+  {
+    k: 'GST (5%)',
+    v: '$0.76',
+    note: 'Tax on its own line, the way a receipt should.',
   },
 ]
 
@@ -44,6 +56,8 @@ const SAFETY = [
 ]
 
 const FAQ = [
+  ['What fees can appear on my receipt?', 'Four kinds, and no others: the ride fare itself, the flat $1 booking fee, an airport surcharge when a trip touches the airport, and any per-trip fee your city charges — each named on the estimate before you book. Tax (GST, and PST where it applies) is shown on its own line.'],
+  ['Is there an insurance fee or service fee?', 'No. Commercial ride-share insurance and licensing are costs Spinr and its drivers carry inside the fare. There is no insurance fee, no infrastructure fee, no \u201cservice fee\u201d \u2014 if a line is not on the receipt above, we cannot charge it.'],
   ['What if my driver takes a longer route?', 'The price you accepted is the price you pay. A detour is our problem to sort out with the driver, not a surprise on your receipt.'],
   ['Can I book ahead?', 'Yes — schedule a ride for later and we dispatch it when the time comes. Scheduled rides are never surge-priced, because nothing is.'],
   ['Do I need cash for a tip?', 'Tips are in the app and optional. 100% of a tip goes to the driver, always.'],
@@ -90,7 +104,7 @@ export default function RidePage() {
               <p className="sp-display sp-anat-head">Broadway &rarr; YXE Airport</p>
               {LINES.map((l, i) => (
                 <Reveal key={l.k} delay={i * 110} className="sp-anat-line">
-                  <div className={`sp-anat-row${l.red ? ' is-red' : ''}`}>
+                  <div className={`sp-anat-row${l.red ? ' is-red' : ''}${l.dim ? ' is-dim' : ''}`}>
                     <span>{l.k}</span>
                     <i aria-hidden="true" />
                     <b className="sp-display">{l.v}</b>
@@ -104,11 +118,20 @@ export default function RidePage() {
                   <i aria-hidden="true" />
                   <b className="sp-display">$15.96</b>
                 </div>
-                <p className="sp-anat-note sp-editorial">Of which $14.20 — the whole fare — goes to the driver.</p>
+                <p className="sp-anat-note sp-editorial">Of which $14.20 — the whole ride fare — goes to the driver.</p>
               </Reveal>
               <span className="sp-anat-tear" aria-hidden="true" />
             </div>
           </div>
+          <Reveal delay={120}>
+            <p className="sp-anat-vow">
+              If a fee isn&rsquo;t on this list, we can&rsquo;t charge it. There is no
+              insurance fee, no infrastructure fee, no &ldquo;service fee&rdquo; —
+              commercial insurance and licensing are costs Spinr and its drivers carry
+              inside the fare, not lines added at checkout. Anything a city or airport
+              does charge is shown <em className="sp-editorial">by name, before you book</em>.
+            </p>
+          </Reveal>
         </div>
       </section>
 

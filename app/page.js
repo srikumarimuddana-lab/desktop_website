@@ -33,7 +33,7 @@ export default async function Home() {
     { icon: CreditCard, title: 'Daily Payouts', description: 'Get paid every day, not weekly.' },
   ]
   const riderBenefits = [
-    { icon: DollarSign, title: 'Flat $1 Fee', description: 'No surge pricing, no surprises.' },
+    { icon: DollarSign, title: 'Flat $1 Fee', description: 'No surge pricing \u2014 any airport or city fee is shown before you book.' },
     { icon: Shield, title: 'Safe & Local', description: 'Verified Saskatchewan drivers.' },
     { icon: Clock, title: 'Fast Pickups', description: 'Reliable service across Saskatoon.' },
   ]
