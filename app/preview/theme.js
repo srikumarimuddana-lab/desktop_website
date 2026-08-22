@@ -39,24 +39,44 @@ export const CSS = `
   border:2px solid var(--ink);background:#fff;color:var(--ink);font-weight:700;font-size:15px;text-decoration:none;
   transition:transform .14s}
 .sp-btn-ghost:hover{transform:translateY(-2px);color:var(--ink)}
+.sp-btn-ghost:active{transform:translateY(1px) scale(.96)}
 .sp-btn-ghost-dark{background:transparent;color:#fff;border-color:#fff}
 
 /* ── nav ── */
-.sp-nav{position:sticky;top:clamp(12px,2.4vw,24px);z-index:60;width:min(1180px,calc(100% - clamp(24px,5vw,56px)));
+@keyframes sp-navin{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
+.sp-nav{animation:sp-navin .65s var(--spring) backwards .1s;
+  position:sticky;top:clamp(12px,2.4vw,24px);z-index:60;width:min(1180px,calc(100% - clamp(24px,5vw,56px)));
   margin:clamp(12px,2.4vw,24px) auto 0;display:flex;align-items:center;gap:14px;
   padding:9px 10px 9px 24px;border-radius:999px;border:2px solid var(--ink);
   background:rgba(251,249,243,.86);backdrop-filter:blur(14px) saturate(1.2);
   box-shadow:var(--hard-sm)}
 .sp-nav-logo{display:flex;align-items:center;flex:0 0 auto}
-.sp-nav-logo img{height:26px;width:auto}
+.sp-nav-logo img{height:26px;width:auto;transition:transform .2s var(--snap)}
+.sp-nav-logo:hover img{transform:rotate(-5deg) scale(1.07)}
+.sp-nav-logo:active img{transform:scale(.92)}
 .sp-nav-links{display:none;gap:22px;margin-left:auto;font-size:14.5px;font-weight:600}
-.sp-nav-links a{color:var(--ink);opacity:.72;text-decoration:none}
-.sp-nav-links a:hover{opacity:1}
-.sp-nav-links a.is-here{opacity:1;box-shadow:inset 0 -3px 0 var(--red)}
+.sp-nav-links a{color:var(--ink);opacity:.72;text-decoration:none;display:inline-block}
+/* menu items walk in behind the bar, then get an underline that sweeps on hover
+   and a press you can feel */
+.sp-nav-links a{animation:sp-navitem .5s ease backwards}
+.sp-nav-links a:nth-child(1){animation-delay:.28s}
+.sp-nav-links a:nth-child(2){animation-delay:.36s}
+.sp-nav-links a:nth-child(3){animation-delay:.44s}
+.sp-nav-links a:nth-child(4){animation-delay:.52s}
+@keyframes sp-navitem{from{opacity:0;transform:translateY(-9px)}to{opacity:1;transform:none}}
+.sp-nav-links a:not(.sp-nav-ai){padding-bottom:3px;
+  background:linear-gradient(var(--red),var(--red)) no-repeat left 100%/0 2.5px;
+  transition:opacity .15s ease,background-size .3s var(--snap),transform .12s ease}
+.sp-nav-links a:not(.sp-nav-ai):hover{opacity:1;background-size:100% 2.5px}
+.sp-nav-links a:not(.sp-nav-ai):active{transform:translateY(1px) scale(.97)}
+.sp-nav-links a.is-here{opacity:1;background-size:100% 2.5px}
 .sp-nav-links a.sp-nav-ai{display:inline-flex;align-items:center;gap:7px;opacity:1;font-weight:800;
   background:var(--sun);border:2px solid var(--ink);border-radius:999px;padding:5px 13px;
-  box-shadow:-2px 2px 0 var(--ink);transition:transform .16s var(--snap)}
+  box-shadow:-2px 2px 0 var(--ink);transition:transform .16s var(--snap),box-shadow .16s}
 .sp-nav-links a.sp-nav-ai:hover{transform:translateY(-1px)}
+.sp-nav-links a.sp-nav-ai:active{transform:translate(-2px,2px);box-shadow:0 0 0 var(--ink)}
+.sp-nav-links a.sp-nav-ai span{display:inline-block;transition:transform .25s var(--snap)}
+.sp-nav-links a.sp-nav-ai:hover span{transform:rotate(20deg) scale(1.2)}
 .sp-nav-cta{display:flex;align-items:center;gap:9px;margin-left:auto}
 .sp-nav-cta .sp-btn,.sp-nav-cta .sp-btn-ghost{padding:11px 20px;font-size:14px;box-shadow:-3px 3px 0 var(--ink)}
 .sp-nav-cta .sp-btn-ghost{box-shadow:none}
@@ -328,6 +348,7 @@ export const CSS = `
   transition:transform .18s var(--snap),box-shadow .18s,background .15s,color .15s}
 .sp-modes button:hover{transform:translateY(-2px);box-shadow:var(--hard-sm)}
 .sp-modes button.on{background:var(--red);color:#fff;transform:translateY(-2px);box-shadow:var(--hard-sm)}
+.sp-modes button:active,.sp-modes button.on:active{transform:translateY(1px);box-shadow:none}
 .sp-keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .sp-keys button{appearance:none;display:grid;place-items:center;min-height:48px;border-radius:10px;
   background:linear-gradient(#FFFBEE,#FBF4E2 55%,#EFE3C6);border:2px solid var(--ink);
@@ -387,6 +408,8 @@ export const CSS = `
 .sp-faq summary{list-style:none;display:flex;align-items:center;gap:18px;cursor:pointer;
   padding:clamp(18px,2.4vw,28px) clamp(18px,2.6vw,32px);font-size:clamp(17px,1.9vw,26px)}
 .sp-faq summary::-webkit-details-marker{display:none}
+.sp-faq summary{transition:transform .1s ease}
+.sp-faq summary:active{transform:translateY(1px)}
 .sp-faq-ic{margin-left:auto;flex:0 0 auto;position:relative;width:clamp(34px,3.2vw,44px);height:clamp(34px,3.2vw,44px);
   border-radius:999px;border:2px solid var(--red);background:var(--red);transition:transform .28s var(--snap),background .2s}
 .sp-faq-ic::before,.sp-faq-ic::after{content:"";position:absolute;top:50%;left:50%;background:#fff;border-radius:2px;transform:translate(-50%,-50%)}
@@ -417,6 +440,8 @@ export const CSS = `
 .sp-foot nav{display:flex;flex-direction:column;gap:9px}
 .sp-foot nav a{color:inherit;font-size:14.5px;font-weight:600;opacity:.82;text-decoration:none}
 .sp-foot nav a:hover{opacity:1;color:var(--sun)}
+.sp-foot nav a{display:inline-block;transition:transform .12s ease}
+.sp-foot nav a:active{transform:translateX(3px)}
 .sp-foot-base{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;
   padding-block:18px 28px;font-size:12.5px;font-weight:600;opacity:.6;border-top:1px solid rgba(255,255,255,.16)}
 .sp-foot-flag{background:rgba(255,255,255,.1);border-radius:999px;padding:5px 12px}
@@ -543,7 +568,8 @@ export const CSS = `
   transition:transform .62s var(--spring),opacity .3s ease}
 .sp-dock.up{transform:translate(-50%,0);opacity:1;pointer-events:auto}
 .sp-dock-ai{display:flex;align-items:center;gap:10px;padding:5px 14px 5px 6px;border-radius:999px;
-  color:var(--ink);text-decoration:none;transition:background .16s ease}
+  color:var(--ink);text-decoration:none;transition:background .16s ease,transform .12s var(--snap)}
+.sp-dock-ai:active{transform:scale(.95)}
 .sp-dock-ai:hover{background:var(--red-1);color:var(--ink)}
 .sp-dock-spark{width:31px;height:31px;flex:0 0 auto;border-radius:999px;border:2px solid var(--ink);
   background:var(--sky);display:grid;place-items:center;font-size:14px}
@@ -585,6 +611,22 @@ export const CSS = `
       RevealFooter drops back to a normal in-flow footer when it can't ── */
 .sp-stage{position:relative;z-index:1;background:#FEFEFE}
 .sp-footlayer.pinned{position:fixed;left:0;right:0;bottom:0;z-index:0}
+
+/* ── the chat bubble: same hard-shadow language, same press ── */
+div.fixed.bottom-6.right-6 > button{
+  border:2px solid #0B0B0B !important;background:#DC3848 !important;
+  box-shadow:-4px 4px 0 #0B0B0B !important;
+  animation:sp-chatin .6s cubic-bezier(.2,1.1,.3,1) backwards .9s;
+  transition:transform .15s cubic-bezier(.34,1.56,.64,1),box-shadow .15s !important}
+div.fixed.bottom-6.right-6 > button:hover{transform:translate(-2px,2px);box-shadow:-2px 2px 0 #0B0B0B !important}
+div.fixed.bottom-6.right-6 > button:active{transform:translate(-4px,4px) scale(.97);box-shadow:0 0 0 #0B0B0B !important}
+@keyframes sp-chatin{from{opacity:0;transform:translateY(30px) scale(.5)}to{opacity:1;transform:none}}
+
+
+@media(prefers-reduced-motion:reduce){
+  .sp-nav,.sp-nav-links a{animation:none}
+  div.fixed.bottom-6.right-6 > button{animation:none}
+}
 
 /* ════════════════ ride page ════════════════ */
 
