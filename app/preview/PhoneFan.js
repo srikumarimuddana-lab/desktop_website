@@ -29,7 +29,7 @@ const LAYOUT = [
 
 const mix = (pair, t) => pair[0] + (pair[1] - pair[0]) * t
 
-export default function PhoneFan() {
+export default function PhoneFan({ force }) {
   const ref = useRef(null)
   const [spread, setSpread] = useState(0)
   /* how far apart they are allowed to travel — a narrow hero would push the
@@ -38,8 +38,8 @@ export default function PhoneFan() {
   const [cast, setCast] = useState(null)
 
   useEffect(() => {
-    setCast(Math.random() < 0.5 ? 'rider' : 'driver')
-  }, [])
+    setCast(force || (Math.random() < 0.5 ? 'rider' : 'driver'))
+  }, [force])
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

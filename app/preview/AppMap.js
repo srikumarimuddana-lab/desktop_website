@@ -22,7 +22,7 @@ const ROUTE = 'M34 268 C 44 232, 30 208, 58 186 S 104 168, 118 132 S 140 74, 166
  * the bridge carry it without the pins, which fall outside. */
 const VIEW = { full: '0 0 200 300', wide: '4 146 192 84' }
 
-export default function AppMap({ t = 0, className = '', pins = true, route = true, view = 'full' }) {
+export default function AppMap({ t = 0, className = '', pins = true, route = true, view = 'full', dense = false }) {
   const clamped = Math.min(1, Math.max(0, t))
   const pathRef = useRef(null)
   const carRef = useRef(null)
@@ -63,6 +63,23 @@ export default function AppMap({ t = 0, className = '', pins = true, route = tru
         fill="none" stroke="#8FC6D3" strokeWidth="1.5"
       />
 
+      {/* full-bleed mode: side streets and more blocks so viewport scale reads as a city */}
+      {dense && (
+        <g>
+          <g stroke="#FAF7EF" strokeWidth="1.6" fill="none" opacity=".8">
+            <path d="M0 12 H200" /><path d="M0 56 H200" /><path d="M0 100 H200" />
+            <path d="M0 144 H200" /><path d="M0 188 H200" /><path d="M0 232 H200" /><path d="M0 276 H200" />
+            <path d="M6 0 V300" /><path d="M50 0 V300" /><path d="M94 0 V300" />
+            <path d="M138 0 V300" /><path d="M182 0 V300" />
+          </g>
+          <rect x="80" y="14" width="30" height="16" rx="4" fill="#E2D7C0" />
+          <rect x="34" y="96" width="28" height="20" rx="4" fill="#E2D7C0" />
+          <rect x="120" y="250" width="34" height="18" rx="4" fill="#E2D7C0" />
+          <rect x="8" y="140" width="14" height="12" rx="3" fill="#D3E6BE" />
+          <rect x="176" y="180" width="20" height="14" rx="4" fill="#D3E6BE" />
+        </g>
+      )}
+
       {/* street grid */}
       <g stroke="#FAF7EF" strokeLinecap="square" fill="none">
         <g strokeWidth="4.5">
@@ -75,16 +92,16 @@ export default function AppMap({ t = 0, className = '', pins = true, route = tru
       </g>
 
       {/* the bridge: railings either side of the avenue, across the water */}
-      <g stroke="rgba(11,11,11,.42)" strokeWidth="1.6" strokeLinecap="round">
+      <g stroke="rgba(11,11,11,.42)" strokeWidth={dense ? 0.9 : 1.6} strokeLinecap="round">
         <path d="M43.3 238.1 L111.1 153.1" /><path d="M35.5 231.9 L103.3 146.9" />
       </g>
 
       {/* route: ghost underneath, then the live line drawn by t */}
       {route && (
         <>
-          <path ref={pathRef} d={ROUTE} fill="none" stroke="rgba(11,11,11,.17)" strokeWidth="6" strokeLinecap="round" />
+          <path ref={pathRef} d={ROUTE} fill="none" stroke="rgba(11,11,11,.17)" strokeWidth={dense ? 3.6 : 6} strokeLinecap="round" />
           <path
-            d={ROUTE} fill="none" stroke="#DC3848" strokeWidth="5" strokeLinecap="round"
+            d={ROUTE} fill="none" stroke="#DC3848" strokeWidth={dense ? 3 : 5} strokeLinecap="round"
             pathLength="1" strokeDasharray="1" strokeDashoffset={1 - clamped}
           />
         </>
@@ -93,21 +110,27 @@ export default function AppMap({ t = 0, className = '', pins = true, route = tru
       {pins && route && (
         <>
           {/* pickup */}
-          <circle cx="34" cy="268" r="7" fill="#fff" stroke="#0B0B0B" strokeWidth="2.5" />
-          <circle cx="34" cy="268" r="2.6" fill="#0B0B0B" />
+          <g transform={dense ? 'translate(34 268) scale(.55) translate(-34 -268)' : undefined}>
+            <circle cx="34" cy="268" r="7" fill="#fff" stroke="#0B0B0B" strokeWidth="2.5" />
+            <circle cx="34" cy="268" r="2.6" fill="#0B0B0B" />
+          </g>
           {/* destination */}
-          <path d="M166 30 c6.6 0 12 5.4 12 12 0 8.6-12 20-12 20s-12-11.4-12-20c0-6.6 5.4-12 12-12z"
-                fill="#FFC60B" stroke="#0B0B0B" strokeWidth="2.5" strokeLinejoin="round" />
-          <circle cx="166" cy="42" r="4" fill="#0B0B0B" />
+          <g transform={dense ? 'translate(166 50) scale(.55) translate(-166 -50)' : undefined}>
+            <path d="M166 30 c6.6 0 12 5.4 12 12 0 8.6-12 20-12 20s-12-11.4-12-20c0-6.6 5.4-12 12-12z"
+                  fill="#FFC60B" stroke="#0B0B0B" strokeWidth="2.5" strokeLinejoin="round" />
+            <circle cx="166" cy="42" r="4" fill="#0B0B0B" />
+          </g>
         </>
       )}
 
-      {/* the car */}
+      {/* the car (drawn at half size in dense/full-bleed mode) */}
       <g ref={carRef} style={{ display: route ? undefined : 'none' }}>
-        <rect x="-9" y="-12.5" width="18" height="25" rx="6" fill="#fff" />
-        <rect x="-7.2" y="-10.7" width="14.4" height="21.4" rx="4.8" fill="#0B0B0B" />
-        <rect x="-5" y="-8.2" width="10" height="7" rx="2.5" fill="#A8E1DE" />
-        <rect x="-5" y="1.4" width="10" height="5.4" rx="2.1" fill="#57575A" />
+        <g transform={dense ? 'scale(.5)' : undefined}>
+          <rect x="-9" y="-12.5" width="18" height="25" rx="6" fill="#fff" />
+          <rect x="-7.2" y="-10.7" width="14.4" height="21.4" rx="4.8" fill="#0B0B0B" />
+          <rect x="-5" y="-8.2" width="10" height="7" rx="2.5" fill="#A8E1DE" />
+          <rect x="-5" y="1.4" width="10" height="5.4" rx="2.1" fill="#57575A" />
+        </g>
       </g>
     </svg>
   )

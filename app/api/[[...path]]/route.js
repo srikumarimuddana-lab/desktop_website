@@ -114,7 +114,7 @@ let demoFaqs = [
   {
     id: '1',
     question: 'What is Spinr?',
-    answer: "Spinr is 100% Canadian owned and operated. We offer 0% commission for drivers and a flat $1 fee for riders - making ridesharing fair for everyone.",
+    answer: "Spinr is proudly Canadian. We offer 0% commission for drivers and a flat $1 fee for riders - making ridesharing fair for everyone.",
     category: 'general',
     tags: ['about', 'getting-started'],
     created_at: new Date().toISOString()
@@ -222,8 +222,8 @@ async function handleRoute(request, { params }) {
         {
           path: '/',
           title: "Spinr - 0% Commission Rideshare in Saskatoon",
-          description: "100% Canadian owned and operated. Drivers keep 100% of net fare, riders pay just $1. No surge pricing. Now serving Saskatoon.",
-          keywords: "rideshare Saskatoon, 0% commission, Canadian owned and operated rideshare, Saskatoon rideshare, Spinr, taxi alternative",
+          description: "Proudly Canadian. Drivers keep 100% of net fare, riders pay just $1. No surge pricing. Now serving Saskatoon.",
+          keywords: "rideshare Saskatoon, 0% commission, proudly Canadian rideshare, Saskatoon rideshare, Spinr, taxi alternative",
           og_image: null,
           canonical: "https://spinr.ca/",
           sitemap_priority: 1.0,
@@ -234,7 +234,7 @@ async function handleRoute(request, { params }) {
             "name": "Spinr",
             "url": "https://spinr.ca",
             "logo": "https://spinr.ca/logo.webp",
-            "description": "100% Canadian owned and operated rideshare platform with 0% commission for drivers",
+            "description": "Proudly Canadian rideshare platform with 0% commission for drivers",
             "areaServed": ["Saskatoon", "Saskatchewan"],
             "sameAs": []
           },
@@ -295,7 +295,7 @@ async function handleRoute(request, { params }) {
         {
           path: '/about',
           title: "About Spinr - Canada's Fair Rideshare",
-          description: "Learn about Spinr's mission to bring fair, transparent ridesharing to Canada. 100% Canadian owned and operated, community-driven.",
+          description: "Learn about Spinr's mission to bring fair, transparent ridesharing to Canada. Proudly Canadian, community-driven.",
           keywords: "about Spinr, Canadian rideshare company, local rideshare, fair rideshare",
           og_image: null,
           canonical: "https://spinr.ca/about",
@@ -308,7 +308,7 @@ async function handleRoute(request, { params }) {
               "@type": "Organization",
               "name": "Spinr",
               "foundingLocation": "Canada",
-              "description": "100% Canadian owned and operated rideshare platform"
+              "description": "Proudly Canadian rideshare platform"
             }
           },
           no_index: false

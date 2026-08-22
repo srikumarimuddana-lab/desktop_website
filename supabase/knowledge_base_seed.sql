@@ -18,7 +18,7 @@ DELETE FROM public.knowledge_base WHERE source = 'website_analysis';
 INSERT INTO public.knowledge_base (title, content, category, tags, source) VALUES
 (
     'What is Spinr',
-    'Spinr is 100% Canadian owned and operated, currently available ONLY in Saskatoon, Saskatchewan. Our core differentiator is that drivers keep 100% of net fare (0% commission forever), and riders pay just a flat $1 platform fee per trip. There is no surge pricing and no hidden charges. We have no announced launch dates for any other city.',
+    'Spinr is proudly Canadian, currently available ONLY in Saskatoon, Saskatchewan. Our core differentiator is that drivers keep 100% of net fare (0% commission forever), and riders pay just a flat $1 platform fee per trip. There is no surge pricing and no hidden charges. We have no announced launch dates for any other city.',
     'general',
     ARRAY['about', 'company', 'introduction', 'what is spinr'],
     'website_analysis'
@@ -32,7 +32,7 @@ INSERT INTO public.knowledge_base (title, content, category, tags, source) VALUE
 ),
 (
     'Spinr Contact Information',
-    'You can reach Spinr support at support@spinr.ca. Spinr is 100% Canadian owned and operated, and rideshare service is currently available only in Saskatoon, Saskatchewan. For immediate assistance, use the in-app chat or email us.',
+    'You can reach Spinr support at support@spinr.ca. Spinr is proudly Canadian, and rideshare service is currently available only in Saskatoon, Saskatchewan. For immediate assistance, use the in-app chat or email us.',
     'general',
     ARRAY['contact', 'support', 'email', 'help', 'phone', 'reach'],
     'website_analysis'
@@ -430,14 +430,14 @@ INSERT INTO public.knowledge_base (title, content, category, tags, source) VALUE
 INSERT INTO public.knowledge_base (title, content, category, tags, source) VALUES
 (
     'Spinr vs Other Rideshare Services',
-    'Spinr differs from other rideshare services like Uber and Lyft in several key ways: 1) 0% commission for drivers — they keep 100% of the fare (Uber/Lyft take 20-30%). 2) Flat $1 platform fee for riders — no surge pricing ever. 3) 100% Canadian owned and operated — supporting a homegrown business. 4) Local Canadian support team. 5) Community-focused approach. 6) Full SGI compliance for Saskatchewan safety standards. 7) Designed specifically for Saskatchewan conditions including winter.',
+    'Spinr differs from other rideshare services like Uber and Lyft in several key ways: 1) 0% commission for drivers — they keep 100% of the fare (Uber/Lyft take 20-30%). 2) Flat $1 platform fee for riders — no surge pricing ever. 3) Proudly Canadian — supporting a homegrown business. 4) Local Canadian support team. 5) Community-focused approach. 6) Full SGI compliance for Saskatchewan safety standards. 7) Designed specifically for Saskatchewan conditions including winter.',
     'general',
     ARRAY['comparison', 'uber', 'lyft', 'difference', 'better', 'alternative', 'vs'],
     'website_analysis'
 ),
 (
     'Why Choose Spinr Over Uber or Lyft',
-    'Choose Spinr because: 1) You support a Canadian business — 100% Canadian owned and operated. 2) Drivers earn more with 0% commission. 3) Riders pay less with just a $1 flat fee and no surge pricing. 4) Local customer support that understands Saskatoon. 5) Community-focused approach. 6) Commitment to safety with SGI compliance. 7) All money stays in Canada — supporting the local economy.',
+    'Choose Spinr because: 1) You support a proudly Canadian business. 2) Drivers earn more with 0% commission. 3) Riders pay less with just a $1 flat fee and no surge pricing. 4) Local customer support that understands Saskatoon. 5) Community-focused approach. 6) Commitment to safety with SGI compliance. 7) All money stays in Canada — supporting the local economy.',
     'general',
     ARRAY['why', 'choose', 'benefits', 'advantages', 'local', 'uber', 'lyft'],
     'website_analysis'

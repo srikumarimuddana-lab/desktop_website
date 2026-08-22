@@ -257,7 +257,7 @@ function Screen3({ on, t }) {
         <div className="sp-scr-avatar" aria-hidden="true" />
         <div>
           <b>Your driver is {mins} min away</b>
-          <i>Grey Corolla &middot; SGI insured</i>
+          <i>Grey Corolla &middot; Fully insured</i>
         </div>
       </div>
       <div className="sp-scr-bar" aria-hidden="true"><i style={{ transform: `scaleX(${clamp01(t)})` }} /></div>
