@@ -140,9 +140,12 @@ export function Tilt({ children, max = 3, className = '' }) {
 export function SplitText({ text, as: Tag = 'span', className = '', step = 16, start = 0 }) {
   const ref = useRef(null)
   const inView = useInView(ref, { threshold: 0.05 })
-  /* Once the cascade lands, the letters drop back to plain inline text.
-   * Atomic inline-blocks break text-selection painting (the line's band
-   * hides their glyphs); ordinary inline text selects normally. */
+  /* Once the cascade lands, the markup collapses back to a plain text node.
+   * Per-character spans are only safe while animating: they break selection
+   * painting, they kill kerning between letters, and an isolated-punctuation
+   * span can resolve to a different font face than its neighbours (the comma
+   * in "Every fare," was rendering from the fallback while the letters used
+   * Anton, so it read as a stray dash). None of that survives one text node. */
   const [done, setDone] = useState(false)
   const chars = String(text).replace(/ /g, '').length
 
@@ -153,10 +156,14 @@ export function SplitText({ text, as: Tag = 'span', className = '', step = 16, s
     return () => clearTimeout(t)
   }, [inView, start, step, chars])
 
+  if (done) {
+    return <Tag ref={ref} className={`sp-split in done ${className}`.trim()}>{text}</Tag>
+  }
+
   const words = String(text).split(' ')
   let n = -1
   return (
-    <Tag ref={ref} className={`sp-split${inView ? ' in' : ''}${done ? ' done' : ''} ${className}`.trim()} aria-label={text}>
+    <Tag ref={ref} className={`sp-split${inView ? ' in' : ''} ${className}`.trim()} aria-label={text}>
       {words.map((w, wi) => (
         <Fragment key={wi}>
           <span className="sp-split-w" aria-hidden="true">

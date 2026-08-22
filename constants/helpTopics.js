@@ -63,7 +63,7 @@ export const HELP_CATEGORIES = [
             { id: 'driver-ratings', title: 'Understanding your driver rating', slug: 'driver-ratings' },
             { id: 'driver-app-guide', title: 'Using the Spinr Driver app', slug: 'driver-app-guide' },
             { id: 'insurance-coverage', title: 'Insurance coverage while driving', slug: 'insurance-coverage' },
-            { id: 'tax-documents', title: 'Tax documents and 1099s', slug: 'tax-documents' },
+            { id: 'tax-documents', title: 'Tax documents and T4A slips', slug: 'tax-documents' },
         ],
     },
     {

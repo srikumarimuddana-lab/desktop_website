@@ -107,7 +107,7 @@ export default function PreviewPage() {
               Proudly Canadian &middot; Saskatoon
             </span>
             <h1 className="sp-display sp-hero-h">
-              <SplitText text="Every fare," start={120} />
+              <SplitText text="Every fare" start={120} />
               <br />
               <SplitText as="span" className="sp-hero-hl" text="straight to the driver." start={300} />
             </h1>
