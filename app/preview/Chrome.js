@@ -42,7 +42,8 @@ export function SiteNav() {
 
 /* Every page ends on the same red room — only the words change. The #get id
  * is what the docked CTA watches for. */
-export function FinalCta({ title, sub }) {
+export function FinalCta({ title, sub, store = 'rider' }) {
+  const urls = APP_URLS[store] || APP_URLS.rider
   return (
     <section className="sp-sec sp-final" id="get">
       <div className="sp-wrap sp-final-in">
@@ -52,8 +53,8 @@ export function FinalCta({ title, sub }) {
             {sub} <span className="sp-editorial">100% Canadian owned and operated.</span>
           </p>
           <div className="sp-final-btns">
-            <a className="sp-btn" href={APP_URLS.rider.ios} target="_blank" rel="noopener noreferrer">App Store</a>
-            <a className="sp-btn-ghost sp-btn-ghost-dark" href={APP_URLS.rider.android} target="_blank" rel="noopener noreferrer">Google Play</a>
+            <a className="sp-btn" href={urls.ios} target="_blank" rel="noopener noreferrer">App Store</a>
+            <a className="sp-btn-ghost sp-btn-ghost-dark" href={urls.android} target="_blank" rel="noopener noreferrer">Google Play</a>
           </div>
         </div>
         <Tilt className="sp-qr" max={5}>
