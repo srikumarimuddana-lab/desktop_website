@@ -17,7 +17,7 @@ export const metadata = { title: 'About | Spinr Design Sample' }
 const HOME = [
   ['Saskatoon first', 'One city, properly served, before anywhere else. There is no planned launch in another city — including Regina.'],
   ['Canadian rules, by design', 'Privacy, insurance and trip-record obligations were the starting point of the build, not a compliance pass at the end.'],
-  ['Money stays here', '100% Canadian owned and operated. The fare a Saskatoon rider pays is earned by a Saskatoon driver.'],
+  ['Money stays here', 'Proudly Canadian. The fare a Saskatoon rider pays is earned by a Saskatoon driver.'],
 ]
 
 export default function AboutPage() {
@@ -43,7 +43,7 @@ export default function AboutPage() {
         <span className="sp-ahero-rule" aria-hidden="true" />
       </header>
 
-      <Marquee items={['100% Canadian owned and operated', 'Saskatoon', '0% commission', 'flat $1 fee', 'no surge, ever']} />
+      <Marquee items={['Proudly Canadian', 'Saskatoon', '0% commission', 'flat $1 fee', 'no surge, ever']} />
 
       {/* ── manifesto ── */}
       <Manifesto />

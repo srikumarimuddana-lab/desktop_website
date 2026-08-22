@@ -17,7 +17,7 @@ export default function Footer() {
                 className="h-8 w-auto brightness-0 invert"
               />
             </Link>
-            <p className="text-gray-400 text-sm">100% Canadian owned and operated. Fair for drivers, affordable for riders.</p>
+            <p className="text-gray-400 text-sm">Proudly Canadian. Fair for drivers, affordable for riders.</p>
           </div>
           <div>
             <h4 className="font-semibold mb-4">For Riders</h4>

@@ -50,7 +50,7 @@ export function FinalCta({ title, sub, store = 'rider' }) {
         <div>
           <h2 className="sp-display sp-final-h">{title}</h2>
           <p className="sp-final-p">
-            {sub} <span className="sp-editorial">100% Canadian owned and operated.</span>
+            {sub} <span className="sp-editorial">Proudly Canadian.</span>
           </p>
           <div className="sp-final-btns">
             <a className="sp-btn" href={urls.ios} target="_blank" rel="noopener noreferrer">App Store</a>

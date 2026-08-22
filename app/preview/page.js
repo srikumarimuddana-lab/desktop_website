@@ -32,7 +32,7 @@ const WHY = [
     bg: '#DBF3F1', ink: '#0F4C5C', border: '#2E7BA6', art: 'surge',
   },
   {
-    t: '100% Canadian owned and operated',
+    t: 'Proudly Canadian',
     p: 'Every driver is background-checked and carries commercial ride-share insurance for the whole trip.',
     bg: '#FFEFC9', ink: '#6E4E00', border: '#C79A1E', art: 'verify',
   },
@@ -92,7 +92,7 @@ const FAQ = [
   ['What does a ride actually cost?', 'The fare, plus a flat $1 platform fee. That fee does not scale with your distance, your fare, or the time of day, and there is no surge multiplier on top of it.'],
   ['How do drivers keep 100%?', 'Spinr takes 0% commission on consumer rides. The platform is funded by the flat rider fee and by corporate accounts — never by a cut of the driver’s fare.'],
   ['Who is driving me?', 'Every driver passes a criminal record check with vulnerable sector screening, holds a full driver\u2019s licence with at least three years of experience, and carries commercial ride-share insurance.'],
-  ['Is Spinr Canadian?', 'Yes — 100% Canadian owned and operated, with a support team based in Saskatchewan.'],
+  ['Is Spinr Canadian?', 'Yes — proudly Canadian, with a support team based in Saskatchewan.'],
 ]
 
 export default function PreviewPage() {
@@ -104,7 +104,7 @@ export default function PreviewPage() {
 
           <div className="sp-hero-copy">
             <span className="sp-hero-badge sp-ap" style={{ '--ap-delay': '620ms', '--ap-y': '18px' }}>
-              100% Canadian owned and operated &middot; Saskatoon
+              Proudly Canadian &middot; Saskatoon
             </span>
             <h1 className="sp-display sp-hero-h">
               <SplitText text="Every fare," start={120} />
@@ -150,7 +150,7 @@ export default function PreviewPage() {
         </section>
 
         {/* ── ticker ────────────────────────────────────────── */}
-        <Marquee items={['0% commission', 'flat $1 fee', 'no surge, ever', '100% Canadian owned and operated', 'Saskatoon']} />
+        <Marquee items={['0% commission', 'flat $1 fee', 'no surge, ever', 'Proudly Canadian', 'Saskatoon']} />
 
         {/* ── Why Spinr — sticky stacking cards ─────────────── */}
         <section className="sp-sec" id="why">
