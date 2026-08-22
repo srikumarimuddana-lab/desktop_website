@@ -19,8 +19,11 @@ import { useEffect, useRef, useState } from 'react'
  * ladder — Part-time and Full-time — separated by how many rides a day they
  * allow. Every driver gets 6 months free at present.
  *
- * Pricing is now fully specified: Part-time $19.99 (introductory), up to 4
- * rides a day; Full-time $49.99, unlimited rides. No placeholders remain.
+ * Pricing is now fully specified: Part-time $19.99, up to 4 rides a day;
+ * Full-time $49.99, unlimited rides. No placeholders remain.
+ *
+ * BOTH prices are introductory — neither is the standard price. Every place
+ * a number appears has to say so.
  *
  * "Unlimited" is a promise, so it is stated plainly and not hedged. If a cap
  * or fair-use rule is ever added, this word has to change here, in both FAQs,
@@ -32,17 +35,24 @@ import { useEffect, useRef, useState } from 'react'
  * discovers mid-shift, having planned to keep working, is worse than one they
  * read before subscribing.
  *
- * `introductory: true` renders a visible badge. That label is not decoration —
- * advertising a promotional price without saying it is promotional is
- * misleading, and this number also reaches drivers through the FAQ and, via
- * lib/kb-sync.js, through the AI assistant's answers. Never fill a bracketed
- * slot with a guess for the same reason.
+ * `introductory: true` renders a visible badge and the line under the price.
+ * That label is not decoration — advertising a promotional price without
+ * saying it is promotional is misleading, and these numbers also reach
+ * drivers through the FAQ and, via lib/kb-sync.js, through the AI
+ * assistant's answers. Never fill a bracketed slot with a guess for the same
+ * reason. The flag stays per-tier so one plan can come off the introductory
+ * rate without the other, but today both carry it.
+ *
+ * Switching plans is a cancel and a re-subscribe. That is the whole of what
+ * is known — say nothing about when a cancellation takes effect, refunds or
+ * proration, or what happens to the free months, because none of that was
+ * specified.
  *
  * No promo end date is stated, because none was given. Do not add one.
  */
 
 const TYPICAL_COMMISSION = 0.25
-const PASS_STANDARD = 49.99
+const PASS_FULLTIME = 49.99
 
 /* Monthly, to compare like with like against a monthly subscription. */
 const MONTHS = [
@@ -63,7 +73,7 @@ const TIERS = [
   {
     name: 'Full-time',
     price: '49.99',
-    introductory: false,
+    introductory: true,
     rides: 'unlimited',
     blurb: 'For driving as the main thing you do.',
   },
@@ -101,7 +111,10 @@ export default function SpinrPass() {
         <div className="sp-pass-price">
           <span className="sp-pass-offer sp-display">Every driver, right now</span>
           <b className="sp-display sp-pass-free">6 months free</b>
-          <span className="sp-pass-note">Then pick a plan. Flat monthly either way — never a share of a fare.</span>
+          <span className="sp-pass-note">
+            Then pick a plan. Both are introductory rates, and both are flat
+            monthly — never a share of a fare.
+          </span>
         </div>
 
         <div className="sp-pass-tiers">
@@ -124,6 +137,10 @@ export default function SpinrPass() {
             </div>
           ))}
         </div>
+        <p className="sp-pass-switch">
+          Changed your mind? Switching is a cancel and a re-subscribe &mdash; cancel the
+          plan you&rsquo;re on, then subscribe to the other one.
+        </p>
 
         <h3 className="sp-display sp-pass-h3">What a percentage would have cost you</h3>
         <div className={`sp-pass-bars${on ? ' in' : ''}`}>
@@ -141,7 +158,7 @@ export default function SpinrPass() {
                 </div>
                 <div className="sp-pass-vs">
                   <span className="sp-pass-flat" />
-                  Spinr Pass (Full-time): ${PASS_STANDARD} &mdash; the same, whatever you earned
+                  Spinr Pass (Full-time): ${PASS_FULLTIME} &mdash; the same, whatever you earned
                 </div>
               </div>
             )

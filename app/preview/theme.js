@@ -83,6 +83,70 @@ export const CSS = `
 @media(min-width:900px){.sp-nav-links{display:flex}.sp-nav-cta{margin-left:0}}
 @media(max-width:600px){.sp-nav-cta .sp-btn-ghost{display:none}}
 
+/* ── mobile menu ──
+   Below 900px the bar has no room for the links, so they move into a panel
+   that drops out of the pill. Same vocabulary as everything else: 2px ink
+   border, hard offset shadow, display type, a press you can feel. */
+.sp-burger{display:inline-grid;place-items:center;width:42px;height:42px;flex:0 0 auto;
+  padding:0;border-radius:14px;border:2px solid var(--ink);background:var(--white);
+  color:var(--ink);cursor:pointer;box-shadow:-3px 3px 0 var(--ink);
+  transition:transform .14s,box-shadow .14s,background .2s ease}
+.sp-burger:hover{transform:translate(-1px,1px);box-shadow:-2px 2px 0 var(--ink)}
+.sp-burger:active{transform:translate(-3px,3px);box-shadow:none}
+.sp-burger.is-open{background:var(--sun)}
+.sp-burger-box{display:block;position:relative;width:19px;height:14px}
+.sp-burger-box i{position:absolute;left:0;right:0;height:2.5px;border-radius:2px;background:currentColor;
+  transition:transform .28s var(--snap),opacity .16s ease}
+.sp-burger-box i:nth-child(1){top:0}
+.sp-burger-box i:nth-child(2){top:50%;margin-top:-1.25px}
+.sp-burger-box i:nth-child(3){bottom:0}
+/* three bars fold into a cross */
+.sp-burger.is-open i:nth-child(1){transform:translateY(5.75px) rotate(45deg)}
+.sp-burger.is-open i:nth-child(2){opacity:0;transform:scaleX(.2)}
+.sp-burger.is-open i:nth-child(3){transform:translateY(-5.75px) rotate(-45deg)}
+
+.sp-menu{position:absolute;top:calc(100% + 12px);left:0;right:0;z-index:2;
+  display:flex;flex-direction:column;gap:2px;padding:16px 18px 18px;
+  border-radius:26px;border:2px solid var(--ink);background:var(--paper-50);
+  box-shadow:var(--hard);max-height:calc(100vh - 120px);overflow-y:auto;
+  transform-origin:top center;animation:sp-menuin .34s var(--spring) backwards}
+@keyframes sp-menuin{from{opacity:0;transform:translateY(-14px) scale(.97)}to{opacity:1;transform:none}}
+.sp-menu-kick{font-family:var(--sp-display),sans-serif;text-transform:uppercase;letter-spacing:.16em;
+  font-size:11.5px;color:var(--ink-5);padding:0 4px 8px}
+.sp-menu-row{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:11px 4px;color:var(--ink);text-decoration:none;
+  border-bottom:2px solid rgba(11,11,11,.08);
+  animation:sp-menurow .34s var(--spring) backwards;
+  animation-delay:calc(.04s + var(--i,0) * .05s);
+  transition:transform .14s var(--snap),padding-left .18s var(--snap),color .16s ease}
+@keyframes sp-menurow{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
+.sp-menu-row .sp-display{font-size:clamp(27px,8vw,34px);line-height:1}
+.sp-menu-row b{font-size:20px;color:var(--ink-4);transition:transform .22s var(--snap),color .16s ease}
+.sp-menu-row:hover{color:var(--ink);padding-left:10px}
+.sp-menu-row:hover b{transform:translateX(5px);color:var(--red)}
+.sp-menu-row:active{transform:scale(.98)}
+.sp-menu-row[aria-current="page"]{color:var(--red)}
+.sp-menu-row[aria-current="page"] b{color:var(--red);transform:translateX(3px)}
+.sp-menu-ai{display:inline-flex;align-items:center;justify-content:center;gap:9px;margin-top:16px;
+  padding:13px 18px;border-radius:999px;border:2px solid var(--ink);background:var(--sun);
+  color:var(--ink);font-weight:800;font-size:15px;text-decoration:none;
+  box-shadow:-3px 3px 0 var(--ink);
+  animation:sp-menurow .34s var(--spring) backwards;
+  animation-delay:calc(.04s + var(--i,0) * .05s);
+  transition:transform .14s,box-shadow .14s}
+.sp-menu-ai:hover{transform:translate(-1px,1px);box-shadow:-2px 2px 0 var(--ink);color:var(--ink)}
+.sp-menu-ai:active{transform:translate(-3px,3px);box-shadow:none}
+.sp-menu-scrim{position:fixed;inset:0;z-index:50;background:rgba(11,11,11,.34);
+  animation:sp-scrimin .28s ease backwards}
+@keyframes sp-scrimin{from{opacity:0}to{opacity:1}}
+/* the docked CTA lives outside the nav's stacking context, so it would float
+   over an open panel — park it while the menu is up */
+.sp-menu-open .sp-dock{opacity:0;pointer-events:none}
+/* same for the assistant: it is the thing the visitor just opened, so the app
+   CTA gets out of its way rather than sitting over the input row */
+body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
+@media(min-width:900px){.sp-burger{display:none}}
+
 /* ── hero: type on mint, a yellow shelf under it, phones straddling both ── */
 .sp-hero{position:relative;margin:clamp(12px,2vw,28px);border-radius:clamp(24px,2.8vw,40px);
   overflow:hidden;border:2px solid var(--ink);background:var(--sky);
@@ -613,57 +677,59 @@ export const CSS = `
 .sp-footlayer.pinned{position:fixed;left:0;right:0;bottom:0;z-index:0}
 
 /* ── the chat bubble: same hard-shadow language, same press ── */
-div.fixed.bottom-6.right-6 > button{
+[data-chat] > button{
   border:2px solid #0B0B0B !important;background:#DC3848 !important;
   box-shadow:-4px 4px 0 #0B0B0B !important;
   animation:sp-chatin .6s cubic-bezier(.2,1.1,.3,1) backwards .9s;
   transition:transform .15s cubic-bezier(.34,1.56,.64,1),box-shadow .15s !important}
-div.fixed.bottom-6.right-6 > button:hover{transform:translate(-2px,2px);box-shadow:-2px 2px 0 #0B0B0B !important}
-div.fixed.bottom-6.right-6 > button:active{transform:translate(-4px,4px) scale(.97);box-shadow:0 0 0 #0B0B0B !important}
+[data-chat] > button:hover{transform:translate(-2px,2px);box-shadow:-2px 2px 0 #0B0B0B !important}
+[data-chat] > button:active{transform:translate(-4px,4px) scale(.97);box-shadow:0 0 0 #0B0B0B !important}
 @keyframes sp-chatin{from{opacity:0;transform:translateY(30px) scale(.5)}to{opacity:1;transform:none}}
 
 
 /* the OPEN chat window, same treatment — scoped by the widget's fixed shell,
    colors literal because the widget sits outside .sp */
-div.fixed.bottom-6.right-6 > div[class*="rounded"]{
+[data-chat] > div[class*="rounded"]{
   border:2px solid #0B0B0B !important;border-radius:18px !important;
   box-shadow:-7px 7px 0 #0B0B0B !important;background:#FAF7EF !important;
   animation:sp-chatopen .4s cubic-bezier(.2,1.1,.3,1) both}
 @keyframes sp-chatopen{from{opacity:0;transform:translateY(22px) scale(.94)}to{opacity:1;transform:none}}
-div.fixed.bottom-6.right-6 [class*="border-b"]{border-bottom:2px solid #0B0B0B !important}
-div.fixed.bottom-6.right-6 [class*="border-t"]{border-top:2px solid #0B0B0B !important}
-div.fixed.bottom-6.right-6 .bg-gray-50{background:#FFF3CF !important}
-div.fixed.bottom-6.right-6 [class*="CardTitle"],
-div.fixed.bottom-6.right-6 h3{font-weight:800 !important;letter-spacing:.02em}
+[data-chat] [class*="border-b"]{border-bottom:2px solid #0B0B0B !important}
+[data-chat] [class*="border-t"]{border-top:2px solid #0B0B0B !important}
+[data-chat] .bg-gray-50{background:#FFF3CF !important}
+[data-chat] [class*="CardTitle"],
+[data-chat] h3{font-weight:800 !important;letter-spacing:.02em}
 /* controls inside: pill input, hard-shadow send, bordered select */
-div.fixed.bottom-6.right-6 input{
+[data-chat] input{
   border:2px solid #0B0B0B !important;border-radius:999px !important;background:#fff !important;
   box-shadow:none !important;padding-left:14px !important}
-div.fixed.bottom-6.right-6 input:focus-visible{outline:none !important;box-shadow:2px 2px 0 #0B0B0B !important}
-div.fixed.bottom-6.right-6 button[class*="h-10"],
-div.fixed.bottom-6.right-6 .flex.gap-2 > button{
+[data-chat] input:focus-visible{outline:none !important;box-shadow:2px 2px 0 #0B0B0B !important}
+[data-chat] button[class*="h-10"],
+[data-chat] .flex.gap-2 > button{
   border:2px solid #0B0B0B !important;border-radius:999px !important;background:#DC3848 !important;
   box-shadow:-3px 3px 0 #0B0B0B !important;color:#fff !important;
   transition:transform .13s cubic-bezier(.34,1.56,.64,1),box-shadow .13s !important}
-div.fixed.bottom-6.right-6 .flex.gap-2 > button:hover{transform:translate(-1px,1px);box-shadow:-2px 2px 0 #0B0B0B !important}
-div.fixed.bottom-6.right-6 .flex.gap-2 > button:active{transform:translate(-3px,3px);box-shadow:0 0 0 #0B0B0B !important}
-div.fixed.bottom-6.right-6 .flex.gap-2 > button:disabled{background:#C9C4B8 !important;box-shadow:-3px 3px 0 #0B0B0B !important;transform:none}
-div.fixed.bottom-6.right-6 button[role="combobox"]{
+[data-chat] .flex.gap-2 > button:hover{transform:translate(-1px,1px);box-shadow:-2px 2px 0 #0B0B0B !important}
+[data-chat] .flex.gap-2 > button:active{transform:translate(-3px,3px);box-shadow:0 0 0 #0B0B0B !important}
+[data-chat] .flex.gap-2 > button:disabled{background:#C9C4B8 !important;box-shadow:-3px 3px 0 #0B0B0B !important;transform:none}
+[data-chat] button[role="combobox"]{
   border:2px solid #0B0B0B !important;border-radius:999px !important;background:#fff !important;font-weight:700 !important}
 /* message bubbles */
-div.fixed.bottom-6.right-6 .bg-primary.text-primary-foreground,
-div.fixed.bottom-6.right-6 [class*="bg-primary"][class*="rounded-lg"]{
+[data-chat] .bg-primary.text-primary-foreground,
+[data-chat] [class*="bg-primary"][class*="rounded-lg"]{
   background:#DC3848 !important;border:2px solid #0B0B0B !important;border-radius:14px !important}
-div.fixed.bottom-6.right-6 .bg-gray-100[class*="rounded-lg"]{
+[data-chat] .bg-gray-100[class*="rounded-lg"]{
   background:#fff !important;border:2px solid #0B0B0B !important;border-radius:14px !important}
 /* header icon buttons stay quiet but press */
-div.fixed.bottom-6.right-6 button[class*="h-8"]{transition:transform .1s ease !important}
-div.fixed.bottom-6.right-6 button[class*="h-8"]:active{transform:scale(.85)}
+[data-chat] button[class*="h-8"]{transition:transform .1s ease !important}
+[data-chat] button[class*="h-8"]:active{transform:scale(.85)}
 
 @media(prefers-reduced-motion:reduce){
   .sp-nav,.sp-nav-links a{animation:none}
-  div.fixed.bottom-6.right-6 > button{animation:none}
-  div.fixed.bottom-6.right-6 > div[class*="rounded"]{animation:none}
+  .sp-menu,.sp-menu-row,.sp-menu-ai,.sp-menu-scrim{animation:none}
+  .sp-burger,.sp-burger-box i,.sp-menu-row,.sp-menu-row b,.sp-menu-ai{transition:none}
+  [data-chat] > button{animation:none}
+  [data-chat] > div[class*="rounded"]{animation:none}
 }
 
 /* text selection carries the brand instead of browser blue */
@@ -1089,7 +1155,8 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 .sp-pass-limit{display:block;margin-top:9px;padding:8px 10px;border:2px solid var(--ink);
   border-radius:9px;background:var(--red-1);font-size:12px;font-weight:700;line-height:1.45;color:var(--red-7)}
 .sp-pass-name{display:block;font-size:15px;letter-spacing:.08em;color:var(--ink-5);margin-bottom:6px}
-.sp-pass-tier{position:relative;background:#fff;border:2px solid var(--ink);border-radius:16px;
+.sp-pass-tier{position:relative;display:flex;flex-direction:column;align-items:flex-start;
+  background:#fff;border:2px solid var(--ink);border-radius:16px;
   padding:clamp(18px,2.2vw,24px);box-shadow:var(--hard-sm)}
 .sp-pass-tier.is-intro{background:var(--paper-50);box-shadow:var(--hard);padding-top:clamp(26px,3vw,32px)}
 .sp-pass-badge{position:absolute;top:-13px;left:16px;background:var(--red);color:#fff;
@@ -1098,9 +1165,11 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 .sp-pass-tier b{display:flex;align-items:baseline;gap:3px;font-size:clamp(30px,3.4vw,42px);line-height:1}
 .sp-pass-tier b i{font-style:normal;font-size:15px;opacity:.7}
 .sp-pass-rides{display:block;margin-top:9px;font-size:13.5px;font-weight:700;color:var(--ink-6)}
-.sp-pass-after{display:block;margin-top:8px;padding-top:8px;border-top:1.5px dashed rgba(11,11,11,.25);
+.sp-pass-after{display:block;align-self:stretch;margin-top:auto;padding-top:8px;
+  border-top:1.5px dashed rgba(11,11,11,.25);
   font-size:11.5px;font-weight:700;color:var(--ink-5)}
 .sp-pass-note{font-size:12.5px;font-weight:700;color:rgba(11,11,11,.7)}
+.sp-pass-switch{margin:14px 0 0;font-size:13px;line-height:1.55;color:var(--ink-5)}
 /* an unfilled fact, marked so it can never be mistaken for a real number */
 .sp-todo{background:repeating-linear-gradient(45deg,#fff,#fff 5px,#FFE7EA 5px,#FFE7EA 10px);
   color:var(--red-7);border:2px dashed var(--red);border-radius:8px;padding:0 8px;font-family:inherit}
