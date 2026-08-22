@@ -378,7 +378,7 @@ export default function DrivePageClient({ structuredData }) {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-6">
             {/* Part-time Plan */}
             <Card className="border border-gray-200 hover:border-gray-300 transition-all duration-300 shadow-lg relative overflow-hidden bg-white">
               <CardHeader className="text-center pb-4 border-b border-gray-100">
@@ -503,6 +503,11 @@ export default function DrivePageClient({ structuredData }) {
               </CardContent>
             </Card>
           </div>
+
+          <p className="text-center text-sm text-gray-500 max-w-5xl mx-auto mb-20">
+            Switching plans is a cancel and a re-subscribe &mdash; cancel the plan
+            you&rsquo;re on, then subscribe to the other one.
+          </p>
 
           {/* Savings Calculator */}
           <div className="max-w-4xl mx-auto bg-gray-900 rounded-[2.5rem] p-8 md:p-12 text-white shadow-2xl relative overflow-hidden">

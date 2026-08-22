@@ -47,6 +47,13 @@
 > subscribing — and answered directly in the help FAQ, which also reaches the
 > AI assistant.
 >
+> **Switching plans is a cancel and a re-subscribe** — the driver cancels the
+> plan they are on and subscribes to the other. That is the whole of what is
+> known: say nothing about when a cancellation takes effect, refunds or
+> proration, or what happens to the remaining free months. Stated on the Pass
+> card, the live `/drive` plan grid, and the help FAQ — which also reaches the
+> AI assistant.
+>
 > **Both $19.99 and $49.99 must always be labelled introductory rates**
 > wherever they appear. Advertising a promotional price without saying it is
 > promotional is misleading, and these numbers reach drivers through the FAQ

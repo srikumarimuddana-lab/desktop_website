@@ -1166,6 +1166,7 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
   border-top:1.5px dashed rgba(11,11,11,.25);
   font-size:11.5px;font-weight:700;color:var(--ink-5)}
 .sp-pass-note{font-size:12.5px;font-weight:700;color:rgba(11,11,11,.7)}
+.sp-pass-switch{margin:14px 0 0;font-size:13px;line-height:1.55;color:var(--ink-5)}
 /* an unfilled fact, marked so it can never be mistaken for a real number */
 .sp-todo{background:repeating-linear-gradient(45deg,#fff,#fff 5px,#FFE7EA 5px,#FFE7EA 10px);
   color:var(--red-7);border:2px dashed var(--red);border-radius:8px;padding:0 8px;font-family:inherit}

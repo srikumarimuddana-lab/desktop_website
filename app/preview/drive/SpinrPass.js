@@ -43,6 +43,11 @@ import { useEffect, useRef, useState } from 'react'
  * reason. The flag stays per-tier so one plan can come off the introductory
  * rate without the other, but today both carry it.
  *
+ * Switching plans is a cancel and a re-subscribe. That is the whole of what
+ * is known — say nothing about when a cancellation takes effect, refunds or
+ * proration, or what happens to the free months, because none of that was
+ * specified.
+ *
  * No promo end date is stated, because none was given. Do not add one.
  */
 
@@ -132,6 +137,10 @@ export default function SpinrPass() {
             </div>
           ))}
         </div>
+        <p className="sp-pass-switch">
+          Changed your mind? Switching is a cancel and a re-subscribe &mdash; cancel the
+          plan you&rsquo;re on, then subscribe to the other one.
+        </p>
 
         <h3 className="sp-display sp-pass-h3">What a percentage would have cost you</h3>
         <div className={`sp-pass-bars${on ? ' in' : ''}`}>
