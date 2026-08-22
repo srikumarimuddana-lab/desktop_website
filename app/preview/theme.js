@@ -83,6 +83,67 @@ export const CSS = `
 @media(min-width:900px){.sp-nav-links{display:flex}.sp-nav-cta{margin-left:0}}
 @media(max-width:600px){.sp-nav-cta .sp-btn-ghost{display:none}}
 
+/* ── mobile menu ──
+   Below 900px the bar has no room for the links, so they move into a panel
+   that drops out of the pill. Same vocabulary as everything else: 2px ink
+   border, hard offset shadow, display type, a press you can feel. */
+.sp-burger{display:inline-grid;place-items:center;width:42px;height:42px;flex:0 0 auto;
+  padding:0;border-radius:14px;border:2px solid var(--ink);background:var(--white);
+  color:var(--ink);cursor:pointer;box-shadow:-3px 3px 0 var(--ink);
+  transition:transform .14s,box-shadow .14s,background .2s ease}
+.sp-burger:hover{transform:translate(-1px,1px);box-shadow:-2px 2px 0 var(--ink)}
+.sp-burger:active{transform:translate(-3px,3px);box-shadow:none}
+.sp-burger.is-open{background:var(--sun)}
+.sp-burger-box{display:block;position:relative;width:19px;height:14px}
+.sp-burger-box i{position:absolute;left:0;right:0;height:2.5px;border-radius:2px;background:currentColor;
+  transition:transform .28s var(--snap),opacity .16s ease}
+.sp-burger-box i:nth-child(1){top:0}
+.sp-burger-box i:nth-child(2){top:50%;margin-top:-1.25px}
+.sp-burger-box i:nth-child(3){bottom:0}
+/* three bars fold into a cross */
+.sp-burger.is-open i:nth-child(1){transform:translateY(5.75px) rotate(45deg)}
+.sp-burger.is-open i:nth-child(2){opacity:0;transform:scaleX(.2)}
+.sp-burger.is-open i:nth-child(3){transform:translateY(-5.75px) rotate(-45deg)}
+
+.sp-menu{position:absolute;top:calc(100% + 12px);left:0;right:0;z-index:2;
+  display:flex;flex-direction:column;gap:2px;padding:16px 18px 18px;
+  border-radius:26px;border:2px solid var(--ink);background:var(--paper-50);
+  box-shadow:var(--hard);max-height:calc(100vh - 120px);overflow-y:auto;
+  transform-origin:top center;animation:sp-menuin .34s var(--spring) backwards}
+@keyframes sp-menuin{from{opacity:0;transform:translateY(-14px) scale(.97)}to{opacity:1;transform:none}}
+.sp-menu-kick{font-family:var(--sp-display),sans-serif;text-transform:uppercase;letter-spacing:.16em;
+  font-size:11.5px;color:var(--ink-5);padding:0 4px 8px}
+.sp-menu-row{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:11px 4px;color:var(--ink);text-decoration:none;
+  border-bottom:2px solid rgba(11,11,11,.08);
+  animation:sp-menurow .34s var(--spring) backwards;
+  animation-delay:calc(.04s + var(--i,0) * .05s);
+  transition:transform .14s var(--snap),padding-left .18s var(--snap),color .16s ease}
+@keyframes sp-menurow{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
+.sp-menu-row .sp-display{font-size:clamp(27px,8vw,34px);line-height:1}
+.sp-menu-row b{font-size:20px;color:var(--ink-4);transition:transform .22s var(--snap),color .16s ease}
+.sp-menu-row:hover{color:var(--ink);padding-left:10px}
+.sp-menu-row:hover b{transform:translateX(5px);color:var(--red)}
+.sp-menu-row:active{transform:scale(.98)}
+.sp-menu-row[aria-current="page"]{color:var(--red)}
+.sp-menu-row[aria-current="page"] b{color:var(--red);transform:translateX(3px)}
+.sp-menu-ai{display:inline-flex;align-items:center;justify-content:center;gap:9px;margin-top:16px;
+  padding:13px 18px;border-radius:999px;border:2px solid var(--ink);background:var(--sun);
+  color:var(--ink);font-weight:800;font-size:15px;text-decoration:none;
+  box-shadow:-3px 3px 0 var(--ink);
+  animation:sp-menurow .34s var(--spring) backwards;
+  animation-delay:calc(.04s + var(--i,0) * .05s);
+  transition:transform .14s,box-shadow .14s}
+.sp-menu-ai:hover{transform:translate(-1px,1px);box-shadow:-2px 2px 0 var(--ink);color:var(--ink)}
+.sp-menu-ai:active{transform:translate(-3px,3px);box-shadow:none}
+.sp-menu-scrim{position:fixed;inset:0;z-index:50;background:rgba(11,11,11,.34);
+  animation:sp-scrimin .28s ease backwards}
+@keyframes sp-scrimin{from{opacity:0}to{opacity:1}}
+/* the docked CTA lives outside the nav's stacking context, so it would float
+   over an open panel — park it while the menu is up */
+.sp-menu-open .sp-dock{opacity:0;pointer-events:none}
+@media(min-width:900px){.sp-burger{display:none}}
+
 /* ── hero: type on mint, a yellow shelf under it, phones straddling both ── */
 .sp-hero{position:relative;margin:clamp(12px,2vw,28px);border-radius:clamp(24px,2.8vw,40px);
   overflow:hidden;border:2px solid var(--ink);background:var(--sky);
@@ -662,6 +723,8 @@ div.fixed.bottom-6.right-6 button[class*="h-8"]:active{transform:scale(.85)}
 
 @media(prefers-reduced-motion:reduce){
   .sp-nav,.sp-nav-links a{animation:none}
+  .sp-menu,.sp-menu-row,.sp-menu-ai,.sp-menu-scrim{animation:none}
+  .sp-burger,.sp-burger-box i,.sp-menu-row,.sp-menu-row b,.sp-menu-ai{transition:none}
   div.fixed.bottom-6.right-6 > button{animation:none}
   div.fixed.bottom-6.right-6 > div[class*="rounded"]{animation:none}
 }
