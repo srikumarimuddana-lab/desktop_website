@@ -130,7 +130,7 @@ let demoFaqs = [
   {
     id: '3',
     question: 'How much does a ride cost?',
-    answer: "You pay the ride fare plus a flat $1 booking fee and tax. An airport surcharge or a city per-trip fee applies only where one exists, and is shown by name on the estimate before you book. There's no surge pricing - the price you see is the price you pay.",
+    answer: "You pay the ride fare plus a flat $1 booking fee and tax, and pass-through charges where they apply (insurance, city or airport fees) - each shown by name on the estimate before you book. Spinr keeps only the $1. There's no surge pricing - the price you see is the price you pay.",
     category: 'rider',
     tags: ['pricing', 'costs'],
     created_at: new Date().toISOString()
@@ -138,7 +138,7 @@ let demoFaqs = [
   {
     id: '3b',
     question: 'What fees does Spinr charge?',
-    answer: "Four kinds, and no others: the ride fare itself (100% goes to your driver), a flat $1 booking fee, an airport surcharge when a trip touches the airport, and any per-trip fee your city charges - each shown by name before you book. GST (and PST where it applies) is its own line. No surge pricing, no insurance fee, no infrastructure fee, no service fee - if it isn't on the receipt, we can't charge it.",
+    answer: "Every fee is shown by name before you book: the ride fare (100% to your driver), the flat $1 booking fee - the only fee Spinr keeps - and pass-through charges where they apply: an insurance fee to the insurer, city or infrastructure fees to your city, an airport surcharge to the airport, and GST (PST where applicable) to the government. Passed through, never marked up. No surge pricing, no hidden service fee - if it isn't on the receipt, we can't charge it.",
     category: 'rider',
     tags: ['pricing', 'fees'],
     created_at: new Date().toISOString()

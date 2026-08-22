@@ -767,6 +767,18 @@ div.fixed.bottom-6.right-6 button[class*="h-8"]:active{transform:scale(.85)}
 .sp-anat-row i{flex:1;border-bottom:2px dotted rgba(11,11,11,.35);transform:translateY(-4px)}
 .sp-anat-row b{font-size:clamp(19px,2vw,26px);font-weight:400}
 .sp-anat-row.is-red b{color:var(--red)}
+.sp-anat-to{flex:0 0 auto;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.07em;
+  text-transform:uppercase;border:2px solid var(--ink);border-radius:999px;padding:3px 9px;
+  white-space:nowrap}
+.sp-anat-to.drv{background:var(--red);color:#fff}
+.sp-anat-to.us{background:var(--sun);color:var(--ink)}
+.sp-anat-to.thru{background:var(--paper-50);color:var(--ink-6)}
+.sp-anat-row.is-dim .sp-anat-to{opacity:.55}
+.sp-anat-keep{display:flex;align-items:center;gap:14px;margin-top:6px;background:var(--sun);
+  border:2px solid var(--ink);border-radius:14px;padding:12px 18px;box-shadow:var(--hard-sm);
+  transform:rotate(-1deg)}
+.sp-anat-keep span{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.sp-anat-keep b{margin-left:auto;font-size:clamp(24px,2.6vw,34px);line-height:.9}
 .sp-anat-row.is-dim{color:var(--ink-4)}
 .sp-anat-row.is-dim b{color:var(--ink-4);font-size:clamp(16px,1.6vw,20px)}
 .sp-anat-vow{max-width:680px;margin:clamp(22px,3vw,32px) auto 0;text-align:center;
