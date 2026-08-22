@@ -15,6 +15,51 @@ export default function ChatWidget() {
     const [userType, setUserType] = useState('rider')
     const [isLoading, setIsLoading] = useState(false)
     const messagesEndRef = useRef(null)
+    const shellRef = useRef(null)
+
+    /* Three things park on the bottom edge of a phone: this widget, the cookie
+     * banner, and (on the /preview pages) the app-download CTA. The banner and
+     * the CTA both outranked this corner, so the assistant button could not be
+     * tapped at all on mobile, and once open the CTA covered the input row.
+     *
+     * Lift clear of the banner — its height depends on how the text wraps, so
+     * it has to be measured — and outrank both: the assistant is something the
+     * visitor deliberately opened, so it wins the corner while it is up. */
+    useEffect(() => {
+        const el = shellRef.current
+        if (!el) return
+        let observed = null
+        const ro = new ResizeObserver(() => measure())
+        const measure = () => {
+            const banner = document.querySelector('.CookieConsent')
+            el.style.setProperty('--chat-lift', banner ? `${banner.offsetHeight + 10}px` : '0px')
+            if (banner !== observed) {
+                if (observed) ro.unobserve(observed)
+                if (banner) ro.observe(banner)
+                observed = banner
+            }
+        }
+        // the banner mounts and unmounts on its own schedule
+        const mo = new MutationObserver(measure)
+        mo.observe(document.body, { childList: true })
+        window.addEventListener('resize', measure)
+        measure()
+        return () => {
+            ro.disconnect()
+            mo.disconnect()
+            window.removeEventListener('resize', measure)
+        }
+    }, [isOpen])
+
+    /* data-chat is the stable hook the /preview stylesheet restyles through.
+     * It used to key off the Tailwind position classes, which meant the widget
+     * could not be moved without silently losing its styling. */
+    const shell = {
+        ref: shellRef,
+        'data-chat': isOpen ? 'open' : 'closed',
+        className: 'fixed right-4 sm:right-6 z-[1000]',
+        style: { bottom: 'calc(1.5rem + var(--chat-lift, 0px))' },
+    }
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -116,7 +161,7 @@ export default function ChatWidget() {
 
     if (!isOpen) {
         return (
-            <div className="fixed bottom-6 right-6 z-50">
+            <div {...shell}>
                 <Button
                     onClick={() => setIsOpen(true)}
                     className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90"
@@ -129,8 +174,14 @@ export default function ChatWidget() {
     }
 
     return (
-        <div className="fixed bottom-6 right-6 z-50">
-            <Card className={`w-80 md:w-96 shadow-xl transition-all duration-300 ${isMinimized ? 'h-14' : 'h-[500px]'}`}>
+        <div {...shell}>
+            {/* Never taller than the space actually left over the banner, and
+                never wider than the screen — a fixed 500px box overflowed both
+                on a short phone. */}
+            <Card
+                className={`flex flex-col w-[min(20rem,calc(100vw-2rem))] md:w-96 shadow-xl transition-all duration-300 ${isMinimized ? 'h-14' : ''}`}
+                style={isMinimized ? undefined : { height: 'min(500px, calc(100dvh - var(--chat-lift, 0px) - 7rem))' }}
+            >
                 <CardHeader className="p-3 border-b flex flex-row items-center justify-between space-y-0">
                     <div className="flex items-center gap-2">
                         <Bot className="h-5 w-5 text-primary" />
@@ -157,7 +208,7 @@ export default function ChatWidget() {
                 </CardHeader>
 
                 {!isMinimized && (
-                    <CardContent className="p-0 flex flex-col h-[calc(500px-56px)]">
+                    <CardContent className="p-0 flex flex-col flex-1 min-h-0">
                         {/* User Type Selector */}
                         <div className="p-3 border-b bg-gray-50">
                             <div className="flex items-center gap-2">
@@ -175,7 +226,7 @@ export default function ChatWidget() {
                         </div>
 
                         {/* Messages */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
                             {messages.length === 0 && (
                                 <div className="text-center text-muted-foreground py-8">
                                     <Bot className="h-12 w-12 mx-auto mb-4 text-primary" />

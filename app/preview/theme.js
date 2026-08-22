@@ -142,6 +142,9 @@ export const CSS = `
 /* the docked CTA lives outside the nav's stacking context, so it would float
    over an open panel — park it while the menu is up */
 .sp-menu-open .sp-dock{opacity:0;pointer-events:none}
+/* same for the assistant: it is the thing the visitor just opened, so the app
+   CTA gets out of its way rather than sitting over the input row */
+body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 @media(min-width:900px){.sp-burger{display:none}}
 
 /* ── hero: type on mint, a yellow shelf under it, phones straddling both ── */
@@ -674,59 +677,59 @@ export const CSS = `
 .sp-footlayer.pinned{position:fixed;left:0;right:0;bottom:0;z-index:0}
 
 /* ── the chat bubble: same hard-shadow language, same press ── */
-div.fixed.bottom-6.right-6 > button{
+[data-chat] > button{
   border:2px solid #0B0B0B !important;background:#DC3848 !important;
   box-shadow:-4px 4px 0 #0B0B0B !important;
   animation:sp-chatin .6s cubic-bezier(.2,1.1,.3,1) backwards .9s;
   transition:transform .15s cubic-bezier(.34,1.56,.64,1),box-shadow .15s !important}
-div.fixed.bottom-6.right-6 > button:hover{transform:translate(-2px,2px);box-shadow:-2px 2px 0 #0B0B0B !important}
-div.fixed.bottom-6.right-6 > button:active{transform:translate(-4px,4px) scale(.97);box-shadow:0 0 0 #0B0B0B !important}
+[data-chat] > button:hover{transform:translate(-2px,2px);box-shadow:-2px 2px 0 #0B0B0B !important}
+[data-chat] > button:active{transform:translate(-4px,4px) scale(.97);box-shadow:0 0 0 #0B0B0B !important}
 @keyframes sp-chatin{from{opacity:0;transform:translateY(30px) scale(.5)}to{opacity:1;transform:none}}
 
 
 /* the OPEN chat window, same treatment — scoped by the widget's fixed shell,
    colors literal because the widget sits outside .sp */
-div.fixed.bottom-6.right-6 > div[class*="rounded"]{
+[data-chat] > div[class*="rounded"]{
   border:2px solid #0B0B0B !important;border-radius:18px !important;
   box-shadow:-7px 7px 0 #0B0B0B !important;background:#FAF7EF !important;
   animation:sp-chatopen .4s cubic-bezier(.2,1.1,.3,1) both}
 @keyframes sp-chatopen{from{opacity:0;transform:translateY(22px) scale(.94)}to{opacity:1;transform:none}}
-div.fixed.bottom-6.right-6 [class*="border-b"]{border-bottom:2px solid #0B0B0B !important}
-div.fixed.bottom-6.right-6 [class*="border-t"]{border-top:2px solid #0B0B0B !important}
-div.fixed.bottom-6.right-6 .bg-gray-50{background:#FFF3CF !important}
-div.fixed.bottom-6.right-6 [class*="CardTitle"],
-div.fixed.bottom-6.right-6 h3{font-weight:800 !important;letter-spacing:.02em}
+[data-chat] [class*="border-b"]{border-bottom:2px solid #0B0B0B !important}
+[data-chat] [class*="border-t"]{border-top:2px solid #0B0B0B !important}
+[data-chat] .bg-gray-50{background:#FFF3CF !important}
+[data-chat] [class*="CardTitle"],
+[data-chat] h3{font-weight:800 !important;letter-spacing:.02em}
 /* controls inside: pill input, hard-shadow send, bordered select */
-div.fixed.bottom-6.right-6 input{
+[data-chat] input{
   border:2px solid #0B0B0B !important;border-radius:999px !important;background:#fff !important;
   box-shadow:none !important;padding-left:14px !important}
-div.fixed.bottom-6.right-6 input:focus-visible{outline:none !important;box-shadow:2px 2px 0 #0B0B0B !important}
-div.fixed.bottom-6.right-6 button[class*="h-10"],
-div.fixed.bottom-6.right-6 .flex.gap-2 > button{
+[data-chat] input:focus-visible{outline:none !important;box-shadow:2px 2px 0 #0B0B0B !important}
+[data-chat] button[class*="h-10"],
+[data-chat] .flex.gap-2 > button{
   border:2px solid #0B0B0B !important;border-radius:999px !important;background:#DC3848 !important;
   box-shadow:-3px 3px 0 #0B0B0B !important;color:#fff !important;
   transition:transform .13s cubic-bezier(.34,1.56,.64,1),box-shadow .13s !important}
-div.fixed.bottom-6.right-6 .flex.gap-2 > button:hover{transform:translate(-1px,1px);box-shadow:-2px 2px 0 #0B0B0B !important}
-div.fixed.bottom-6.right-6 .flex.gap-2 > button:active{transform:translate(-3px,3px);box-shadow:0 0 0 #0B0B0B !important}
-div.fixed.bottom-6.right-6 .flex.gap-2 > button:disabled{background:#C9C4B8 !important;box-shadow:-3px 3px 0 #0B0B0B !important;transform:none}
-div.fixed.bottom-6.right-6 button[role="combobox"]{
+[data-chat] .flex.gap-2 > button:hover{transform:translate(-1px,1px);box-shadow:-2px 2px 0 #0B0B0B !important}
+[data-chat] .flex.gap-2 > button:active{transform:translate(-3px,3px);box-shadow:0 0 0 #0B0B0B !important}
+[data-chat] .flex.gap-2 > button:disabled{background:#C9C4B8 !important;box-shadow:-3px 3px 0 #0B0B0B !important;transform:none}
+[data-chat] button[role="combobox"]{
   border:2px solid #0B0B0B !important;border-radius:999px !important;background:#fff !important;font-weight:700 !important}
 /* message bubbles */
-div.fixed.bottom-6.right-6 .bg-primary.text-primary-foreground,
-div.fixed.bottom-6.right-6 [class*="bg-primary"][class*="rounded-lg"]{
+[data-chat] .bg-primary.text-primary-foreground,
+[data-chat] [class*="bg-primary"][class*="rounded-lg"]{
   background:#DC3848 !important;border:2px solid #0B0B0B !important;border-radius:14px !important}
-div.fixed.bottom-6.right-6 .bg-gray-100[class*="rounded-lg"]{
+[data-chat] .bg-gray-100[class*="rounded-lg"]{
   background:#fff !important;border:2px solid #0B0B0B !important;border-radius:14px !important}
 /* header icon buttons stay quiet but press */
-div.fixed.bottom-6.right-6 button[class*="h-8"]{transition:transform .1s ease !important}
-div.fixed.bottom-6.right-6 button[class*="h-8"]:active{transform:scale(.85)}
+[data-chat] button[class*="h-8"]{transition:transform .1s ease !important}
+[data-chat] button[class*="h-8"]:active{transform:scale(.85)}
 
 @media(prefers-reduced-motion:reduce){
   .sp-nav,.sp-nav-links a{animation:none}
   .sp-menu,.sp-menu-row,.sp-menu-ai,.sp-menu-scrim{animation:none}
   .sp-burger,.sp-burger-box i,.sp-menu-row,.sp-menu-row b,.sp-menu-ai{transition:none}
-  div.fixed.bottom-6.right-6 > button{animation:none}
-  div.fixed.bottom-6.right-6 > div[class*="rounded"]{animation:none}
+  [data-chat] > button{animation:none}
+  [data-chat] > div[class*="rounded"]{animation:none}
 }
 
 /* text selection carries the brand instead of browser blue */
