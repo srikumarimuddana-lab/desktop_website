@@ -7,6 +7,32 @@
 
 ## What Is Spinr
 
+> ### ⚠️ Upcoming: Spinr Pass (driver-side charge)
+>
+> A **Spinr Pass** charged to drivers is planned. It does not exist yet and
+> drivers pay nothing today — but copy written before it launches must not
+> become false the day it does.
+>
+> **The line that holds:** Spinr never takes a **percentage of the fare**.
+> That is true now and stays true with a Pass, because a Pass is a flat,
+> disclosed amount — the same philosophy as the rider's flat $1. It is the
+> opposite of a commission, which grows as the driver earns more.
+>
+> **Safe to say (now and after launch):** "0% commission", "we never take a
+> share of your fare", "drivers keep 100% of the net fare", "the number you
+> accept is the number you are paid".
+>
+> **NOT safe to say:** anything asserting Spinr charges drivers *nothing at
+> all* — "Spinr's cut: $0.00", "Spinr takes $0.00 of your fare", "drivers pay
+> no platform fee". These were removed on 2026-08-22 for exactly this reason.
+> Do not reintroduce them.
+>
+> **Still needed before the Pass can be built into the site:** price, billing
+> period, what it includes, launch date, and whether existing drivers are
+> grandfathered. Nothing about the Pass should be written into marketing copy,
+> FAQs or the knowledge base until those are known — an invented price would
+> reach riders, drivers *and* the AI assistant's retrieval corpus at once.
+
 Spinr is a **Proudly Canadian rideshare platform**. Drivers keep 100% of net fare (0% commission). Riders pay a flat $1 platform fee per trip. No surge pricing. Currently available **only in Saskatoon, Saskatchewan** — there is no planned launch in any other city, including Regina.
 
 ---

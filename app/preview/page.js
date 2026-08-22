@@ -228,19 +228,20 @@ export default async function PreviewPage() {
                 <b className="sp-display">$14.20</b>
               </div>
               <span className="sp-dt-stamp sp-display" aria-hidden="true">
-                Spinr&rsquo;s cut: $0.00
+                0% of your fare
               </span>
             </Reveal>
             <div>
               <span className="sp-kick">For drivers</span>
               <h2 className="sp-display sp-h2">The fare is yours. All of it.</h2>
               <p className="sp-drive-p">
-                Other platforms take a slice of every trip. Spinr runs on the rider&rsquo;s
-                flat $1 fee instead — so the fare you see is the money you keep.
+                Other platforms take a percentage of every trip, so the more you earn
+                the more they take. Spinr never takes a share of your fare — the number
+                you accept is the number you are paid.
               </p>
               <ul className="sp-ticks">
                 <li>See what a trip pays before you accept it</li>
-                <li>$0.00 commission — permanent, not a launch promo</li>
+                <li>0% commission — permanent, not a launch promo</li>
                 <li>Drive when it suits you. No shifts, no quotas.</li>
               </ul>
               <a className="sp-btn" href="/preview/drive">Driving with Spinr</a>
