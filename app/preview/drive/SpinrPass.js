@@ -15,12 +15,12 @@ import { useEffect, useRef, useState } from 'react'
  * The bars are drawn to scale from the numbers below, so the shape of the
  * claim is honest even while the price itself is still a placeholder.
  *
- * Pricing: three monthly tiers — Basic, Pro, Ultra — separated by how many
- * rides a day they allow. New drivers get 6 months free first.
+ * Pricing: two monthly tiers named for the driver rather than a product
+ * ladder — Part-time and Full-time — separated by how many rides a day they
+ * allow. New drivers get 6 months free first.
  *
- * KNOWN: Basic $19.99 (introductory), Pro $49.99.
- * NOT KNOWN, rendered as bracketed slots: Ultra's price, and the rides-a-day
- * limit on all three.
+ * KNOWN: Part-time $19.99 (introductory), Full-time $49.99.
+ * NOT KNOWN, rendered as a bracketed slot: the rides-a-day limit on each.
  *
  * `introductory: true` renders a visible badge. That label is not decoration —
  * advertising a promotional price without saying it is promotional is
@@ -42,9 +42,8 @@ const MONTHS = [
 ]
 
 const TIERS = [
-  { name: 'Basic', price: '19.99', introductory: true, rides: '[N]' },
-  { name: 'Pro', price: '49.99', introductory: false, rides: '[N]' },
-  { name: 'Ultra', price: null, introductory: false, rides: '[N]' },
+  { name: 'Part-time', price: '19.99', introductory: true, blurb: 'For driving around a job, school or a shift somewhere else.' },
+  { name: 'Full-time', price: '49.99', introductory: false, blurb: 'For driving as the main thing you do.' },
 ]
 
 const money = (v) => '$' + v.toLocaleString('en-CA', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
@@ -94,6 +93,7 @@ export default function SpinrPass() {
               <span className="sp-pass-rides">
                 Up to <mark className="sp-todo">[N]</mark> rides a day
               </span>
+              <span className="sp-pass-blurb">{t.blurb}</span>
               {t.introductory && (
                 <span className="sp-pass-after">Introductory rate &mdash; not the standard price.</span>
               )}
@@ -117,7 +117,7 @@ export default function SpinrPass() {
                 </div>
                 <div className="sp-pass-vs">
                   <span className="sp-pass-flat" />
-                  Spinr Pass (Pro): ${PASS_STANDARD} &mdash; the same, whatever you earned
+                  Spinr Pass (Full-time): ${PASS_STANDARD} &mdash; the same, whatever you earned
                 </div>
               </div>
             )

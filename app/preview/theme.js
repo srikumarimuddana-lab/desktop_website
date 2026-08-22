@@ -1083,8 +1083,9 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 .sp-pass-offer{display:inline-block;background:var(--ink);color:var(--sun);border-radius:999px;
   padding:5px 13px;font-size:12.5px;letter-spacing:.06em;align-self:flex-start}
 .sp-pass-free{font-size:clamp(34px,4.4vw,56px);line-height:1;margin:10px 0 6px}
-.sp-pass-tiers{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-  max-width:760px;margin-bottom:clamp(30px,4vw,46px)}
+.sp-pass-tiers{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  max-width:620px;margin-bottom:clamp(30px,4vw,46px)}
+.sp-pass-blurb{display:block;margin-top:8px;font-size:12.5px;line-height:1.5;color:var(--ink-5)}
 .sp-pass-name{display:block;font-size:15px;letter-spacing:.08em;color:var(--ink-5);margin-bottom:6px}
 .sp-pass-tier{position:relative;background:#fff;border:2px solid var(--ink);border-radius:16px;
   padding:clamp(18px,2.2vw,24px);box-shadow:var(--hard-sm)}

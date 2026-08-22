@@ -25,10 +25,10 @@
 > - **Nowhere:** a combined "here is how we make money" reveal, revenue-leg
 >   lists, or corporate accounts as a revenue source.
 >
-> **Spinr Pass tiers** — three monthly plans, separated by rides allowed per
-> day: **Basic $19.99 (introductory)**, **Pro $49.99**, **Ultra [price TBC]**.
-> Still unset: Ultra's price and the rides-a-day limit on all three; these
-> render as `.sp-todo` bracketed slots on `/preview/drive`.
+> **Spinr Pass tiers** — two monthly plans, separated by rides allowed per
+> day: **Part-time $19.99 (introductory)** and **Full-time $49.99**. Still
+> unset: the rides-a-day limit on each, rendered as a `.sp-todo` bracketed
+> slot on `/preview/drive`.
 >
 > **$19.99 must always be labelled an introductory rate** wherever it appears.
 > Advertising a promotional price without saying it is promotional is
