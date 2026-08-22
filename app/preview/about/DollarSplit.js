@@ -49,10 +49,11 @@ export default function DollarSplit() {
         </dl>
 
         <p className="sp-split-note">
-          Spinr is paid by the rider&rsquo;s flat <strong>$1</strong> platform fee and by
-          corporate accounts — a fixed amount that doesn&rsquo;t care how long your trip
-          was or what time you took it. That is the entire business model, and it is
-          the reason the driver&rsquo;s column can read 100%.
+          Spinr is paid two flat amounts and no percentages: the rider&rsquo;s
+          <strong>$1</strong> booking fee, and the <strong>Spinr Pass</strong> a driver
+          subscribes to for access to the app. Neither one cares how long your trip was
+          or what time you took it. That is the entire business model, and it is the
+          reason the driver&rsquo;s column can read 100%.
         </p>
       </div>
     </section>

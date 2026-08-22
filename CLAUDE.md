@@ -14,9 +14,9 @@
 > commission: Spinr is paid a flat amount for access rather than a share of
 > each fare. Not launched yet; drivers pay nothing today.
 >
-> Monetisation therefore has three legs, and copy that names only the first
-> is incomplete: the rider's flat $1 booking fee, corporate accounts, and the
-> Spinr Pass.
+> Monetisation has exactly **two** legs, both flat, neither a percentage: the
+> rider's flat $1 booking fee and the Spinr Pass. Corporate accounts are NOT a
+> revenue leg — do not list them as one in copy.
 >
 > **The line that holds:** Spinr never takes a **percentage of the fare**.
 > That is true now and stays true with a Pass, because a Pass is a flat,
