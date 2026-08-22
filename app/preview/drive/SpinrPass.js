@@ -17,7 +17,7 @@ import { useEffect, useRef, useState } from 'react'
  *
  * Pricing: two monthly tiers named for the driver rather than a product
  * ladder — Part-time and Full-time — separated by how many rides a day they
- * allow. New drivers get 6 months free first.
+ * allow. Every driver gets 6 months free at present.
  *
  * Pricing is now fully specified: Part-time $19.99 (introductory), up to 4
  * rides a day; Full-time $49.99, unlimited rides. No placeholders remain.
@@ -99,7 +99,7 @@ export default function SpinrPass() {
         </p>
 
         <div className="sp-pass-price">
-          <span className="sp-pass-offer sp-display">New drivers</span>
+          <span className="sp-pass-offer sp-display">Every driver, right now</span>
           <b className="sp-display sp-pass-free">6 months free</b>
           <span className="sp-pass-note">Then pick a plan. Flat monthly either way — never a share of a fare.</span>
         </div>

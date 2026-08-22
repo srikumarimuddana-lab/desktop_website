@@ -21,9 +21,13 @@
 > - **To riders:** "$1 per ride — that is what Spinr takes from a fare."
 >   Do not mention the Pass on rider-facing surfaces; it is not their charge.
 > - **To drivers:** "0% commission — no share of your fare, ever. Access to
->   the app is a monthly Spinr Pass. New drivers get 6 months free."
+>   the app is a monthly Spinr Pass. Every driver gets 6 months free right now."
 > - **Nowhere:** a combined "here is how we make money" reveal, revenue-leg
 >   lists, or corporate accounts as a revenue source.
+>
+> **6 months free applies to ALL drivers at present**, not just new signups —
+> but it is a present-tense offer. Say "every driver, right now"; never
+> "forever", and never invent an end date.
 >
 > **Spinr Pass tiers** — two monthly plans, separated by rides allowed per
 > day: **Part-time $19.99 (introductory), up to 4 rides a day** and
