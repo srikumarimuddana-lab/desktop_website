@@ -1071,4 +1071,35 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 .sp-ask-src{margin-top:10px !important;font-size:11.5px !important;font-weight:800;
   letter-spacing:.06em;text-transform:uppercase;color:var(--ink-4) !important}
 .sp-ask-err{background:var(--red-1)}
+
+/* ── the Spinr Pass: subscription vs commission ── */
+.sp-pass{background:var(--paper-3);border-bottom:2px solid var(--ink)}
+.sp-pass-lede{max-width:640px;margin:0 0 clamp(22px,3vw,30px);font-size:clamp(15px,1.35vw,17.5px);
+  line-height:1.65;color:var(--ink-6)}
+.sp-pass-price{display:inline-flex;flex-direction:column;background:var(--sun);border:2px solid var(--ink);
+  border-radius:18px;padding:clamp(16px,2vw,22px) clamp(20px,2.6vw,30px);box-shadow:var(--hard);
+  transform:rotate(-1deg);margin-bottom:clamp(30px,4vw,46px)}
+.sp-pass-k{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(11,11,11,.6)}
+.sp-pass-price b{display:flex;align-items:baseline;gap:8px;font-size:clamp(32px,4vw,52px);line-height:1;margin:6px 0 8px}
+.sp-pass-price i{font-style:normal;font-size:clamp(15px,1.5vw,20px);opacity:.75}
+.sp-pass-note{font-size:12.5px;font-weight:700;color:rgba(11,11,11,.7)}
+/* an unfilled fact, marked so it can never be mistaken for a real number */
+.sp-todo{background:repeating-linear-gradient(45deg,#fff,#fff 5px,#FFE7EA 5px,#FFE7EA 10px);
+  color:var(--red-7);border:2px dashed var(--red);border-radius:8px;padding:0 8px;font-family:inherit}
+.sp-pass-h3{font-size:clamp(18px,2vw,26px);margin:0 0 clamp(14px,2vw,20px)}
+.sp-pass-bars{display:flex;flex-direction:column;gap:clamp(16px,2.2vw,24px);max-width:720px}
+.sp-pass-row-head{display:flex;align-items:baseline;gap:12px;font-size:13px;font-weight:700;color:var(--ink-6);margin-bottom:6px}
+.sp-pass-row-head b{margin-left:auto;font-family:var(--sp-display),sans-serif;font-weight:400;
+  font-size:17px;color:var(--ink)}
+.sp-pass-track{position:relative;height:40px;background:#fff;border:2px solid var(--ink);border-radius:10px;
+  overflow:hidden;display:flex;align-items:center}
+.sp-pass-fill{position:absolute;left:0;top:0;bottom:0;width:var(--w,0%);background:var(--red);
+  transform:scaleX(0);transform-origin:0 50%;transition:transform .75s var(--spring) var(--d,0ms)}
+.sp-pass-bars.in .sp-pass-fill{transform:scaleX(1)}
+.sp-pass-take{position:relative;z-index:1;margin-left:12px;font-family:var(--sp-display),sans-serif;
+  font-size:18px;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.35)}
+.sp-pass-vs{display:flex;align-items:center;gap:8px;margin-top:7px;font-size:12.5px;font-weight:700;color:var(--ink-6)}
+.sp-pass-flat{width:16px;height:4px;border-radius:2px;background:var(--ink);flex:0 0 auto}
+.sp-pass-fine{max-width:640px;margin:clamp(22px,3vw,30px) 0 0;font-size:12.5px;line-height:1.6;color:var(--ink-5)}
+@media(prefers-reduced-motion:reduce){.sp-pass-fill{transition:none}}
 `

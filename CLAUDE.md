@@ -7,11 +7,16 @@
 
 ## What Is Spinr
 
-> ### ⚠️ Upcoming: Spinr Pass (driver-side charge)
+> ### ⚠️ Spinr Pass — the driver side of the business model
 >
-> A **Spinr Pass** charged to drivers is planned. It does not exist yet and
-> drivers pay nothing today — but copy written before it launches must not
-> become false the day it does.
+> **Spinr Pass is a subscription drivers pay for access to the platform** —
+> the driver app, dispatch, in-app payments, support. It is *why* there is no
+> commission: Spinr is paid a flat amount for access rather than a share of
+> each fare. Not launched yet; drivers pay nothing today.
+>
+> Monetisation therefore has three legs, and copy that names only the first
+> is incomplete: the rider's flat $1 booking fee, corporate accounts, and the
+> Spinr Pass.
 >
 > **The line that holds:** Spinr never takes a **percentage of the fare**.
 > That is true now and stays true with a Pass, because a Pass is a flat,
@@ -27,11 +32,13 @@
 > no platform fee". These were removed on 2026-08-22 for exactly this reason.
 > Do not reintroduce them.
 >
-> **Still needed before the Pass can be built into the site:** price, billing
-> period, what it includes, launch date, and whether existing drivers are
-> grandfathered. Nothing about the Pass should be written into marketing copy,
-> FAQs or the knowledge base until those are known — an invented price would
-> reach riders, drivers *and* the AI assistant's retrieval corpus at once.
+> **Still unset:** price, billing period, launch date, and whether existing
+> drivers are grandfathered. `/preview/drive` has the Pass section built with
+> those rendered as visibly bracketed `[PRICE]` / `[PERIOD]` slots (`.sp-todo`,
+> a dashed red hatch — impossible to mistake for a real number). **Never
+> substitute a guess:** FAQ copy flows through `lib/kb-sync.js` into
+> `knowledge_base`, so an invented price would be quoted to drivers by the AI
+> assistant as fact.
 
 Spinr is a **Proudly Canadian rideshare platform**. Drivers keep 100% of net fare (0% commission). Riders pay a flat $1 platform fee per trip. No surge pricing. Currently available **only in Saskatoon, Saskatchewan** — there is no planned launch in any other city, including Regina.
 

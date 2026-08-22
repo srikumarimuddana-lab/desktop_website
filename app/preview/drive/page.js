@@ -4,6 +4,7 @@ import { FinalCta } from '../Chrome'
 import { Reveal, SplitText } from '../Reveal'
 import PhoneFan from '../PhoneFan'
 import Payday from './Payday'
+import SpinrPass from './SpinrPass'
 
 /*
  * DESIGN SAMPLE — /preview/drive
@@ -83,6 +84,9 @@ export default function DrivePage() {
 
       {/* ── the payday ── */}
       <Payday />
+
+      {/* ── what Spinr actually charges ── */}
+      <SpinrPass />
 
       {/* ── side by side ── */}
       <section className="sp-sec sp-cmp" id="compare">
