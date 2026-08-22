@@ -1086,6 +1086,8 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 .sp-pass-tiers{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   max-width:620px;margin-bottom:clamp(30px,4vw,46px)}
 .sp-pass-blurb{display:block;margin-top:8px;font-size:12.5px;line-height:1.5;color:var(--ink-5)}
+.sp-pass-limit{display:block;margin-top:9px;padding:8px 10px;border:2px solid var(--ink);
+  border-radius:9px;background:var(--red-1);font-size:12px;font-weight:700;line-height:1.45;color:var(--red-7)}
 .sp-pass-name{display:block;font-size:15px;letter-spacing:.08em;color:var(--ink-5);margin-bottom:6px}
 .sp-pass-tier{position:relative;background:#fff;border:2px solid var(--ink);border-radius:16px;
   padding:clamp(18px,2.2vw,24px);box-shadow:var(--hard-sm)}

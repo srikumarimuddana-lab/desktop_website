@@ -35,9 +35,11 @@
 > FAQ, and `app/drive/DrivePageClient.js` — the FAQs also feed the AI
 > assistant through `lib/kb-sync.js`.
 >
-> Still unanswered: what happens when a Part-time driver reaches 4 rides in a
-> day (offers stop / upgrade prompt / carry on). Drivers will ask this and the
-> assistant currently cannot answer it.
+> The Part-time cap is a HARD stop: at 4 rides the driver is offered no more
+> that day, resetting the next day. Stated on the Pass card itself, not buried
+> in an FAQ — a limit discovered mid-shift is worse than one read before
+> subscribing — and answered directly in the help FAQ, which also reaches the
+> AI assistant.
 >
 > **$19.99 must always be labelled an introductory rate** wherever it appears.
 > Advertising a promotional price without saying it is promotional is

@@ -27,6 +27,11 @@ import { useEffect, useRef, useState } from 'react'
  * and on the live drive page at the same time — it also reaches drivers
  * through the AI assistant via lib/kb-sync.js.
  *
+ * The Part-time cap is HARD: at 4 rides the driver takes no more that day.
+ * That is stated on the card rather than buried in an FAQ — a limit a driver
+ * discovers mid-shift, having planned to keep working, is worse than one they
+ * read before subscribing.
+ *
  * `introductory: true` renders a visible badge. That label is not decoration —
  * advertising a promotional price without saying it is promotional is
  * misleading, and this number also reaches drivers through the FAQ and, via
@@ -53,6 +58,7 @@ const TIERS = [
     introductory: true,
     rides: '4',
     blurb: 'For driving around a job, school or a shift somewhere else.',
+    limit: 'Four is a hard stop — no more rides that day. Resets tomorrow.',
   },
   {
     name: 'Full-time',
@@ -111,6 +117,7 @@ export default function SpinrPass() {
                 {t.rides === 'unlimited' ? 'Unlimited rides' : `Up to ${t.rides} rides a day`}
               </span>
               <span className="sp-pass-blurb">{t.blurb}</span>
+              {t.limit && <span className="sp-pass-limit">{t.limit}</span>}
               {t.introductory && (
                 <span className="sp-pass-after">Introductory rate &mdash; not the standard price.</span>
               )}
