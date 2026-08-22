@@ -15,10 +15,13 @@ import { useEffect, useRef, useState } from 'react'
  * The bars are drawn to scale from the numbers below, so the shape of the
  * claim is honest even while the price itself is still a placeholder.
  *
- * PLACEHOLDERS: price and billing period are not yet set. They render as
- * visibly bracketed slots — never invent a number here. The same wording
- * flows into the FAQ and, through lib/kb-sync.js, into the AI assistant's
- * retrieval corpus, so a made-up price would be quoted to drivers as fact.
+ * The 6-month free offer for new drivers is a real, current offer and leads
+ * the card. Price and billing period after that are NOT yet set and render as
+ * visibly bracketed slots — never invent a number here. The same wording flows
+ * into the FAQ and, through lib/kb-sync.js, into the AI assistant's retrieval
+ * corpus, so a made-up price would be quoted to drivers as fact.
+ *
+ * No promo end date is stated, because none was given. Do not add one.
  */
 
 const TYPICAL_COMMISSION = 0.25
@@ -53,18 +56,18 @@ export default function SpinrPass() {
         <span className="sp-kick">The Spinr Pass</span>
         <h2 className="sp-display sp-h2">A subscription, not a slice.</h2>
         <p className="sp-pass-lede">
-          Spinr doesn&rsquo;t take a cut of your fares. You subscribe to the platform —
-          the driver app, dispatch, in-app payments and support — for one flat amount,
-          and everything you earn on top of it is yours.
+          Spinr doesn&rsquo;t take a cut of your fares. You subscribe to the app —
+          dispatch, in-app payments, support — for one flat amount, and everything
+          you earn on top of it is yours.
         </p>
 
         <div className="sp-pass-price">
-          <span className="sp-pass-k">Spinr Pass</span>
-          <b className="sp-display">
-            <mark className="sp-todo">[PRICE]</mark>
-            <i>/ <mark className="sp-todo">[PERIOD]</mark></i>
-          </b>
-          <span className="sp-pass-note">Flat. Published. The same whether you drive ten trips or a hundred.</span>
+          <span className="sp-pass-offer sp-display">New drivers</span>
+          <b className="sp-display sp-pass-free">6 months free</b>
+          <span className="sp-pass-then">
+            then <mark className="sp-todo">[PRICE]</mark> / <mark className="sp-todo">[PERIOD]</mark>
+          </span>
+          <span className="sp-pass-note">Flat either way. The same whether you drive ten trips or a hundred.</span>
         </div>
 
         <h3 className="sp-display sp-pass-h3">What a percentage would have cost you</h3>

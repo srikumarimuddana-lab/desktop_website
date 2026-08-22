@@ -288,7 +288,7 @@ export default function DrivePageClient({ structuredData }) {
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2">Keep more of what you earn</h3>
                     <p className="text-gray-600 leading-relaxed">
-                      Spinr takes 0% commission \u2014 you subscribe to the platform with the Spinr Pass instead, so every dollar you earn on a trip stays yours.
+                      Spinr takes 0% commission \u2014 you subscribe to the app with a Spinr Pass instead, so every dollar you earn on a trip stays yours. New drivers get 6 months free.
                     </p>
                   </div>
                 </div>

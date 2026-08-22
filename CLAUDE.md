@@ -14,9 +14,16 @@
 > commission: Spinr is paid a flat amount for access rather than a share of
 > each fare. Not launched yet; drivers pay nothing today.
 >
-> Monetisation has exactly **two** legs, both flat, neither a percentage: the
-> rider's flat $1 booking fee and the Spinr Pass. Corporate accounts are NOT a
-> revenue leg — do not list them as one in copy.
+> **Say it per audience; never explain the business model as a whole.**
+> Spinr does not publish how it earns. Copy states what each audience is
+> charged and stops there:
+>
+> - **To riders:** "$1 per ride — that is what Spinr takes from a fare."
+>   Do not mention the Pass on rider-facing surfaces; it is not their charge.
+> - **To drivers:** "0% commission — no share of your fare, ever. Access to
+>   the app is a Spinr Pass. New drivers get 6 months free."
+> - **Nowhere:** a combined "here is how we make money" reveal, revenue-leg
+>   lists, or corporate accounts as a revenue source.
 >
 > **The line that holds:** Spinr never takes a **percentage of the fare**.
 > That is true now and stays true with a Pass, because a Pass is a flat,

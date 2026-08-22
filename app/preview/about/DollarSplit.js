@@ -31,7 +31,7 @@ export default function DollarSplit() {
   return (
     <section className="sp-sec sp-split" id="money" ref={ref}>
       <div className="sp-wrap">
-        <span className="sp-kick">Where the money goes</span>
+        <span className="sp-kick">What comes out of a fare</span>
         <h2 className="sp-display sp-h2">Follow one fare.</h2>
 
         <div className={`sp-split-bar${on ? ' in' : ''}`} aria-hidden="true">
@@ -49,11 +49,10 @@ export default function DollarSplit() {
         </dl>
 
         <p className="sp-split-note">
-          Spinr is paid two flat amounts and no percentages: the rider&rsquo;s
-          <strong>$1</strong> booking fee, and the <strong>Spinr Pass</strong> a driver
-          subscribes to for access to the app. Neither one cares how long your trip was
-          or what time you took it. That is the entire business model, and it is the
-          reason the driver&rsquo;s column can read 100%.
+          Spinr takes <strong>$1</strong> from a trip. Not a percentage — a flat
+          dollar, the same whether you went four blocks or across the city, at 8am or
+          at 2am. That is the whole of what comes out of a fare, and it is the reason
+          the driver&rsquo;s column reads 100%.
         </p>
       </div>
     </section>
