@@ -194,21 +194,41 @@ export default function PreviewPage() {
           </div>
         </section>
 
-        {/* ── Drivers ───────────────────────────────────────── */}
+        {/* ── Drivers teaser — drawn, like everything else here ── */}
         <section className="sp-sec sp-drive" id="drive">
           <div className="sp-wrap sp-drive-g">
-            <div className="sp-drive-art">
-              <Image src="/driver_feature.png" alt="A Spinr driver" width={900} height={700} sizes="(max-width: 900px) 90vw, 520px" />
-            </div>
+            <Reveal className="sp-drive-art">
+              <div className="sp-dt-week">
+                <span className="sp-dt-k">This week</span>
+                <b className="sp-display sp-dt-big">$1,204</b>
+                <div className="sp-dt-bars" aria-hidden="true">
+                  {[46, 70, 32, 86, 58, 96, 74].map((h, i) => (
+                    <i key={i} style={{ '--h': `${h}%`, '--bd': `${i * 70}ms` }} />
+                  ))}
+                </div>
+                <div className="sp-dt-row"><span>41 trips</span><b>28h online</b></div>
+              </div>
+              <div className="sp-dt-offer" aria-hidden="true">
+                <span className="sp-dt-k">New trip &middot; you earn</span>
+                <b className="sp-display">$14.20</b>
+              </div>
+              <span className="sp-dt-stamp sp-display" aria-hidden="true">
+                Spinr&rsquo;s cut: $0.00
+              </span>
+            </Reveal>
             <div>
               <span className="sp-kick">For drivers</span>
-              <h2 className="sp-display sp-h2">Keep every dollar you earn.</h2>
+              <h2 className="sp-display sp-h2">The fare is yours. All of it.</h2>
+              <p className="sp-drive-p">
+                Other platforms take a slice of every trip. Spinr runs on the rider&rsquo;s
+                flat $1 fee instead — so the fare you see is the money you keep.
+              </p>
               <ul className="sp-ticks">
-                <li>0% commission — permanently, not as a promotion</li>
-                <li>Set your own schedule, work when you want</li>
-                <li>See the fare before you accept the trip</li>
+                <li>See what a trip pays before you accept it</li>
+                <li>$0.00 commission — permanent, not a launch promo</li>
+                <li>Drive when it suits you. No shifts, no quotas.</li>
               </ul>
-              <a className="sp-btn" href="/preview/drive">Start driving</a>
+              <a className="sp-btn" href="/preview/drive">Driving with Spinr</a>
             </div>
           </div>
         </section>
