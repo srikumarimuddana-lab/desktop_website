@@ -30,8 +30,10 @@
 > "forever", and never invent an end date.
 >
 > **Spinr Pass tiers** — two monthly plans, separated by rides allowed per
-> day: **Part-time $19.99 (introductory), up to 4 rides a day** and
-> **Full-time $49.99, unlimited rides**. Fully specified — no placeholders
+> day: **Part-time $19.99, up to 4 rides a day** and **Full-time $49.99,
+> unlimited rides**. BOTH prices are introductory rates — neither is the
+> standard price, and both must be labelled as such wherever they appear.
+> Fully specified — no placeholders
 > remain on `/preview/drive`.
 >
 > "Unlimited" is a promise. If a cap or fair-use rule is ever introduced it
@@ -45,10 +47,11 @@
 > subscribing — and answered directly in the help FAQ, which also reaches the
 > AI assistant.
 >
-> **$19.99 must always be labelled an introductory rate** wherever it appears.
-> Advertising a promotional price without saying it is promotional is
-> misleading, and this number reaches drivers through the FAQ and — via
-> `lib/kb-sync.js` → `knowledge_base` — through the AI assistant's answers.
+> **Both $19.99 and $49.99 must always be labelled introductory rates**
+> wherever they appear. Advertising a promotional price without saying it is
+> promotional is misleading, and these numbers reach drivers through the FAQ
+> and — via `lib/kb-sync.js` → `knowledge_base` — through the AI assistant's
+> answers.
 >
 > **The line that holds:** Spinr never takes a **percentage of the fare**.
 > That is true now and stays true with a Pass, because a Pass is a flat,

@@ -20,6 +20,19 @@ export default function DrivePageClient({ structuredData }) {
   const competitorEarnings = weeklyEarnings * 0.75
   const spinrEarnings = weeklyEarnings
 
+  /* The savings calculator has to price the plan the driver would actually be
+     on. Part-time stops at 4 rides a day, so past that the only plan that can
+     do those rides is Full-time — pricing 30 rides a day against $19.99 would
+     overstate the saving by a plan the driver cannot buy. */
+  const COMMISSION = 0.25
+  const savedPerRide = avgFare * COMMISSION
+  const plan = dailyRides[0] <= 4
+    ? { name: 'Part-time', price: 19.99 }
+    : { name: 'Full-time', price: 49.99 }
+  const commissionTaken = dailyRides[0] * 30 * avgFare * COMMISSION
+  const monthlySaving = commissionTaken - plan.price
+  const breakEvenRides = Math.ceil(plan.price / savedPerRide)
+
   const benefits = [
     { icon: DollarSign, title: '0% Commission Forever', description: 'Every dollar goes to you.' },
     { icon: Calendar, title: '6 Months Free', description: 'No subscription to start.' },
@@ -288,7 +301,7 @@ export default function DrivePageClient({ structuredData }) {
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2">Keep more of what you earn</h3>
                     <p className="text-gray-600 leading-relaxed">
-                      Spinr takes 0% commission — you subscribe to the app with a monthly Spinr Pass instead, so every dollar you earn on a trip stays yours. Every driver gets 6 months free right now, then Part-time at $19.99/month as an introductory rate (up to 4 rides a day), or Full-time at $49.99/month with unlimited rides.
+                      Spinr takes 0% commission — you subscribe to the app with a monthly Spinr Pass instead, so every dollar you earn on a trip stays yours. Every driver gets 6 months free right now, then Part-time at $19.99/month (up to 4 rides a day) or Full-time at $49.99/month with unlimited rides — both introductory rates.
                     </p>
                   </div>
                 </div>
@@ -366,12 +379,13 @@ export default function DrivePageClient({ structuredData }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-20">
-            {/* Standard Plan */}
+            {/* Part-time Plan */}
             <Card className="border border-gray-200 hover:border-gray-300 transition-all duration-300 shadow-lg relative overflow-hidden bg-white">
               <CardHeader className="text-center pb-4 border-b border-gray-100">
-                <CardTitle className="text-2xl font-bold text-gray-900">Standard Driver</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900">Part-time</CardTitle>
                 <div className="mt-4 flex flex-col items-center justify-center">
                   <span className="text-gray-400 line-through text-lg font-medium">$19.99/mo</span>
+                  <span className="text-xs text-gray-400 font-medium">Introductory rate</span>
                   <span className="text-5xl font-extrabold text-gray-900">$0<span className="text-lg font-medium text-gray-500">/mo</span></span>
                   <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-bold">
                     <CheckCircle2 className="w-4 h-4" />
@@ -386,7 +400,8 @@ export default function DrivePageClient({ structuredData }) {
                     The "Catch":
                   </p>
                   <p className="text-gray-600 text-sm">
-                    Limited to <span className="font-bold text-gray-900">5 rides/day maximum</span>.
+                    Limited to <span className="font-bold text-gray-900">4 rides a day</span>. Four is a
+                    hard stop — no more rides that day. Resets tomorrow.
                   </p>
                 </div>
 
@@ -417,24 +432,26 @@ export default function DrivePageClient({ structuredData }) {
                   </li>
                 </ul>
                 <Button variant="outline" className="w-full border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-bold py-4 rounded-xl text-lg transition-all">
-                  Choose Standard
+                  Choose Part-time
                 </Button>
                 <p className="text-xs text-center text-gray-400">
-                  Cancel anytime. Limit resets daily.
+                  $19.99/mo after 6 months — an introductory rate, not the standard
+                  price. Cancel anytime.
                 </p>
               </CardContent>
             </Card>
 
-            {/* Pro Plan */}
+            {/* Full-time Plan */}
             <Card className="border-2 border-primary shadow-xl relative overflow-hidden group bg-white">
               <div className="absolute top-0 inset-x-0 h-2 bg-primary" />
               <div className="absolute top-0 right-0 bg-primary text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
                 Most Popular
               </div>
               <CardHeader className="text-center pb-4 border-b border-gray-100">
-                <CardTitle className="text-2xl font-bold text-gray-900">Pro Driver</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900">Full-time</CardTitle>
                 <div className="mt-4 flex flex-col items-center justify-center">
                   <span className="text-gray-400 line-through text-lg font-medium">$49.99/mo</span>
+                  <span className="text-xs text-gray-400 font-medium">Introductory rate</span>
                   <span className="text-5xl font-extrabold text-gray-900">$0<span className="text-lg font-medium text-gray-500">/mo</span></span>
                   <span className="text-sm text-green-600 font-bold mt-2">Free for 6 months</span>
                 </div>
@@ -443,7 +460,7 @@ export default function DrivePageClient({ structuredData }) {
                 <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
                   <p className="text-sm font-semibold text-blue-900 mb-1 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-500" />
-                    Pro Benefit:
+                    Full-time:
                   </p>
                   <p className="text-blue-800 text-sm">
                     <span className="font-bold">Unlimited Rides</span>. Drive as much as you want with no caps.
@@ -477,10 +494,11 @@ export default function DrivePageClient({ structuredData }) {
                   </li>
                 </ul>
                 <Button className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl text-lg shadow-lg shadow-primary/20 transition-all transform active:scale-95">
-                  Try Pro Free
+                  Try Full-time Free
                 </Button>
                 <p className="text-xs text-center text-gray-400">
-                  $49.99/mo after 6 months. Cancel anytime.
+                  $49.99/mo after 6 months — an introductory rate, not the standard
+                  price. Cancel anytime.
                 </p>
               </CardContent>
             </Card>
@@ -495,7 +513,9 @@ export default function DrivePageClient({ structuredData }) {
               <div>
                 <h3 className="text-3xl font-bold mb-4">See how much you'll save</h3>
                 <p className="text-gray-400 mb-8">
-                  Compare Spinr's flat subscription to the standard 25% commission.
+                  Compare Spinr&rsquo;s flat subscription to a 25% commission. Worked at an
+                  average fare of ${avgFare} over 30 days &mdash; commission rates on other
+                  platforms commonly run 20&ndash;30% and vary by market.
                 </p>
 
                 <div className="space-y-6">
@@ -516,6 +536,11 @@ export default function DrivePageClient({ structuredData }) {
                       <span>1 ride</span>
                       <span>30 rides</span>
                     </div>
+                    <p className="text-xs text-gray-500 mt-3">
+                      {dailyRides[0] <= 4
+                        ? 'Within the Part-time plan\u2019s 4 rides a day, so it is priced at $19.99.'
+                        : 'Above the Part-time plan\u2019s 4 rides a day, so it is priced on Full-time at $49.99.'}
+                    </p>
                   </div>
 
                   <div className="p-4 bg-white/10 rounded-xl border border-white/10 backdrop-blur-sm">
@@ -524,7 +549,8 @@ export default function DrivePageClient({ structuredData }) {
                       <span className="text-sm text-gray-300">Break-even Point</span>
                     </div>
                     <p className="text-sm text-gray-400">
-                      You only need to do <span className="text-white font-bold">5 rides in a whole month</span> to cover your subscription!
+                      On {plan.name}, <span className="text-white font-bold">{breakEvenRides} rides in a whole month</span> cover
+                      your subscription. Everything after that is money a commission would have taken.
                     </p>
                   </div>
                 </div>
@@ -534,22 +560,22 @@ export default function DrivePageClient({ structuredData }) {
                 <div className="text-center">
                   <p className="text-gray-500 font-medium mb-1">Your Monthly Savings</p>
                   <p className="text-5xl font-extrabold text-primary mb-2">
-                    ${((dailyRides[0] * 30 * 18 * 0.25) - 19.99).toFixed(0)}
+                    ${monthlySaving.toFixed(0)}
                   </p>
                   <p className="text-sm text-gray-400 mb-6">vs paying 25% commission</p>
 
                   <div className="space-y-3 pt-6 border-t border-gray-100">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Competitor Takes (25%)</span>
-                      <span className="font-semibold text-red-500">-${(dailyRides[0] * 30 * 18 * 0.25).toFixed(0)}</span>
+                      <span className="font-semibold text-red-500">-${commissionTaken.toFixed(0)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Spinr Cost</span>
-                      <span className="font-semibold text-gray-900">-$19.99</span>
+                      <span className="text-gray-600">Spinr Pass ({plan.name})</span>
+                      <span className="font-semibold text-gray-900">-${plan.price}</span>
                     </div>
                     <div className="flex justify-between text-sm pt-2">
                       <span className="font-bold text-gray-900">Yearly Savings</span>
-                      <span className="font-bold text-green-600">+${(((dailyRides[0] * 30 * 18 * 0.25) - 19.99) * 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                      <span className="font-bold text-green-600">+${(monthlySaving * 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
                     </div>
                   </div>
                 </div>

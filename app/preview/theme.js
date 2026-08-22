@@ -1152,7 +1152,8 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 .sp-pass-limit{display:block;margin-top:9px;padding:8px 10px;border:2px solid var(--ink);
   border-radius:9px;background:var(--red-1);font-size:12px;font-weight:700;line-height:1.45;color:var(--red-7)}
 .sp-pass-name{display:block;font-size:15px;letter-spacing:.08em;color:var(--ink-5);margin-bottom:6px}
-.sp-pass-tier{position:relative;background:#fff;border:2px solid var(--ink);border-radius:16px;
+.sp-pass-tier{position:relative;display:flex;flex-direction:column;align-items:flex-start;
+  background:#fff;border:2px solid var(--ink);border-radius:16px;
   padding:clamp(18px,2.2vw,24px);box-shadow:var(--hard-sm)}
 .sp-pass-tier.is-intro{background:var(--paper-50);box-shadow:var(--hard);padding-top:clamp(26px,3vw,32px)}
 .sp-pass-badge{position:absolute;top:-13px;left:16px;background:var(--red);color:#fff;
@@ -1161,7 +1162,8 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 .sp-pass-tier b{display:flex;align-items:baseline;gap:3px;font-size:clamp(30px,3.4vw,42px);line-height:1}
 .sp-pass-tier b i{font-style:normal;font-size:15px;opacity:.7}
 .sp-pass-rides{display:block;margin-top:9px;font-size:13.5px;font-weight:700;color:var(--ink-6)}
-.sp-pass-after{display:block;margin-top:8px;padding-top:8px;border-top:1.5px dashed rgba(11,11,11,.25);
+.sp-pass-after{display:block;align-self:stretch;margin-top:auto;padding-top:8px;
+  border-top:1.5px dashed rgba(11,11,11,.25);
   font-size:11.5px;font-weight:700;color:var(--ink-5)}
 .sp-pass-note{font-size:12.5px;font-weight:700;color:rgba(11,11,11,.7)}
 /* an unfilled fact, marked so it can never be mistaken for a real number */
