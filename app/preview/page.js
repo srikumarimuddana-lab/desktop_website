@@ -93,7 +93,7 @@ function CardArt({ kind }) {
 const FAQ_FALLBACK = [
   ['Where can I use Spinr?', 'Spinr is available in Saskatoon, Saskatchewan. There is no planned launch in any other city at this time.'],
   ['What does a ride actually cost?', 'The ride fare, a flat $1 booking fee \u2014 the only fee Spinr keeps \u2014 plus pass-through charges where they apply (insurance, city or airport fees) and tax, each shown by name before you book. No surge multiplier, ever, and no fee that is not on the receipt.'],
-  ['How do drivers keep 100%?', 'Spinr takes 0% commission — no share of the fare, ever. Drivers subscribe to the app with a monthly Spinr Pass instead: 6 months free for new drivers, then Part-time at $19.99 a month as an introductory rate, covering up to 4 rides a day, or Full-time at $49.99.'],
+  ['How do drivers keep 100%?', 'Spinr takes 0% commission — no share of the fare, ever. Drivers subscribe to the app with a monthly Spinr Pass instead: 6 months free for new drivers, then Part-time at $19.99 a month as an introductory rate, covering up to 4 rides a day, or Full-time at $49.99 with unlimited rides.'],
   ['Who is driving me?', 'Every driver passes a criminal record check with vulnerable sector screening, holds a full driver\u2019s licence with at least three years of experience, and carries commercial ride-share insurance.'],
   ['Is Spinr Canadian?', 'Yes — proudly Canadian, with a support team based in Saskatchewan.'],
 ]

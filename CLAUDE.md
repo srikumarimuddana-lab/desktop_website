@@ -27,10 +27,17 @@
 >
 > **Spinr Pass tiers** — two monthly plans, separated by rides allowed per
 > day: **Part-time $19.99 (introductory), up to 4 rides a day** and
-> **Full-time $49.99**. Still unset: Full-time's rides-a-day limit, rendered
-> as a `.sp-todo` bracketed slot on `/preview/drive` — do not write
-> "unlimited" there unless that is confirmed; it is a promise, not a guess.
-> Also unanswered: what happens when a Part-time driver hits 4 rides in a day.
+> **Full-time $49.99, unlimited rides**. Fully specified — no placeholders
+> remain on `/preview/drive`.
+>
+> "Unlimited" is a promise. If a cap or fair-use rule is ever introduced it
+> must change in four places at once: the Pass card, the home FAQ, the help
+> FAQ, and `app/drive/DrivePageClient.js` — the FAQs also feed the AI
+> assistant through `lib/kb-sync.js`.
+>
+> Still unanswered: what happens when a Part-time driver reaches 4 rides in a
+> day (offers stop / upgrade prompt / carry on). Drivers will ask this and the
+> assistant currently cannot answer it.
 >
 > **$19.99 must always be labelled an introductory rate** wherever it appears.
 > Advertising a promotional price without saying it is promotional is

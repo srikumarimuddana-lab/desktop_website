@@ -19,9 +19,13 @@ import { useEffect, useRef, useState } from 'react'
  * ladder — Part-time and Full-time — separated by how many rides a day they
  * allow. New drivers get 6 months free first.
  *
- * KNOWN: Part-time $19.99 (introductory), 4 rides a day. Full-time $49.99.
- * NOT KNOWN, rendered as a bracketed slot: Full-time's rides-a-day limit.
- * Do not write "unlimited" there on a hunch — it is a promise, not a guess.
+ * Pricing is now fully specified: Part-time $19.99 (introductory), up to 4
+ * rides a day; Full-time $49.99, unlimited rides. No placeholders remain.
+ *
+ * "Unlimited" is a promise, so it is stated plainly and not hedged. If a cap
+ * or fair-use rule is ever added, this word has to change here, in both FAQs,
+ * and on the live drive page at the same time — it also reaches drivers
+ * through the AI assistant via lib/kb-sync.js.
  *
  * `introductory: true` renders a visible badge. That label is not decoration —
  * advertising a promotional price without saying it is promotional is
@@ -54,7 +58,7 @@ const TIERS = [
     name: 'Full-time',
     price: '49.99',
     introductory: false,
-    rides: null,
+    rides: 'unlimited',
     blurb: 'For driving as the main thing you do.',
   },
 ]
@@ -104,7 +108,7 @@ export default function SpinrPass() {
                 <i>/month</i>
               </b>
               <span className="sp-pass-rides">
-                Up to {t.rides ? t.rides : <mark className="sp-todo">[N]</mark>} rides a day
+                {t.rides === 'unlimited' ? 'Unlimited rides' : `Up to ${t.rides} rides a day`}
               </span>
               <span className="sp-pass-blurb">{t.blurb}</span>
               {t.introductory && (
