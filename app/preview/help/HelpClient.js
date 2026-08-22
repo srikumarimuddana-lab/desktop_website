@@ -219,7 +219,7 @@ export default function HelpClient({ faq = [], articles = [] }) {
                     <span className="sp-display">{q}</span>
                     <span className="sp-faq-ic" aria-hidden="true" />
                   </summary>
-                  <div className="sp-faq-a">{a}</div>
+                  <SafeHtml className="sp-faq-a" content={a} />
                 </details>
               ))}
             </div>

@@ -1,6 +1,7 @@
 import { APP_URLS } from '@/lib/app-links'
 import { FinalCta } from '../Chrome'
 import { getFaqs, previewMetadata } from '@/lib/preview-content'
+import SafeHtml from '@/components/ui/SafeHtml'
 import { Reveal, SplitText } from '../Reveal'
 import RideJourney from './RideJourney'
 
@@ -195,7 +196,7 @@ export default async function RidePage() {
                   <span className="sp-display">{q}</span>
                   <span className="sp-faq-ic" aria-hidden="true" />
                 </summary>
-                <div className="sp-faq-a">{a}</div>
+                <SafeHtml className="sp-faq-a" content={a} />
               </Reveal>
             ))}
           </div>

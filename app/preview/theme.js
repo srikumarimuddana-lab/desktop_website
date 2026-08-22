@@ -482,6 +482,20 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-faq details[open] .sp-faq-ic{transform:rotate(135deg);background:var(--sun);border-color:var(--ink)}
 .sp-faq details[open] .sp-faq-ic::before,.sp-faq details[open] .sp-faq-ic::after{background:var(--ink)}
 .sp-faq-a{padding:0 clamp(18px,2.6vw,32px) clamp(20px,2.8vw,30px);max-width:74ch;font-size:15.5px;line-height:1.62;color:var(--ink-6)}
+/* answers written in the admin dashboard come through as rich text, so the
+   tags it emits need styling — otherwise a CMS answer looks nothing like a
+   hardcoded one */
+.sp-faq-a > :first-child{margin-top:0}
+.sp-faq-a > :last-child{margin-bottom:0}
+.sp-faq-a p{margin:0 0 .7em}
+.sp-faq-a ul{list-style:disc;margin:.5em 0 .7em;padding-left:1.35em}
+.sp-faq-a ol{list-style:decimal;margin:.5em 0 .7em;padding-left:1.5em}
+.sp-faq-a li{margin:.25em 0}
+.sp-faq-a strong,.sp-faq-a b{font-weight:800;color:var(--ink)}
+.sp-faq-a a{color:var(--red);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.sp-faq-a h1,.sp-faq-a h2,.sp-faq-a h3,.sp-faq-a h4{margin:.9em 0 .4em;font-size:1.05em;font-weight:800;color:var(--ink)}
+.sp-faq-a blockquote{margin:.6em 0;padding-left:14px;border-left:3px solid var(--paper-3)}
+.sp-faq-a code{font-size:.92em;background:var(--paper-3);padding:1px 5px;border-radius:5px}
 
 /* ── final CTA ── */
 .sp-final{background:var(--red);color:#fff;border-block:2px solid var(--ink)}
