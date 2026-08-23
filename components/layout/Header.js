@@ -45,14 +45,21 @@ export default function Header() {
               <Button className="bg-primary hover:bg-primary/90 text-white">Get a Ride</Button>
             </Link>
           </div>
-          <button className="md:hidden text-gray-600" onClick={() => setOpen(!open)}>
+          <button
+            type="button"
+            className="md:hidden -mr-2.5 inline-flex h-11 w-11 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 active:scale-95"
+            onClick={() => setOpen(!open)}
+            aria-expanded={open}
+            aria-controls="site-menu"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+          >
             {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
         {open && (
-          <div className="md:hidden py-4 border-t">
+          <div id="site-menu" className="md:hidden py-4 border-t">
             {nav.map((item) => (
-              <Link key={item.name} href={item.href} className="block py-2 text-gray-600 hover:text-primary" onClick={() => setOpen(false)}>
+              <Link key={item.name} href={item.href} className="flex min-h-11 items-center py-2 text-gray-600 hover:text-primary" onClick={() => setOpen(false)}>
                 {item.name}
               </Link>
             ))}

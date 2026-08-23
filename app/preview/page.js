@@ -6,6 +6,7 @@ import HowItWorks from './HowItWorks'
 import AiChat from './AiChat'
 import { FinalCta } from './Chrome'
 import { getFaqs, previewMetadata } from '@/lib/preview-content'
+import SafeHtml from '@/components/ui/SafeHtml'
 import { Reveal, CountUp, Marquee, SplitText } from './Reveal'
 
 /*
@@ -263,7 +264,7 @@ export default async function PreviewPage() {
                     <span className="sp-display">{q}</span>
                     <span className="sp-faq-ic" aria-hidden="true" />
                   </summary>
-                  <div className="sp-faq-a">{a}</div>
+                  <SafeHtml className="sp-faq-a" content={a} />
                 </Reveal>
               ))}
             </div>

@@ -38,7 +38,7 @@ export default function SmartAppLink({
             href={url}
             target="_blank"
             onClick={trackClick}
-            className={`bg-white p-6 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer min-w-[320px] group border border-gray-100 ${className}`}
+            className={`bg-white p-6 rounded-2xl flex items-center gap-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer w-full sm:min-w-[320px] group border border-gray-100 ${className}`}
         >
             <div className="bg-white p-2 rounded-xl border border-gray-100 shrink-0">
                 <QRCodeSVG

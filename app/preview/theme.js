@@ -482,6 +482,20 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-faq details[open] .sp-faq-ic{transform:rotate(135deg);background:var(--sun);border-color:var(--ink)}
 .sp-faq details[open] .sp-faq-ic::before,.sp-faq details[open] .sp-faq-ic::after{background:var(--ink)}
 .sp-faq-a{padding:0 clamp(18px,2.6vw,32px) clamp(20px,2.8vw,30px);max-width:74ch;font-size:15.5px;line-height:1.62;color:var(--ink-6)}
+/* answers written in the admin dashboard come through as rich text, so the
+   tags it emits need styling — otherwise a CMS answer looks nothing like a
+   hardcoded one */
+.sp-faq-a > :first-child{margin-top:0}
+.sp-faq-a > :last-child{margin-bottom:0}
+.sp-faq-a p{margin:0 0 .7em}
+.sp-faq-a ul{list-style:disc;margin:.5em 0 .7em;padding-left:1.35em}
+.sp-faq-a ol{list-style:decimal;margin:.5em 0 .7em;padding-left:1.5em}
+.sp-faq-a li{margin:.25em 0}
+.sp-faq-a strong,.sp-faq-a b{font-weight:800;color:var(--ink)}
+.sp-faq-a a{color:var(--red);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.sp-faq-a h1,.sp-faq-a h2,.sp-faq-a h3,.sp-faq-a h4{margin:.9em 0 .4em;font-size:1.05em;font-weight:800;color:var(--ink)}
+.sp-faq-a blockquote{margin:.6em 0;padding-left:14px;border-left:3px solid var(--paper-3)}
+.sp-faq-a code{font-size:.92em;background:var(--paper-3);padding:1px 5px;border-radius:5px}
 
 /* ── final CTA ── */
 .sp-final{background:var(--red);color:#fff;border-block:2px solid var(--ink)}
@@ -509,7 +523,13 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-foot-base{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;
   padding-block:18px 28px;font-size:12.5px;font-weight:600;opacity:.6;border-top:1px solid rgba(255,255,255,.16)}
 .sp-foot-flag{background:rgba(255,255,255,.1);border-radius:999px;padding:5px 12px}
-@media(max-width:820px){.sp-foot-in{grid-template-columns:1fr 1fr}}
+/* stacked 22px links 9px apart are a 31px pitch — too tight to tap reliably
+   on a phone, where a mis-tap loads the wrong page */
+@media(max-width:820px){
+  .sp-foot-in{grid-template-columns:1fr 1fr}
+  .sp-foot nav{gap:0}
+  .sp-foot nav a{display:flex;align-items:center;min-height:42px}
+}
 @media(max-width:480px){.sp-foot-in{grid-template-columns:1fr}}
 
 /* ── scroll primitives ── */
@@ -826,8 +846,12 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-anat-head{font-size:clamp(19px,2.2vw,27px);margin:0 0 clamp(16px,2.4vw,26px);
   padding-bottom:14px;border-bottom:2px solid var(--ink)}
 .sp-anat-line{display:block;margin-bottom:clamp(14px,2vw,20px)}
-.sp-anat-row{display:flex;align-items:baseline;gap:12px;font-size:clamp(13.5px,1.25vw,15.5px);font-weight:700}
-.sp-anat-row i{flex:1;border-bottom:2px dotted rgba(11,11,11,.35);transform:translateY(-4px)}
+/* a receipt line is label + pill + leader + amount; on a narrow phone that is
+   more than one line's worth, so let it wrap rather than push the page wide */
+.sp-anat-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;row-gap:2px;
+  font-size:clamp(13.5px,1.25vw,15.5px);font-weight:700}
+.sp-anat-row>span{min-width:0}
+.sp-anat-row i{flex:1;min-width:18px;border-bottom:2px dotted rgba(11,11,11,.35);transform:translateY(-4px)}
 .sp-anat-row b{font-size:clamp(19px,2vw,26px);font-weight:400}
 .sp-anat-row.is-red b{color:var(--red)}
 .sp-anat-to{flex:0 0 auto;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.07em;
@@ -886,6 +910,10 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-pd.is-pinned .sp-pd-stage{position:sticky;top:0;height:100vh}
 .sp-pd:not(.is-pinned) .sp-pd-stage{padding-block:clamp(56px,7vw,104px)}
 .sp-pd-in{display:grid;gap:clamp(28px,4vw,64px);align-items:center;width:100%}
+/* grid items default to min-width:auto, so the ledger's own min-content (its
+   route lines) was widening the whole track past the viewport on a 320px
+   screen. Let them shrink; the ledger's rows already truncate. */
+.sp-pd-in>*{min-width:0}
 @media(min-width:900px){.sp-pd-in{grid-template-columns:.9fr 1.1fr}}
 .sp-pd-lede{max-width:420px;margin:0 0 22px;font-size:clamp(15px,1.3vw,17.5px);line-height:1.6;color:var(--ink-6)}
 .sp-pd-keep{display:inline-block;background:var(--sun);border:2px solid var(--ink);border-radius:16px;
