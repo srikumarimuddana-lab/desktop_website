@@ -1183,6 +1183,36 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-sos-not p{margin:16px 0 0;padding-top:14px;border-top:2px solid rgba(255,255,255,.28);
   font-size:14px;line-height:1.6;color:#FFE7EA}
 
+/* ════════════ driver requirements ════════════ */
+.sp-rqhero{background:var(--paper-50);border-bottom:2px solid var(--ink);
+  margin-top:calc(-1 * clamp(52px,7vw,74px));
+  padding:clamp(112px,15vh,168px) 0 clamp(30px,4vw,46px)}
+.sp-rqhero-here{color:rgba(11,11,11,.44)}
+.sp-rqhero-h{font-size:clamp(36px,6vw,74px);margin:0 0 14px}
+.sp-rqhero-p{margin:0;max-width:52ch;font-size:clamp(15px,1.35vw,17.5px);line-height:1.65;color:var(--ink-6)}
+.sp-rq-alt{background:var(--paper-50);border-block:2px solid var(--ink)}
+.sp-rq-lede{margin-bottom:clamp(22px,3vw,30px)}
+.sp-rq-list{margin:0;max-width:760px;display:flex;flex-direction:column}
+.sp-rq-list>div{padding:clamp(16px,2.2vw,22px) 0;border-bottom:2px dashed rgba(11,11,11,.18)}
+.sp-rq-list>div:last-child{border-bottom:0}
+.sp-rq-list dt{margin:0 0 8px;font-size:clamp(18px,2vw,25px);line-height:1.05}
+.sp-rq-list dd{margin:0;font-size:14.5px;line-height:1.66;color:var(--ink-6);max-width:62ch}
+.sp-rq-docs{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(258px,1fr))}
+.sp-rq-docs>*{min-width:0}
+.sp-rq-doc{display:flex;gap:13px;align-items:flex-start;background:#fff;
+  border:2px solid var(--ink);border-radius:16px;padding:16px;box-shadow:var(--hard-sm)}
+.sp-rq-doc-n{display:grid;place-items:center;width:28px;height:28px;flex:0 0 auto;
+  border-radius:999px;background:var(--sun);border:2px solid var(--ink);font-size:14px}
+.sp-rq-doc b{display:block;margin-bottom:4px;font-size:14.5px;color:var(--ink)}
+.sp-rq-doc span{display:block;font-size:13px;line-height:1.55;color:var(--ink-5)}
+.sp-req-more{margin:clamp(20px,2.6vw,28px) 0 0}
+.sp-req-more a{font-size:14.5px;font-weight:800;color:var(--red);text-decoration:none;
+  display:inline-block;transition:transform .14s var(--snap)}
+.sp-req-more a:hover{transform:translateX(3px)}
+.sp-req-more a:active{transform:translateX(1px) scale(.98)}
+.sp-rq-more{margin:clamp(22px,3vw,32px) 0 0;font-size:15px;line-height:1.65;color:var(--ink-6);max-width:64ch}
+.sp-rq-more a{color:var(--red);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+
 /* ════════════ account deletion ════════════ */
 .sp-adhero{background:var(--paper-50);border-bottom:2px solid var(--ink);
   margin-top:calc(-1 * clamp(52px,7vw,74px));
