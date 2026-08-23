@@ -6,6 +6,7 @@ import HowItWorks from './HowItWorks'
 import AiChat from './AiChat'
 import { FinalCta } from './Chrome'
 import { getFaqs, previewMetadata } from '@/lib/preview-content'
+import { pickFaqs } from '@/lib/faq-fallback'
 import SafeHtml from '@/components/ui/SafeHtml'
 import { Reveal, CountUp, Marquee, SplitText } from './Reveal'
 
@@ -91,13 +92,13 @@ function CardArt({ kind }) {
 
 /* Fallback only — the live list comes from the faqs table so admin edits
  * show up without a deploy. */
-const FAQ_FALLBACK = [
-  ['Where can I use Spinr?', 'Spinr is available in Saskatoon, Saskatchewan. There is no planned launch in any other city at this time.'],
-  ['What does a ride actually cost?', 'The ride fare, a flat $1 booking fee \u2014 the only fee Spinr keeps \u2014 plus pass-through charges where they apply (insurance, city or airport fees) and tax, each shown by name before you book. No surge multiplier, ever, and no fee that is not on the receipt.'],
-  ['How do drivers keep 100%?', 'Spinr takes 0% commission — no share of the fare, ever. Drivers subscribe to the app with a monthly Spinr Pass instead: 6 months free for every driver right now, then Part-time at $19.99 a month covering up to 4 rides a day, or Full-time at $49.99 with unlimited rides. Both are introductory rates, not the standard price.'],
-  ['Who is driving me?', 'Every driver passes a criminal record check with vulnerable sector screening, holds a full driver\u2019s licence with at least three years of experience, and carries commercial ride-share insurance.'],
-  ['Is Spinr Canadian?', 'Yes — proudly Canadian, with a support team based in Saskatchewan.'],
-]
+const FAQ_FALLBACK = pickFaqs([
+  'Where can I use Spinr?',
+  'What does a ride actually cost?',
+  'How do drivers keep 100%?',
+  'Who is driving me?',
+  'Is Spinr Canadian?',
+])
 
 /* revalidate 0: an FAQ added in /spinr-internal must appear on the next
  * request, not after the next build. */

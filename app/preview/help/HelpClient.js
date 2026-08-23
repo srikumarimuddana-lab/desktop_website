@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import SafeHtml from '@/components/ui/SafeHtml'
 import { HELP_CATEGORIES, ARTICLE_CONTENT } from '@/constants/helpTopics'
+import { faqSlug } from '@/lib/help-slug'
 
 /*
  * The consolidated help page: help topics, FAQ and support in one place,
@@ -198,12 +199,12 @@ export default function HelpClient({ faq = [], articles = [] }) {
               <ul className="sp-help-links">
                 {cat.articles.filter((a) => !ARTICLE_CONTENT[a.id]).map((a) => (
                   <li key={a.id}>
-                    <Link href={`/help/article/${a.slug}`}>{a.title}</Link>
+                    <Link href={`/preview/help/${a.slug}`}>{a.title}</Link>
                   </li>
                 ))}
                 {extraArticlesFor(cat.id, articles, staticSlugs).map((a) => (
                   <li key={a.id}>
-                    <Link href={`/help/article/${a.slug}`}>{a.title}</Link>
+                    <Link href={`/preview/help/${a.slug}`}>{a.title}</Link>
                   </li>
                 ))}
               </ul>
@@ -220,6 +221,11 @@ export default function HelpClient({ faq = [], articles = [] }) {
                     <span className="sp-faq-ic" aria-hidden="true" />
                   </summary>
                   <SafeHtml className="sp-faq-a" content={a} />
+                  {/* the same answer has its own page, so it can be linked,
+                      shared and indexed rather than living only in an accordion */}
+                  <Link className="sp-faq-perma" href={`/preview/help/${faqSlug(q)}`}>
+                    Open this answer<span aria-hidden="true"> &rarr;</span>
+                  </Link>
                 </details>
               ))}
             </div>
