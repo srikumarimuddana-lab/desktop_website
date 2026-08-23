@@ -11,8 +11,6 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 import { getActivePromotions } from '@/lib/promotions'
 
 export const metadata = {
@@ -27,7 +25,6 @@ export default async function PromotionsPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <Header />
 
       {/* Hero */}
       <section className="relative pt-28 sm:pt-32 pb-16 sm:pb-20 overflow-hidden">
@@ -178,8 +175,6 @@ export default async function PromotionsPage() {
           )}
         </div>
       </section>
-
-      <Footer />
     </main>
   )
 }

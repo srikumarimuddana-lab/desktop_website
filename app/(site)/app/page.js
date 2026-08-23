@@ -4,8 +4,6 @@ import { useEffect, useState, Suspense } from 'react'
 import Script from 'next/script'
 import { APP_URLS, detectPlatform } from '@/lib/app-links'
 import { Loader2 } from 'lucide-react'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 import { useSearchParams } from 'next/navigation'
 
 function RedirectContent() {
@@ -69,13 +67,11 @@ function RedirectContent() {
 export default function AppRedirectPage() {
     return (
         <main className="min-h-screen flex flex-col bg-background">
-            <Header />
             <div className="flex-1 flex items-center justify-center">
                 <Suspense fallback={<div className="flex items-center justify-center p-20"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>}>
                     <RedirectContent />
                 </Suspense>
             </div>
-            <Footer />
             {/* Google tag (gtag.js) */}
             <Script
                 strategy="afterInteractive"

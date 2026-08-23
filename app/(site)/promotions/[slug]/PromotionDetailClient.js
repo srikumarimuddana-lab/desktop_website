@@ -24,8 +24,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 import SmartAppLink from '@/components/ui/SmartAppLink'
 
 const normalizeCode = (v) => (v || '').toString().trim().toUpperCase()
@@ -196,7 +194,6 @@ export default function PromotionDetailClient({ promo, initialCode = '' }) {
 
   return (
     <main className="min-h-screen bg-background">
-      <Header />
 
       {/* Hero */}
       <section className="relative pt-24 sm:pt-28 pb-16 sm:pb-24 overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
@@ -686,8 +683,6 @@ export default function PromotionDetailClient({ promo, initialCode = '' }) {
           </div>
         </div>
       </section>
-
-      <Footer />
     </main>
   )
 }

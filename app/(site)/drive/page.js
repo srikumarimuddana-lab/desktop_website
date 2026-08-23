@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { previewMetadata } from '@/lib/preview-content'
 import { APP_URLS } from '@/lib/app-links'
 import { FinalCta } from '../Chrome'
@@ -133,6 +134,9 @@ export default function DrivePage() {
               </Reveal>
             ))}
           </div>
+          <p className="sp-req-more">
+            <Link href="/drive/requirements">The full list, in detail &rarr;</Link>
+          </p>
         </div>
       </section>
 

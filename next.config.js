@@ -21,6 +21,11 @@ const nextConfig = {
   async redirects() {
     return [
       { source: '/help/article/:slug', destination: '/help/:slug', permanent: true },
+      /* /support was top-articles + browse-by-category + an email link. The
+         redesigned /help does all three, plus the FAQ and the assistant, so
+         the page had nothing left of its own. */
+      { source: '/support', destination: '/help', permanent: true },
+      { source: '/support/requirements', destination: '/drive/requirements', permanent: true },
       { source: '/help/category/:slug', destination: '/help', permanent: true },
       // the old design lived here while the new one was being built
       { source: '/preview', destination: '/', permanent: true },
