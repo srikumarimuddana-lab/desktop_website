@@ -299,7 +299,7 @@ export default function PromotionDetailClient({ promo, initialCode = '' }) {
       <section className="py-16 sm:py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mb-12">
-            <span className="inline-block bg-red-50 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+            <span className="inline-block bg-red-50 text-red-700 px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
               How it works
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
@@ -388,7 +388,7 @@ export default function PromotionDetailClient({ promo, initialCode = '' }) {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
-              <span className="inline-block bg-red-50 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+              <span className="inline-block bg-red-50 text-red-700 px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
                 Accept the quest
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
@@ -667,7 +667,7 @@ export default function PromotionDetailClient({ promo, initialCode = '' }) {
             <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-red-50/50 to-transparent -z-0 rounded-r-[40px] pointer-events-none" />
             <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               <div>
-                <span className="bg-red-50 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-5 inline-block">
+                <span className="bg-red-50 text-red-700 px-4 py-1.5 rounded-full text-sm font-semibold mb-5 inline-block">
                   Driver app
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">

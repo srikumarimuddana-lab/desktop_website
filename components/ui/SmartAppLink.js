@@ -42,6 +42,7 @@ export default function SmartAppLink({
         >
             <div className="bg-white p-2 rounded-xl border border-gray-100 shrink-0">
                 <QRCodeSVG
+                    title={`QR code to download the Spinr ${appType} app`}
                     value={url}
                     size={qrSize}
                     level="H"
@@ -50,7 +51,7 @@ export default function SmartAppLink({
                 />
             </div>
             <div className="flex-1">
-                <h4 className="font-bold text-gray-900 text-xl mb-2">{title}</h4>
+                <p className="font-bold text-gray-900 text-xl mb-2">{title}</p>
                 <div className="flex items-center text-gray-500 gap-1 group-hover:text-primary transition-colors font-medium">
                     Scan to download <ArrowRight className="w-4 h-4 ml-1" />
                 </div>

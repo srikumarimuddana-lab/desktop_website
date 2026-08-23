@@ -166,6 +166,7 @@ export default function ChatWidget() {
                     onClick={() => setIsOpen(true)}
                     className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90"
                     size="icon"
+                    aria-label="Open the Spinr AI assistant"
                 >
                     <MessageSquare className="h-6 w-6" />
                 </Button>
@@ -193,6 +194,7 @@ export default function ChatWidget() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => setIsMinimized(!isMinimized)}
+                            aria-label={isMinimized ? 'Expand the assistant' : 'Minimise the assistant'}
                         >
                             {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
                         </Button>
@@ -201,6 +203,7 @@ export default function ChatWidget() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => setIsOpen(false)}
+                            aria-label="Close the assistant"
                         >
                             <X className="h-4 w-4" />
                         </Button>
@@ -267,6 +270,7 @@ export default function ChatWidget() {
                                                                     size="icon"
                                                                     className="h-6 w-6"
                                                                     onClick={() => handleFeedback(message.conversation_id, true)}
+                                                                    aria-label="This answer was helpful"
                                                                 >
                                                                     <ThumbsUp className="h-3 w-3" />
                                                                 </Button>
@@ -275,6 +279,7 @@ export default function ChatWidget() {
                                                                     size="icon"
                                                                     className="h-6 w-6"
                                                                     onClick={() => handleFeedback(message.conversation_id, false)}
+                                                                    aria-label="This answer was not helpful"
                                                                 >
                                                                     <ThumbsDown className="h-3 w-3" />
                                                                 </Button>

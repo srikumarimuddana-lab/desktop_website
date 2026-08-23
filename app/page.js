@@ -138,7 +138,7 @@ export default async function Home() {
 
             {/* Content Left */}
             <div className="order-2 lg:order-1">
-              <span className="bg-red-50 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-6 inline-block">
+              <span className="bg-red-50 text-red-700 px-4 py-1.5 rounded-full text-sm font-semibold mb-6 inline-block">
                 Rider Path
               </span>
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
@@ -155,7 +155,7 @@ export default async function Home() {
                     <CheckCircle className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 mb-1">Fixed Pricing</h4>
+                    <h3 className="font-bold text-gray-900 mb-1">Fixed Pricing</h3>
                     <p className="text-sm text-gray-500">No surprises at the end of the trip.</p>
                   </div>
                 </div>
@@ -164,7 +164,7 @@ export default async function Home() {
                     <Clock className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 mb-1">24/7 Support</h4>
+                    <h3 className="font-bold text-gray-900 mb-1">24/7 Support</h3>
                     <p className="text-sm text-gray-500">We're here whenever you need us.</p>
                   </div>
                 </div>
@@ -347,7 +347,7 @@ export default async function Home() {
                   <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-4">
                     <DollarSign className="w-5 h-5 text-primary" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mb-1">Surge-Free Rides</h4>
+                  <h3 className="font-bold text-gray-900 mb-1">Surge-Free Rides</h3>
                   <p className="text-sm text-gray-500">Same low price, rain or shine</p>
                 </div>
 
@@ -356,7 +356,7 @@ export default async function Home() {
                   <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-4">
                     <Clock className="w-5 h-5 text-primary" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mb-1">Pre-booking</h4>
+                  <h3 className="font-bold text-gray-900 mb-1">Pre-booking</h3>
                   <p className="text-sm text-gray-500">Reserve your ride 7 days out</p>
                 </div>
               </div>
@@ -384,7 +384,7 @@ export default async function Home() {
 
               {/* Text Content */}
               <div>
-                <span className="bg-red-50 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-6 inline-block">
+                <span className="bg-red-50 text-red-700 px-4 py-1.5 rounded-full text-sm font-semibold mb-6 inline-block">
                   Mobile App
                 </span>
                 <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">

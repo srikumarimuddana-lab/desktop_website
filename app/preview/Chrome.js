@@ -158,7 +158,7 @@ export function SiteFooter() {
           <p>Canada&rsquo;s own rideshare. Serving Saskatoon.</p>
         </div>
         <div>
-          <h4>Riders</h4>
+          <h3>Riders</h3>
           <nav>
             <Link href="/preview/ride">Riding with Spinr</Link>
             <Link href="/preview#math">The math</Link>
@@ -166,14 +166,14 @@ export function SiteFooter() {
           </nav>
         </div>
         <div>
-          <h4>Drivers</h4>
+          <h3>Drivers</h3>
           <nav>
             <Link href="/preview/drive">Start driving</Link>
             <Link href="/preview/about">About Spinr</Link>
           </nav>
         </div>
         <div>
-          <h4>Support</h4>
+          <h3>Support</h3>
           <nav>
             <Link href="/preview/help">Help centre</Link>
             <Link href="/preview/legal/terms">Terms of service</Link>

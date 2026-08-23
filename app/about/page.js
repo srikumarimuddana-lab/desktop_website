@@ -153,8 +153,8 @@ export default async function AboutPage() {
                 We've built safety into every part of the experience, for both riders and drivers.
               </p>
             </div>
-            <Link href="/safety">
-              <Button variant="outline" className="rounded-full px-6 border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold hidden md:flex">
+            <Link href="/safety" className="hidden md:block">
+              <Button variant="outline" className="rounded-full px-6 border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold flex">
                 Our Safety Standards <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>

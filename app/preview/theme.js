@@ -17,6 +17,10 @@ export const CSS = `
   font-family:var(--font-inter,system-ui),system-ui,sans-serif;
 }
 .sp *{box-sizing:border-box}
+/* readable to assistive tech, invisible on screen — used where the visible
+   markup is decorative (split headlines paint per-character spans) */
+.sp-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 .sp img{max-width:100%}
 .sp-display{font-family:var(--sp-display),"Arial Narrow",sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.005em;line-height:.92}
 .sp-editorial{font-family:var(--sp-serif),Georgia,serif;font-style:italic;text-transform:none;letter-spacing:0}
@@ -514,7 +518,7 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-foot-logo{height:30px;width:auto;filter:brightness(0) invert(1)}
 .sp-foot-lock{margin:14px 0 8px;font-family:var(--sp-display),sans-serif;font-size:clamp(20px,2vw,26px);color:var(--sun)}
 .sp-foot-lead p:last-child{margin:0;font-size:15px;line-height:1.5;opacity:.72;max-width:30ch}
-.sp-foot h4{margin:0 0 12px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.2em;opacity:.5}
+.sp-foot h3{margin:0 0 12px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.2em;opacity:.5}
 .sp-foot nav{display:flex;flex-direction:column;gap:9px}
 .sp-foot nav a{color:inherit;font-size:14.5px;font-weight:600;opacity:.82;text-decoration:none}
 .sp-foot nav a:hover{opacity:1;color:var(--sun)}

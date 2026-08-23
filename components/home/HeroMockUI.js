@@ -49,7 +49,7 @@ export default function HeroMockUI() {
                                     <p className="text-xs text-gray-500">2 min away</p>
                                 </div>
                             </div>
-                            <span className="bg-red-50 text-primary text-[10px] font-bold px-2 py-1 rounded-full uppercase">
+                            <span className="bg-red-50 text-red-700 text-[10px] font-bold px-2 py-1 rounded-full uppercase">
                                 Spinr X
                             </span>
                         </div>
