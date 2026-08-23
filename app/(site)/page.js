@@ -4,6 +4,7 @@ import FareCalc from './FareCalc'
 import PhoneFan from './PhoneFan'
 import HowItWorks from './HowItWorks'
 import AiChat from './AiChat'
+import RoadTrip from './RoadTrip'
 import { FinalCta } from './Chrome'
 import { getFaqs, previewMetadata } from '@/lib/preview-content'
 import { pickFaqs } from '@/lib/faq-fallback'
@@ -168,6 +169,9 @@ export default async function PreviewPage() {
 
         {/* ── ticker ────────────────────────────────────────── */}
         <Marquee items={['fair, both ways', '0% commission', 'flat $1 fee', 'no surge, ever', 'Proudly Canadian', 'Saskatoon']} />
+
+        {/* ── the drive ─────────────────────────────────────── */}
+        <RoadTrip />
 
         {/* ── Why Spinr — sticky stacking cards ─────────────── */}
         <section className="sp-sec" id="why">
