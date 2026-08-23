@@ -93,7 +93,7 @@ export default function HelpCenterClient({ articles = [] }) {
                                     className="w-full pl-14 pr-4 py-5 text-gray-900 text-lg placeholder:text-gray-400 focus:outline-none"
                                 />
                                 <Button
-                                    className="absolute right-2 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-semibold"
+                                    className="absolute right-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-semibold"
                                     onClick={() => { }}
                                 >
                                     Search

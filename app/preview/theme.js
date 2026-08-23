@@ -6,7 +6,7 @@ export const CSS = `
 .sp{
   --ink:#0B0B0B; --ink-6:#4A4A4A; --ink-5:#757370; --ink-4:#9C9890;
   --paper:#F3EEE2; --paper-50:#FAF7EF; --paper-3:#E6DCC9; --white:#fff;
-  --red:#DC3848; --red-7:#B41E31; --red-1:#FFE7EA;
+  --red:#DB3344; --red-7:#B41E31; --red-1:#FFE7EA;
   --sky:#A8E1DE; --sun:#FFC60B;
   --hard:5px 5px 0 var(--ink);
   --hard-sm:3px 3px 0 var(--ink);
@@ -702,7 +702,7 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 
 /* ── the chat bubble: same hard-shadow language, same press ── */
 [data-chat] > button{
-  border:2px solid #0B0B0B !important;background:#DC3848 !important;
+  border:2px solid #0B0B0B !important;background:#DB3344 !important;
   box-shadow:-4px 4px 0 #0B0B0B !important;
   animation:sp-chatin .6s cubic-bezier(.2,1.1,.3,1) backwards .9s;
   transition:transform .15s cubic-bezier(.34,1.56,.64,1),box-shadow .15s !important}
@@ -730,7 +730,7 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 [data-chat] input:focus-visible{outline:none !important;box-shadow:2px 2px 0 #0B0B0B !important}
 [data-chat] button[class*="h-10"],
 [data-chat] .flex.gap-2 > button{
-  border:2px solid #0B0B0B !important;border-radius:999px !important;background:#DC3848 !important;
+  border:2px solid #0B0B0B !important;border-radius:999px !important;background:#DB3344 !important;
   box-shadow:-3px 3px 0 #0B0B0B !important;color:#fff !important;
   transition:transform .13s cubic-bezier(.34,1.56,.64,1),box-shadow .13s !important}
 [data-chat] .flex.gap-2 > button:hover{transform:translate(-1px,1px);box-shadow:-2px 2px 0 #0B0B0B !important}
@@ -741,7 +741,7 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 /* message bubbles */
 [data-chat] .bg-primary.text-primary-foreground,
 [data-chat] [class*="bg-primary"][class*="rounded-lg"]{
-  background:#DC3848 !important;border:2px solid #0B0B0B !important;border-radius:14px !important}
+  background:#DB3344 !important;border:2px solid #0B0B0B !important;border-radius:14px !important}
 [data-chat] .bg-gray-100[class*="rounded-lg"]{
   background:#fff !important;border:2px solid #0B0B0B !important;border-radius:14px !important}
 /* header icon buttons stay quiet but press */

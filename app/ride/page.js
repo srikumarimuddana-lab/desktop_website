@@ -54,19 +54,19 @@ export default async function RidePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left Content */}
             <div className="max-w-xl">
-              <span className="text-[#E63946] font-bold tracking-widest text-sm uppercase mb-4 block">
+              <span className="text-primary font-bold tracking-widest text-sm uppercase mb-4 block">
                 Revolutionizing Your Commute
               </span>
               <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-gray-900 mb-6 leading-[1.1]">
                 Your ride, <br />
-                <span className="text-[#E63946]">your way.</span>
+                <span className="text-primary">your way.</span>
               </h1>
               <p className="text-xl text-gray-500 mb-10 leading-relaxed">
                 Experience fair pricing, verified safety protocols, and 24/7 support with every Spinr trip.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <SmartDownloadButton size="lg" className="rounded-xl px-10 py-7 text-lg font-bold bg-[#E63946] hover:bg-[#D62839] text-white shadow-lg shadow-red-100">
+                <SmartDownloadButton size="lg" className="rounded-xl px-10 py-7 text-lg font-bold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-red-100">
                   Request a Ride
                 </SmartDownloadButton>
               </div>
@@ -100,7 +100,7 @@ export default async function RidePage() {
             {/* Step 1 */}
             <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
               <div className="text-4xl font-bold text-red-100 mb-6">01</div>
-              <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-[#E63946] mb-6">
+              <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-700 mb-6">
                 <MapPin className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">1. Set your destination</h3>
@@ -112,7 +112,7 @@ export default async function RidePage() {
             {/* Step 2 */}
             <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
               <div className="text-4xl font-bold text-red-100 mb-6">02</div>
-              <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-[#E63946] mb-6">
+              <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-700 mb-6">
                 <UserCheck className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">2. Match with a driver</h3>
@@ -124,7 +124,7 @@ export default async function RidePage() {
             {/* Step 3 */}
             <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow">
               <div className="text-4xl font-bold text-red-100 mb-6">03</div>
-              <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-[#E63946] mb-6">
+              <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-700 mb-6">
                 <Car className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">3. Hop in and enjoy</h3>
@@ -194,7 +194,7 @@ export default async function RidePage() {
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
                 Know before you go. <br />
-                <span className="text-red-500">Total Transparency.</span>
+                <span className="text-primary">Total Transparency.</span>
               </h2>
               <p className="text-lg text-gray-500 mb-8 leading-relaxed">
                 No more guessing games. With Spinr, you can see your estimated fare instantly. Our calculator uses real-time distance data to give you an accurate price range based on our fair-pay model.

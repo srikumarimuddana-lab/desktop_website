@@ -223,7 +223,7 @@ export default function FareCalculator() {
                     )}
 
                     <Button
-                        className="w-full h-12 text-lg font-bold bg-[#E63946] hover:bg-[#D62839] text-white shadow-md mt-4"
+                        className="w-full h-12 text-lg font-bold bg-primary hover:bg-primary/90 text-white shadow-md mt-4"
                         onClick={calculateFare}
                         disabled={loading}
                     >

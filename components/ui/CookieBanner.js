@@ -10,7 +10,7 @@ export default function CookieBanner() {
             ariaAcceptLabel="I Understand"
             cookieName="spinrCookieConsent"
             style={{ background: "#2B373B" }}
-            buttonStyle={{ color: "#ffffff", fontSize: "14px", fontWeight: "bold", borderRadius: "8px", padding: "10px 20px", background: "#e11d48" }}
+            buttonStyle={{ color: "#ffffff", fontSize: "14px", fontWeight: "bold", borderRadius: "8px", padding: "10px 20px", background: "#db3344" }}
             expires={150}
         >
             This website uses cookies to enhance the user experience.

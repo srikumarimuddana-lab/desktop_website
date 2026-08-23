@@ -10,7 +10,10 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 354 70% 54%;
+    /* 53%, not 54%: white on 54% (#dc3848) measures 4.46:1 and WCAG AA
+       needs 4.5:1 for the button labels this sits behind. One step
+       darker (#db3344) is 4.60:1. Do not lighten it back. */
+    --primary: 354 70% 53%;
     --primary-foreground: 0 0% 100%;
     --secondary: 220 14% 96%;
     --secondary-foreground: 222.2 47.4% 11.2%;

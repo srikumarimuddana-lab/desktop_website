@@ -121,10 +121,10 @@ export default function DrivePageClient({ structuredData }) {
                       <p className="text-xs text-primary mt-1">-25% commission</p>
                     </div>
                     <div className="bg-red-50 rounded-xl p-4 border-2 border-primary text-center">
-                      <p className="text-primary font-medium mb-1 text-sm">With Spinr</p>
+                      <p className="text-red-700 font-medium mb-1 text-sm">With Spinr</p>
                       <p className="text-2xl font-bold text-primary">${spinrEarnings.toFixed(0)}</p>
                       <div className="flex flex-col gap-0.5">
-                        <p className="text-xs text-red-500 mt-1 font-bold">0% commission!</p>
+                        <p className="text-xs text-red-700 mt-1 font-bold">0% commission!</p>
                         <p className="text-[10px] text-gray-500">(Free for 6 months)</p>
                       </div>
                     </div>
