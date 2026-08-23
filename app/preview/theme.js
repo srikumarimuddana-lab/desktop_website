@@ -523,7 +523,13 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-foot-base{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;
   padding-block:18px 28px;font-size:12.5px;font-weight:600;opacity:.6;border-top:1px solid rgba(255,255,255,.16)}
 .sp-foot-flag{background:rgba(255,255,255,.1);border-radius:999px;padding:5px 12px}
-@media(max-width:820px){.sp-foot-in{grid-template-columns:1fr 1fr}}
+/* stacked 22px links 9px apart are a 31px pitch — too tight to tap reliably
+   on a phone, where a mis-tap loads the wrong page */
+@media(max-width:820px){
+  .sp-foot-in{grid-template-columns:1fr 1fr}
+  .sp-foot nav{gap:0}
+  .sp-foot nav a{display:flex;align-items:center;min-height:42px}
+}
 @media(max-width:480px){.sp-foot-in{grid-template-columns:1fr}}
 
 /* ── scroll primitives ── */

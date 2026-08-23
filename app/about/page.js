@@ -117,7 +117,7 @@ export default async function AboutPage() {
               </div>
 
               <div className="mt-10">
-                <Link href="#safety" className="text-primary font-bold hover:underline text-lg">
+                <Link href="#safety" className="inline-flex min-h-11 items-center text-primary font-bold hover:underline text-lg">
                   Learn about our values
                 </Link>
                 <div className="h-0.5 w-16 bg-primary mt-1"></div>
