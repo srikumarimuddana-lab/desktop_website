@@ -1142,66 +1142,6 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-faq-perma:hover{transform:translateX(3px)}
 .sp-faq-perma:active{transform:translateX(1px) scale(.98)}
 
-/* ════════════ the drive — scroll-driven car ════════════ */
-.sp-road{--horizon:66%;
-  /* the car's width is clamped, so it does NOT scale with the section — the
-     travel has to be expressed in its terms or a percentage that parks it
-     neatly on a desktop shoves it off the edge on a phone */
-  --carw:clamp(150px,21vw,250px);
-  --park:clamp(70px,11vw,150px);
-  position:relative;overflow:hidden;background:var(--sky);
-  border-block:2px solid var(--ink);
-  height:clamp(250px,32vw,380px)}
-.sp-road-sky{position:absolute;left:0;right:0;top:0;height:var(--horizon);background:var(--sky)}
-.sp-road-city{position:absolute;left:0;right:0;bottom:0;height:clamp(58px,9vw,104px);
-  color:rgba(11,11,11,.16);
-  /* drifts the opposite way to the car, and less far — parallax by hand */
-  transform:translateX(calc(var(--t) * 34px))}
-.sp-road-city svg{display:block;width:112%;height:100%;margin-left:-6%}
-
-/* the road runs to the bottom edge — a strip of paper under it read as dead
-   space, and asphalt to the edge is what you actually see out a window */
-.sp-road-strip{position:absolute;left:0;right:0;top:var(--horizon);bottom:0;
-  background:var(--ink);border-top:3px solid var(--ink)}
-.sp-road-dashes{position:absolute;left:0;right:0;top:52%;height:6px;
-  background:repeating-linear-gradient(90deg,var(--sun) 0 52px,transparent 52px 108px);
-  /* the road runs under the car, so it scrolls the other way */
-  transform:translateX(calc(var(--t) * -190px))}
-
-.sp-road-pin{position:absolute;right:clamp(26px,6vw,90px);top:var(--horizon);width:clamp(26px,3.4vw,34px);
-  transform:translateY(-100%) scale(.6);transform-origin:50% 100%;opacity:0;
-  transition:transform .42s var(--snap),opacity .2s ease}
-.sp-road-pin svg{display:block;width:100%;height:auto}
-.sp-road.is-there .sp-road-pin{opacity:1;transform:translateY(-100%) scale(1)}
-
-.sp-road-car{position:absolute;top:var(--horizon);width:var(--carw);
-  /* fully offscreen left at rest; parked with its nose --park short of the
-     right edge, which leaves the pin clear at every width */
-  left:calc(0px - var(--carw) + var(--t) * (100% - var(--park)));
-  /* wheels rest below the horizon, so it sits ON the asphalt rather than
-     balancing on the line where the road starts */
-  transform:translate(0,-78%);will-change:left}
-.sp-road-car svg{display:block;width:100%;height:auto;overflow:visible}
-/* a hair of suspension, so it does not glide like a sticker */
-@keyframes sp-road-bob{0%,100%{transform:translate(0,-78%)}50%{transform:translate(0,calc(-78% - 2px))}}
-.sp-road-car{animation:sp-road-bob .5s ease-in-out infinite}
-.sp-road.is-there .sp-road-car{animation:none}
-
-.sp-road-wheel{transform-box:fill-box;transform-origin:center;
-  transform:rotate(calc(var(--t) * 1600deg))}
-
-.sp-road-cap{position:absolute;left:clamp(18px,4vw,44px);top:clamp(16px,3vw,28px);
-  display:flex;flex-direction:column;gap:4px;margin:0}
-.sp-road-cap span{font-size:clamp(20px,3vw,34px);line-height:.95}
-.sp-road-cap i{font-family:var(--font-inter,system-ui),sans-serif;font-style:normal;
-  font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
-  color:rgba(11,11,11,.62)}
-
-@media(prefers-reduced-motion:reduce){
-  .sp-road-car{animation:none}
-  .sp-road-pin{transition:none}
-}
-
 /* ════════════ live trip estimator ════════════ */
 .sp-estsec{background:var(--paper-50);border-block:2px solid var(--ink)}
 .sp-estsec-lede{margin-bottom:clamp(22px,3vw,32px)}
