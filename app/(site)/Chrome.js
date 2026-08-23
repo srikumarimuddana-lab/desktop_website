@@ -10,10 +10,10 @@ import { Tilt } from './Reveal'
 /* The shared shell pieces: nav, final CTA, footer. */
 
 const LINKS = [
-  ['/preview/ride', 'Ride'],
-  ['/preview/drive', 'Drive'],
-  ['/preview/about', 'About'],
-  ['/preview/help', 'Help'],
+  ['/ride', 'Ride'],
+  ['/drive', 'Drive'],
+  ['/about', 'About'],
+  ['/help', 'Help'],
 ]
 
 export function SiteNav() {
@@ -77,7 +77,7 @@ export function SiteNav() {
   return (
     <>
       <nav className="sp-nav">
-        <Link href="/preview" className="sp-nav-logo" aria-label="Spinr home">
+        <Link href="/" className="sp-nav-logo" aria-label="Spinr home">
           <Image src="/logo.webp" alt="Spinr" width={92} height={30} priority />
         </Link>
         <div className="sp-nav-links">
@@ -87,7 +87,7 @@ export function SiteNav() {
               {label}
             </Link>
           ))}
-          <Link href="/preview#ai" className="sp-nav-ai">
+          <Link href="/#ai" className="sp-nav-ai">
             <span aria-hidden="true">&#10022;</span>AI assistant
           </Link>
         </div>
@@ -111,7 +111,7 @@ export function SiteNav() {
                 <b aria-hidden="true">&rarr;</b>
               </Link>
             ))}
-            <Link href="/preview#ai" className="sp-menu-ai" style={{ '--i': LINKS.length }}>
+            <Link href="/#ai" className="sp-menu-ai" style={{ '--i': LINKS.length }}>
               <span aria-hidden="true">&#10022;</span>Ask the AI assistant
             </Link>
           </div>
@@ -160,30 +160,30 @@ export function SiteFooter() {
         <div>
           <h3>Riders</h3>
           <nav>
-            <Link href="/preview/ride">Riding with Spinr</Link>
-            <Link href="/preview#math">The math</Link>
-            <Link href="/preview#faq">FAQ</Link>
+            <Link href="/ride">Riding with Spinr</Link>
+            <Link href="/#math">The math</Link>
+            <Link href="/#faq">FAQ</Link>
           </nav>
         </div>
         <div>
           <h3>Drivers</h3>
           <nav>
-            <Link href="/preview/drive">Start driving</Link>
-            <Link href="/preview/about">About Spinr</Link>
+            <Link href="/drive">Start driving</Link>
+            <Link href="/about">About Spinr</Link>
           </nav>
         </div>
         <div>
           <h3>Support</h3>
           <nav>
-            <Link href="/preview/help">Help centre</Link>
-            <Link href="/preview/legal/terms">Terms of service</Link>
-            <Link href="/preview/legal/privacy">Privacy policy</Link>
+            <Link href="/help">Help centre</Link>
+            <Link href="/legal/terms">Terms of service</Link>
+            <Link href="/legal/privacy">Privacy policy</Link>
           </nav>
         </div>
       </div>
       <div className="sp-wrap sp-foot-base">
         <span>Saskatoon, SK &middot; support@spinr.ca</span>
-        <span className="sp-foot-flag">Design sample &middot; /preview &middot; not linked from the live site</span>
+        <span className="sp-foot-flag">Proudly Canadian &middot; Saskatoon, Saskatchewan</span>
       </div>
     </footer>
   )

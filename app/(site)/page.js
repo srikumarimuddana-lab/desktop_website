@@ -105,7 +105,7 @@ const FAQ_FALLBACK = pickFaqs([
 export const revalidate = 0
 
 export async function generateMetadata() {
-  return previewMetadata('/preview', {
+  return previewMetadata('/', {
     title: 'Design Sample | Spinr',
     description: 'Internal design sample. Not a live page.',
   })
@@ -246,7 +246,7 @@ export default async function PreviewPage() {
                 <li>0% commission — permanent, not a launch promo</li>
                 <li>Drive when it suits you. No shifts, no quotas.</li>
               </ul>
-              <a className="sp-btn" href="/preview/drive">Driving with Spinr</a>
+              <a className="sp-btn" href="/drive">Driving with Spinr</a>
             </div>
           </div>
         </section>

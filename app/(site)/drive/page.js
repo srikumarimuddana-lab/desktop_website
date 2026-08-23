@@ -7,7 +7,7 @@ import Payday from './Payday'
 import SpinrPass from './SpinrPass'
 
 /*
- * DESIGN SAMPLE — /preview/drive
+ * DESIGN SAMPLE — /drive
  * The driver page. Its motion identity is THE PAYDAY: a pinned ledger where a
  * Friday night's trips land one by one and the commission line never moves.
  * Uses the DRIVER app store links, not the rider ones.
@@ -16,7 +16,7 @@ import SpinrPass from './SpinrPass'
 export const revalidate = 0
 
 export async function generateMetadata() {
-  return previewMetadata('/preview/drive', {
+  return previewMetadata('/drive', {
     title: 'Drive | Spinr Design Sample',
     description: 'Keep 100% of the fare. Design sample.',
   })

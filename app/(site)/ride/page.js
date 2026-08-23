@@ -5,9 +5,10 @@ import { pickFaqs } from '@/lib/faq-fallback'
 import SafeHtml from '@/components/ui/SafeHtml'
 import { Reveal, SplitText } from '../Reveal'
 import RideJourney from './RideJourney'
+import TripEstimate from './TripEstimate'
 
 /*
- * DESIGN SAMPLE — /preview/ride
+ * DESIGN SAMPLE — /ride
  * The rider page. Its motion identity is THE TRIP: one pinned, full-bleed
  * map that plays a single ride end to end as you scroll. Everything else on
  * the page stays quieter so the journey owns the middle.
@@ -16,7 +17,7 @@ import RideJourney from './RideJourney'
 export const revalidate = 0
 
 export async function generateMetadata() {
-  return previewMetadata('/preview/ride', {
+  return previewMetadata('/ride', {
     title: 'Ride | Spinr Design Sample',
     description: 'See the full fare before you book. Design sample.',
   })
@@ -160,6 +161,23 @@ export default async function RidePage() {
               government — and passed straight through, <em className="sp-editorial">never marked up</em>.
               If a fee isn&rsquo;t on this list, we can&rsquo;t charge it.
             </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ── price your own trip ── */}
+      <section className="sp-sec sp-estsec" id="estimate">
+        <div className="sp-wrap">
+          <Reveal>
+            <span className="sp-kick">Before you book</span>
+            <h2 className="sp-display sp-h2">Price your own trip.</h2>
+            <p className="sp-lede sp-estsec-lede">
+              Two addresses, a real driving distance, and the same maths the app
+              uses. No account, no app, no catch.
+            </p>
+          </Reveal>
+          <Reveal delay={90}>
+            <TripEstimate />
           </Reveal>
         </div>
       </section>

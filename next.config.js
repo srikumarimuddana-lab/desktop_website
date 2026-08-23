@@ -14,6 +14,19 @@ const nextConfig = {
     // Remove if not using Server Components
   },
   devIndicators: false,
+  /* The redesign consolidated the help centre: article pages moved from
+     /help/article/:slug to /help/:slug, and category pages became anchors on
+     the one help page. 301 rather than 404 — these URLs are indexed and
+     linked, and a permanent redirect passes their ranking to the new page. */
+  async redirects() {
+    return [
+      { source: '/help/article/:slug', destination: '/help/:slug', permanent: true },
+      { source: '/help/category/:slug', destination: '/help', permanent: true },
+      // the old design lived here while the new one was being built
+      { source: '/preview', destination: '/', permanent: true },
+      { source: '/preview/:path*', destination: '/:path*', permanent: true },
+    ]
+  },
   turbopack: {},
   webpack(config, { dev }) {
     if (dev) {

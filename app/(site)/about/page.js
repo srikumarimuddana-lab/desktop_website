@@ -6,7 +6,7 @@ import RefuseRail from './RefuseRail'
 import DollarSplit from './DollarSplit'
 
 /*
- * DESIGN SAMPLE — /preview/about
+ * DESIGN SAMPLE — /about
  * The company page. Its motion identity is EDITORIAL: a marker pen that
  * sweeps through the manifesto as you read it, and a horizontal rail of the
  * things the product refuses to become. No invented dates, headcounts or
@@ -16,7 +16,7 @@ import DollarSplit from './DollarSplit'
 export const revalidate = 0
 
 export async function generateMetadata() {
-  return previewMetadata('/preview/about', {
+  return previewMetadata('/about', {
     title: 'About | Spinr Design Sample',
     description: 'Why Spinr is built the way it is. Design sample.',
   })

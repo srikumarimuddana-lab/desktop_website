@@ -1,7 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { getHelpSlugs } from '@/lib/help-answers'
-import { PREVIEW_IS_LIVE } from '@/lib/preview-content'
 export const dynamic = 'force-dynamic'
 export const revalidate = 3600 // Revalidate every hour
 
@@ -19,16 +18,15 @@ interface SeoPage {
  * their own titles and copy, so they belong in the sitemap — leaving them out
  * meant the entire help centre was one URL as far as search was concerned.
  *
- * While the new design is still behind /preview it is noindex, so its URLs are
- * withheld: listing a page in the sitemap and then telling the crawler not to
- * index it is a contradiction Search Console reports as an error.
+ * Topics with no article behind them are excluded by getHelpSlugs(), because
+ * those pages are noindex: listing a page in the sitemap and then telling the
+ * crawler not to index it is a contradiction Search Console reports.
  */
 async function helpAnswerEntries(baseUrl: string): Promise<MetadataRoute.Sitemap> {
-  if (!PREVIEW_IS_LIVE) return []
   try {
     const slugs = await getHelpSlugs()
     return slugs.map((s: { slug: string; updatedAt?: string }) => ({
-      url: `${baseUrl}/preview/help/${s.slug}`,
+      url: `${baseUrl}/help/${s.slug}`,
       lastModified: s.updatedAt ? new Date(s.updatedAt) : new Date(),
       changeFrequency: 'monthly' as const,
       priority: 0.6,

@@ -1142,6 +1142,48 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-faq-perma:hover{transform:translateX(3px)}
 .sp-faq-perma:active{transform:translateX(1px) scale(.98)}
 
+/* ════════════ live trip estimator ════════════ */
+.sp-estsec{background:var(--paper-50);border-block:2px solid var(--ink)}
+.sp-estsec-lede{margin-bottom:clamp(22px,3vw,32px)}
+.sp-est{position:relative;max-width:620px;background:#fff;border:2px solid var(--ink);
+  border-radius:22px;box-shadow:var(--hard);padding:clamp(18px,2.6vw,28px)}
+.sp-est-fields{position:relative;display:grid;gap:10px}
+.sp-est-field{display:block}
+.sp-est-field span{display:block;margin-bottom:6px;font-size:11px;font-weight:800;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-5)}
+.sp-est-field input{width:100%;padding:13px 15px;font:inherit;font-size:15px;
+  border:2px solid var(--ink);border-radius:12px;background:var(--paper-50);color:var(--ink);
+  transition:box-shadow .14s,transform .14s}
+.sp-est-field input::placeholder{color:var(--ink-4)}
+.sp-est-field input:focus{outline:none;background:#fff;box-shadow:-3px 3px 0 var(--ink)}
+.sp-est-swap{justify-self:start;display:grid;place-items:center;width:38px;height:38px;
+  border:2px solid var(--ink);border-radius:12px;background:var(--sun);cursor:pointer;
+  font-size:16px;line-height:1;box-shadow:-2px 2px 0 var(--ink);
+  transition:transform .14s,box-shadow .14s}
+.sp-est-swap:hover{transform:translate(-1px,1px);box-shadow:-1px 1px 0 var(--ink)}
+.sp-est-swap:active{transform:translate(-2px,2px);box-shadow:none}
+.sp-est-list{position:absolute;left:0;right:0;top:100%;z-index:5;list-style:none;margin:6px 0 0;
+  padding:5px;max-height:250px;overflow-y:auto;background:#fff;border:2px solid var(--ink);
+  border-radius:14px;box-shadow:var(--hard-sm)}
+.sp-est-list button{display:block;width:100%;padding:10px 12px;border:0;border-radius:9px;
+  background:none;font:inherit;font-size:13.5px;line-height:1.45;text-align:left;color:var(--ink-6);
+  cursor:pointer;transition:background .12s}
+.sp-est-list button:hover{background:var(--paper-50);color:var(--ink)}
+.sp-est-list button:active{background:var(--sun)}
+.sp-est-go{margin-top:16px;width:100%;justify-content:center}
+.sp-est-go:disabled{background:var(--ink-4);cursor:progress}
+.sp-est-err{margin:12px 0 0;font-size:13.5px;font-weight:700;color:var(--red-7)}
+.sp-est-out{margin-top:18px;padding-top:16px;border-top:2px dashed rgba(11,11,11,.22)}
+.sp-est-headline{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sp-est-k{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-5)}
+.sp-est-headline b{margin-left:auto;font-size:clamp(26px,3.4vw,40px);line-height:.95}
+.sp-est-rows{margin:0;display:flex;flex-direction:column;gap:0}
+.sp-est-rows>div{display:flex;align-items:baseline;gap:10px;padding:7px 0;
+  border-bottom:1.5px dashed rgba(11,11,11,.14);font-size:13.5px}
+.sp-est-rows dt{margin:0;color:var(--ink-5);font-weight:600}
+.sp-est-rows dd{margin:0 0 0 auto;font-weight:800;color:var(--ink)}
+.sp-est-fine{margin:14px 0 0;font-size:12.5px;line-height:1.6;color:var(--ink-5)}
+
 /* ════════════ one help answer, /help/[slug] ════════════ */
 .sp-ans-hero{background:var(--sky);border-bottom:2px solid var(--ink);
   margin-top:calc(-1 * clamp(52px,7vw,74px));

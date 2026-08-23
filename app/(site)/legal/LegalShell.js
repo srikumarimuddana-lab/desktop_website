@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import SafeHtml from '@/components/ui/SafeHtml'
 
 /*
  * Shared frame for the legal pages: a sticky table-of-contents rail that
@@ -9,6 +10,11 @@ import Link from 'next/link'
  * documents are drafts pending review by Saskatchewan counsel — a DRAFT
  * stamp that stays visible. The stamp comes off when the text has been
  * signed off, not before.
+ *
+ * A document published through the admin dashboard is not a draft, so it does
+ * not get the stamp: `doc.fromCms` distinguishes the two. Sections arrive
+ * either as plain paragraphs (the checked-in drafts) or as an HTML fragment
+ * (a CMS document split on its own headings), and both render here.
  */
 
 export default function LegalShell({ kicker, doc, other }) {
@@ -55,9 +61,11 @@ export default function LegalShell({ kicker, doc, other }) {
           <p className="sp-legal-updated">
             {doc.updated || 'Last updated: [pending publication]'}
           </p>
-          <span className="sp-legal-draft sp-display" role="note">
-            Draft &middot; pending legal review
-          </span>
+          {!doc.fromCms && (
+            <span className="sp-legal-draft sp-display" role="note">
+              Draft &middot; pending legal review
+            </span>
+          )}
         </div>
       </header>
 
@@ -72,18 +80,22 @@ export default function LegalShell({ kicker, doc, other }) {
         </nav>
 
         <article className="sp-legal-body" ref={bodyRef}>
-          {doc.intro.map((p, i) => (
-            <p key={i} className="sp-legal-lede">{p}</p>
-          ))}
+          {doc.intro.map((p, i) =>
+            doc.fromCms
+              ? <SafeHtml key={i} className="sp-legal-lede" content={p} />
+              : <p key={i} className="sp-legal-lede">{p}</p>
+          )}
           {doc.sections.map((s) => (
             <section key={s.id} id={s.id}>
               <h2 className="sp-display" data-sec={s.id}>{s.title.toLowerCase()}</h2>
-              {s.paras.map((p, i) => <p key={i}>{p}</p>)}
+              {s.html
+                ? <SafeHtml content={s.html} />
+                : (s.paras || []).map((p, i) => <p key={i}>{p}</p>)}
             </section>
           ))}
           <div className="sp-legal-next">
             <Link className="sp-btn-ghost" href={other.href}>{other.label}</Link>
-            <Link className="sp-btn-ghost" href="/preview/help">Help centre</Link>
+            <Link className="sp-btn-ghost" href="/help">Help centre</Link>
           </div>
         </article>
       </div>

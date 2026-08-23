@@ -199,12 +199,12 @@ export default function HelpClient({ faq = [], articles = [] }) {
               <ul className="sp-help-links">
                 {cat.articles.filter((a) => !ARTICLE_CONTENT[a.id]).map((a) => (
                   <li key={a.id}>
-                    <Link href={`/preview/help/${a.slug}`}>{a.title}</Link>
+                    <Link href={`/help/${a.slug}`}>{a.title}</Link>
                   </li>
                 ))}
                 {extraArticlesFor(cat.id, articles, staticSlugs).map((a) => (
                   <li key={a.id}>
-                    <Link href={`/preview/help/${a.slug}`}>{a.title}</Link>
+                    <Link href={`/help/${a.slug}`}>{a.title}</Link>
                   </li>
                 ))}
               </ul>
@@ -223,7 +223,7 @@ export default function HelpClient({ faq = [], articles = [] }) {
                   <SafeHtml className="sp-faq-a" content={a} />
                   {/* the same answer has its own page, so it can be linked,
                       shared and indexed rather than living only in an accordion */}
-                  <Link className="sp-faq-perma" href={`/preview/help/${faqSlug(q)}`}>
+                  <Link className="sp-faq-perma" href={`/help/${faqSlug(q)}`}>
                     Open this answer<span aria-hidden="true"> &rarr;</span>
                   </Link>
                 </details>
@@ -248,9 +248,9 @@ export default function HelpClient({ faq = [], articles = [] }) {
               </Link>
             </div>
             <p className="sp-help-legal-links">
-              The fine print: <Link href="/preview/legal/terms">Terms of service</Link>
+              The fine print: <Link href="/legal/terms">Terms of service</Link>
               {' '}&middot;{' '}
-              <Link href="/preview/legal/privacy">Privacy policy</Link>
+              <Link href="/legal/privacy">Privacy policy</Link>
             </p>
           </section>
         </div>

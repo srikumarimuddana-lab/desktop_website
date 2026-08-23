@@ -8,7 +8,7 @@ import { pickFaqs } from '@/lib/faq-fallback'
 export const revalidate = 0
 
 export async function generateMetadata() {
-  return previewMetadata('/preview/help', {
+  return previewMetadata('/help', {
     title: 'Help | Spinr Design Sample',
     description: 'Riding, driving and account help in one place. Design sample.',
   })

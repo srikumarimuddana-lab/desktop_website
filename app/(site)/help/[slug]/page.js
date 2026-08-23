@@ -44,7 +44,7 @@ function summarise(html, fallback) {
 export async function generateMetadata({ params }) {
   const { slug } = await params
   const answer = await getHelpAnswer(slug)
-  if (!answer) return previewMetadata(`/preview/help/${slug}`, { title: 'Help | Spinr' })
+  if (!answer) return previewMetadata(`/help/${slug}`, { title: 'Help | Spinr' })
 
   const description = answer.placeholder
     ? `We have not written this one up yet. Ask the Spinr AI assistant about ${answer.title.toLowerCase()}, or email support@spinr.ca.`
@@ -53,22 +53,22 @@ export async function generateMetadata({ params }) {
   // A topic with no article behind it is a thin page. Keep the link working,
   // keep it out of the index.
   if (answer.placeholder) {
-    const meta = await previewMetadata(`/preview/help/${slug}`, {
+    const meta = await previewMetadata(`/help/${slug}`, {
       title: `${answer.title} | Spinr Help`,
       description,
     })
     return { ...meta, robots: { index: false, follow: true } }
   }
 
-  return previewMetadata(`/preview/help/${slug}`, {
+  return previewMetadata(`/help/${slug}`, {
     title: `${answer.title} | Spinr Help`,
     description,
-    alternates: { canonical: `${SITE_URL}/preview/help/${slug}` },
+    alternates: { canonical: `${SITE_URL}/help/${slug}` },
     openGraph: {
       type: 'article',
       title: answer.title,
       description,
-      url: `${SITE_URL}/preview/help/${slug}`,
+      url: `${SITE_URL}/help/${slug}`,
     },
   })
 }
@@ -109,8 +109,8 @@ export default async function HelpAnswerPage({ params }) {
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Help', item: `${SITE_URL}/preview/help` },
-          { '@type': 'ListItem', position: 2, name: answer.title, item: `${SITE_URL}/preview/help/${slug}` },
+          { '@type': 'ListItem', position: 1, name: 'Help', item: `${SITE_URL}/help` },
+          { '@type': 'ListItem', position: 2, name: answer.title, item: `${SITE_URL}/help/${slug}` },
         ],
       },
     ],
@@ -125,10 +125,10 @@ export default async function HelpAnswerPage({ params }) {
       <header className="sp-ans-hero">
         <div className="sp-wrap">
           <nav className="sp-ans-crumb" aria-label="Breadcrumb">
-            <Link href="/preview/help">Help centre</Link>
+            <Link href="/help">Help centre</Link>
             {answer.categoryTitle && <span aria-hidden="true">/</span>}
             {answer.categoryTitle && (
-              <Link href={`/preview/help#${answer.categoryId}`}>{answer.categoryTitle}</Link>
+              <Link href={`/help#${answer.categoryId}`}>{answer.categoryTitle}</Link>
             )}
           </nav>
           <h1 className="sp-display sp-ans-h">{answer.title}</h1>
@@ -146,7 +146,7 @@ export default async function HelpAnswerPage({ params }) {
                 it will hand you to a person when it should.
               </p>
               <div className="sp-ans-todo-btns">
-                <Link className="sp-btn" href="/preview/help#assistant">Ask the AI assistant</Link>
+                <Link className="sp-btn" href="/help#assistant">Ask the AI assistant</Link>
                 <a className="sp-btn-ghost" href="mailto:support@spinr.ca">Email support</a>
               </div>
             </div>
@@ -163,7 +163,7 @@ export default async function HelpAnswerPage({ params }) {
               The AI assistant answers from this same help centre, and knows whether
               you are asking as a rider or a driver.
             </p>
-            <Link className="sp-btn sp-ans-ai-btn" href="/preview/help#assistant">Ask the AI assistant</Link>
+            <Link className="sp-btn sp-ans-ai-btn" href="/help#assistant">Ask the AI assistant</Link>
           </div>
 
           {related.length > 0 && (
@@ -172,7 +172,7 @@ export default async function HelpAnswerPage({ params }) {
               <ul>
                 {related.map((r) => (
                   <li key={r.slug}>
-                    <Link href={`/preview/help/${r.slug}`}>{r.title}</Link>
+                    <Link href={`/help/${r.slug}`}>{r.title}</Link>
                   </li>
                 ))}
               </ul>
