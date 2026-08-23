@@ -107,7 +107,8 @@ export default function DrivePageClient({ structuredData }) {
                 </CardHeader>
                 <CardContent className="p-8 pt-2 space-y-8">
                   <div className="space-y-4">
-                    <Slider value={trips} onValueChange={setTrips} max={100} min={10} step={5} className="w-full" />
+                    <Slider value={trips} onValueChange={setTrips} max={100} min={10} step={5} className="w-full"
+                      aria-label="Trips per week" />
                     <div className="flex justify-between text-xs text-muted-foreground">
                       <span>10 trips</span>
                       <span>100 trips</span>
@@ -115,12 +116,12 @@ export default function DrivePageClient({ structuredData }) {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-secondary rounded-xl p-4 text-center">
-                      <h4 className="text-muted-foreground font-medium mb-1 text-sm">Other Rideshare Companies</h4>
+                      <p className="text-muted-foreground font-medium mb-1 text-sm">Other Rideshare Companies</p>
                       <p className="text-2xl font-bold text-foreground">${competitorEarnings.toFixed(0)}</p>
                       <p className="text-xs text-primary mt-1">-25% commission</p>
                     </div>
                     <div className="bg-red-50 rounded-xl p-4 border-2 border-primary text-center">
-                      <h4 className="text-primary font-medium mb-1 text-sm">With Spinr</h4>
+                      <p className="text-primary font-medium mb-1 text-sm">With Spinr</p>
                       <p className="text-2xl font-bold text-primary">${spinrEarnings.toFixed(0)}</p>
                       <div className="flex flex-col gap-0.5">
                         <p className="text-xs text-red-500 mt-1 font-bold">0% commission!</p>
@@ -536,6 +537,7 @@ export default function DrivePageClient({ structuredData }) {
                       min={1}
                       step={1}
                       className="w-full [&>span]:bg-primary"
+                      aria-label="Rides per day"
                     />
                     <div className="flex justify-between text-xs text-gray-500 mt-2">
                       <span>1 ride</span>

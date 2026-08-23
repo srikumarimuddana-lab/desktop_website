@@ -20,7 +20,7 @@ export default function Footer() {
             <p className="text-gray-400 text-sm">Proudly Canadian. Fair for drivers, affordable for riders.</p>
           </div>
           <div>
-            <h4 className="font-semibold mb-4">For Riders</h4>
+            <h3 className="font-semibold mb-4">For Riders</h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li><Link href="/ride" className="hover:text-primary">How it Works</Link></li>
               <li><Link href="/support" className="hover:text-primary">Safety</Link></li>
@@ -29,7 +29,7 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-4">For Drivers</h4>
+            <h3 className="font-semibold mb-4">For Drivers</h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li><Link href="/drive" className="hover:text-primary">Start Driving</Link></li>
               <li><Link href="/support/requirements" className="hover:text-primary">Requirements</Link></li>
@@ -38,7 +38,7 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-4">Company</h4>
+            <h3 className="font-semibold mb-4">Company</h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li><Link href="/about" className="hover:text-primary">About Us</Link></li>
               <li><Link href="/help" className="hover:text-primary">Help Center</Link></li>
@@ -46,7 +46,7 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+        <div className="mt-8 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Saskatoon, SK</span>
             <span className="flex items-center gap-2"><Mail className="w-4 h-4" /> <a href="mailto:support@spinr.ca" className="hover:text-primary">support@spinr.ca</a></span>

@@ -7,6 +7,7 @@ export default function CookieBanner() {
         <CookieConsent
             location="bottom"
             buttonText="I Understand"
+            ariaAcceptLabel="I Understand"
             cookieName="spinrCookieConsent"
             style={{ background: "#2B373B" }}
             buttonStyle={{ color: "#ffffff", fontSize: "14px", fontWeight: "bold", borderRadius: "8px", padding: "10px 20px", background: "#e11d48" }}

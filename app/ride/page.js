@@ -206,7 +206,7 @@ export default async function RidePage() {
                     <ArrowRight className="w-4 h-4 text-red-600" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900">Upfront Pricing</h4>
+                    <h3 className="font-bold text-gray-900">Upfront Pricing</h3>
                     <p className="text-sm text-gray-500">Price locked in before you book.</p>
                   </div>
                 </li>
@@ -215,7 +215,7 @@ export default async function RidePage() {
                     <ArrowRight className="w-4 h-4 text-red-600" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900">No Surge Pricing</h4>
+                    <h3 className="font-bold text-gray-900">No Surge Pricing</h3>
                     <p className="text-sm text-gray-500">Same fair rates, even during rush hour.</p>
                   </div>
                 </li>

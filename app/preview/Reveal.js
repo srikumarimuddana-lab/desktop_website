@@ -163,7 +163,8 @@ export function SplitText({ text, as: Tag = 'span', className = '', step = 16, s
   const words = String(text).split(' ')
   let n = -1
   return (
-    <Tag ref={ref} className={`sp-split${inView ? ' in' : ''} ${className}`.trim()} aria-label={text}>
+    <Tag ref={ref} className={`sp-split${inView ? ' in' : ''} ${className}`.trim()}>
+      <span className="sp-sr">{text}</span>
       {words.map((w, wi) => (
         <Fragment key={wi}>
           <span className="sp-split-w" aria-hidden="true">
@@ -263,7 +264,7 @@ export function StickyCta({ href = '#get' }) {
   const tab = show ? 0 : -1
   return (
     <div ref={ref} className={`sp-dock${show ? ' up' : ''}`}>
-      <a className="sp-dock-ai" href="#ai" tabIndex={tab}>
+      <a className="sp-dock-ai" href="#ai" tabIndex={tab} aria-label="Ask the AI assistant">
         <span className="sp-dock-spark" aria-hidden="true">&#10022;</span>
         <span>
           <b>Ask the AI assistant</b>
