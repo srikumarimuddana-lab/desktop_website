@@ -92,28 +92,28 @@ export default function Payday() {
           </div>
 
           <div className="sp-pd-ledger" role="table" aria-label="A Friday night of trips">
-            <div className="sp-pd-head">
+            <div className="sp-pd-head" aria-hidden="true">
               <span className="sp-display">Friday</span>
               <i>driver ledger</i>
             </div>
-            <div className="sp-pd-rows">
+            <div className="sp-pd-rows" role="rowgroup">
               {TRIPS.map(([t, r, v], i) => (
-                <div key={t} className={`sp-pd-row${i < shown ? ' in' : ''}`} aria-hidden={i >= shown}>
-                  <span className="sp-pd-t">{t}</span>
-                  <span className="sp-pd-r">{r}</span>
-                  <b className="sp-display">{money(v)}</b>
+                <div key={t} role="row" className={`sp-pd-row${i < shown ? ' in' : ''}`} aria-hidden={i >= shown}>
+                  <span role="cell" className="sp-pd-t">{t}</span>
+                  <span role="cell" className="sp-pd-r">{r}</span>
+                  <b role="cell" className="sp-display">{money(v)}</b>
                 </div>
               ))}
             </div>
-            <div className="sp-pd-cut">
-              <span>Platform commission</span>
+            <div className="sp-pd-cut" role="row">
+              <span role="cell">Platform commission</span>
               <i aria-hidden="true" />
               {/* remounts on each landing so the zero visibly re-stamps */}
-              <b className="sp-display" key={shown}>&minus;$0.00</b>
+              <b role="cell" className="sp-display" key={shown}>&minus;$0.00</b>
             </div>
-            <div className="sp-pd-total">
-              <span>You keep</span>
-              <b className="sp-display">{money(total)}</b>
+            <div className="sp-pd-total" role="row">
+              <span role="cell">You keep</span>
+              <b role="cell" className="sp-display">{money(total)}</b>
             </div>
           </div>
         </div>
