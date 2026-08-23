@@ -102,37 +102,53 @@ export default function RoadTrip() {
       </div>
 
       <div className="sp-road-car" aria-hidden="true">
-        <span className="sp-road-puff" />
-        <svg viewBox="0 0 210 96" role="presentation">
-          {/* shadow first, so the body sits on it */}
-          <ellipse cx="105" cy="88" rx="76" ry="6" fill="rgba(11,11,11,.18)" />
+        {/* Side view of an ordinary hatchback — deliberately ordinary, since
+            that is what a rideshare car is. No roof light: that reads taxi,
+            which Spinr is not.
 
-          <g stroke="var(--ink)" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round">
-            {/* greenhouse */}
-            <path d="M56 44 70 20h68l20 24Z" fill="var(--sky)" />
-            <path d="M104 21v23" strokeWidth="3.5" />
-            {/* body */}
+            The wheel arches are part of the body outline rather than notches
+            cut from a rectangle, the glass follows the pillar rake, and the
+            tyres are a shade lighter than the asphalt so the car does not
+            dissolve into the road it is driving on. */}
+        <svg viewBox="0 0 300 122" role="presentation">
+          <ellipse cx="150" cy="110" rx="108" ry="7" fill="rgba(11,11,11,.16)" />
+
+          {/* wells first — the arches are openings onto these, so no sky
+              shows through the gap above each tyre */}
+          <circle cx="78" cy="86" r="23" fill="var(--ink)" />
+          <circle cx="222" cy="86" r="23" fill="var(--ink)" />
+
+          <g stroke="var(--ink)" strokeWidth="4.5" strokeLinejoin="round" strokeLinecap="round">
             <path
-              d="M18 46h174a8 8 0 0 1 8 8v14a6 6 0 0 1-6 6h-14a22 22 0 0 0-44 0H66a22 22 0 0 0-44 0H14a6 6 0 0 1-6-6V56a10 10 0 0 1 10-10Z"
               fill="var(--red)"
+              d="M24 84 L22 68 Q22 58 32 55 L68 50 L100 26 Q104 22 111 22
+                 L174 22 Q182 22 186 25 L212 50 L252 56 Q268 58 274 66
+                 L277 76 Q278 84 272 84 L244 84
+                 A22 22 0 0 0 200 84 L100 84
+                 A22 22 0 0 0 56 84 Z"
             />
-            {/* roof sign — the bit that says taxi without saying taxi */}
-            <rect x="86" y="8" width="38" height="14" rx="5" fill="var(--sun)" />
-            {/* headlight, tail light */}
-            <rect x="188" y="52" width="13" height="10" rx="4" fill="var(--sun)" />
-            <rect x="9" y="52" width="11" height="10" rx="4" fill="#FFE7EA" />
+
+            <path fill="var(--sky)" d="M77 49 L102 27 L127 27 L127 49 Z" />
+            <path fill="var(--sky)" d="M134 27 L181 27 L202 49 L134 49 Z" />
+
+            <path d="M130 51 L130 80" strokeWidth="3" />
+            <rect x="141" y="57" width="16" height="6" rx="3" fill="var(--red-7)" strokeWidth="3" />
+
+            <rect x="262" y="62" width="13" height="9" rx="3.5" fill="var(--sun)" strokeWidth="3.5" />
+            <rect x="24" y="60" width="10" height="9" rx="3.5" fill="#FFB3BB" strokeWidth="3.5" />
           </g>
 
-          {/* wheels spin with distance travelled, not with the clock */}
-          <g className="sp-road-wheel" style={{ '--cx': '44px', '--cy': '68px' }}>
-            <circle cx="44" cy="68" r="20" fill="var(--ink)" />
-            <circle cx="44" cy="68" r="8.5" fill="var(--paper-50)" stroke="var(--ink)" strokeWidth="3" />
-            <path d="M44 60v16M36 68h16" stroke="var(--ink)" strokeWidth="3" strokeLinecap="round" />
+          {/* wheels last, in front of the arch edge, turning with distance
+              travelled rather than with the clock */}
+          <g className="sp-road-wheel">
+            <circle cx="78" cy="86" r="19" fill="#33322F" stroke="var(--ink)" strokeWidth="4" />
+            <circle cx="78" cy="86" r="8.5" fill="var(--paper-50)" stroke="var(--ink)" strokeWidth="3" />
+            <path d="M78 79v14M71 86h14" stroke="var(--ink)" strokeWidth="2.5" strokeLinecap="round" />
           </g>
-          <g className="sp-road-wheel" style={{ '--cx': '166px', '--cy': '68px' }}>
-            <circle cx="166" cy="68" r="20" fill="var(--ink)" />
-            <circle cx="166" cy="68" r="8.5" fill="var(--paper-50)" stroke="var(--ink)" strokeWidth="3" />
-            <path d="M166 60v16M158 68h16" stroke="var(--ink)" strokeWidth="3" strokeLinecap="round" />
+          <g className="sp-road-wheel">
+            <circle cx="222" cy="86" r="19" fill="#33322F" stroke="var(--ink)" strokeWidth="4" />
+            <circle cx="222" cy="86" r="8.5" fill="var(--paper-50)" stroke="var(--ink)" strokeWidth="3" />
+            <path d="M222 79v14M215 86h14" stroke="var(--ink)" strokeWidth="2.5" strokeLinecap="round" />
           </g>
         </svg>
       </div>

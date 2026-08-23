@@ -1180,23 +1180,15 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
   left:calc(0px - var(--carw) + var(--t) * (100% - var(--park)));
   /* wheels rest below the horizon, so it sits ON the asphalt rather than
      balancing on the line where the road starts */
-  transform:translate(0,-73%);will-change:left}
+  transform:translate(0,-78%);will-change:left}
 .sp-road-car svg{display:block;width:100%;height:auto;overflow:visible}
 /* a hair of suspension, so it does not glide like a sticker */
-@keyframes sp-road-bob{0%,100%{transform:translate(0,-73%)}50%{transform:translate(0,calc(-73% - 2px))}}
+@keyframes sp-road-bob{0%,100%{transform:translate(0,-78%)}50%{transform:translate(0,calc(-78% - 2px))}}
 .sp-road-car{animation:sp-road-bob .5s ease-in-out infinite}
 .sp-road.is-there .sp-road-car{animation:none}
 
 .sp-road-wheel{transform-box:fill-box;transform-origin:center;
   transform:rotate(calc(var(--t) * 1600deg))}
-
-/* exhaust puff, only while actually moving */
-.sp-road-puff{position:absolute;left:-6%;top:52%;width:14px;height:14px;border-radius:999px;
-  background:rgba(11,11,11,.14);opacity:0;animation:sp-road-puff 1.1s ease-out infinite}
-@keyframes sp-road-puff{
-  0%{opacity:.5;transform:translate(0,0) scale(.5)}
-  100%{opacity:0;transform:translate(-46px,-16px) scale(2.2)}}
-.sp-road.is-there .sp-road-puff{animation:none;opacity:0}
 
 .sp-road-cap{position:absolute;left:clamp(18px,4vw,44px);top:clamp(16px,3vw,28px);
   display:flex;flex-direction:column;gap:4px;margin:0}
@@ -1207,7 +1199,6 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 
 @media(prefers-reduced-motion:reduce){
   .sp-road-car{animation:none}
-  .sp-road-puff{animation:none;opacity:0}
   .sp-road-pin{transition:none}
 }
 
