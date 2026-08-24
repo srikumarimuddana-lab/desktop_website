@@ -276,6 +276,7 @@ terms should be.
 | Help centre FAQs | `GET /faqs?audience=` | `faqs` table, then the page's `pickFaqs()` list |
 | `/legal/terms`, `/legal/privacy` | `GET /legal-documents?audience=rider&type=` | `legal_docs` table, then `app/(site)/legal/content.js` |
 | Chat widget | `POST /ai/public-chat` | local LangChain RAG, then keyword search |
+| Driver signup | `auth/send-otp`, `auth/verify-otp`, `drivers/register` | nothing — the form says applications are unavailable and points at the app |
 
 Two things to know before touching this:
 
@@ -301,6 +302,53 @@ Note the assistant reached through `/ai/public-chat` answers from the
 serves the local fallback pipeline, so a FAQ added in `/spinr-internal` still
 reaches that — but a FAQ that should reach riders and drivers belongs in the
 spinrvm dashboard.
+
+### Driver signup runs against the backend, and holds no token in the browser
+
+`/drive/apply` creates a **real** account and a **real** `drivers` row through
+the existing spinrvm APIs — `auth/send-otp`, `auth/verify-otp`,
+`drivers/register`. An applicant who starts here lands in the spinrvm admin
+dashboard as `status: pending` immediately. It is not a lead form.
+
+```
+browser  ->  /api/driver-signup/{otp,verify,register}  ->  spinrvm
+                     (httpOnly cookie lives here)
+```
+
+Rules for anyone touching this:
+
+- **The bearer token never reaches client JavaScript.** verify-otp's token goes
+  into an httpOnly, Secure, SameSite=lax cookie scoped to `/api/driver-signup`,
+  is read back server-side for register, and is **deleted the moment the
+  application is submitted**. Do not move any of these calls into a client
+  component.
+- **The refresh token is discarded on purpose.** A 30-day refresh credential on
+  a marketing site buys nothing here — the flow completes in seconds. The
+  session is also capped at 20 minutes regardless of what the backend reports.
+- **The phone step is LAST, and that is deliberate.** It keeps the auth wall
+  out of the way and holds the token for seconds rather than the minutes
+  someone spends typing a VIN. Do not "improve" the flow by verifying first.
+- **Two backend error shapes exist.** `HTTPException` returns
+  `{ detail: "..." }` (prose for users); `SpinrException` returns
+  `{ success, error: { message, action_hint } }` where `message` can be a token
+  like `ERR_OTP_INVALID`. `backendMessage()` in the route handles both and
+  refuses to show a token-shaped string. Do not simplify it back to reading
+  `detail`.
+- **send-otp is metered per client IP backend-side**, so every applicant shares
+  the Vercel egress IP's 6/minute bucket. Never forge `CF-Connecting-IP` to
+  escape that — the backend treats it as authoritative. The route meters per
+  real client IP on its own side; the backend's per-phone send cap is the
+  actual control. If volume ever outgrows it, the fix is a trusted-caller
+  mechanism on the backend.
+- **The web flow does not finish an application.** Licence, insurance and
+  inspection photos and the CRC consent need the app. The last step is a
+  hand-off and must keep saying so — "application started", never "approved".
+- **Gender is deliberately not collected here** even though the backend accepts
+  it, because there is no stated purpose for it on a public web form.
+
+Service areas and vehicle types are read from the backend, so the form does not
+hardcode Saskatoon and cannot offer a vehicle type with no fare configured for
+the area.
 
 ### Admin edits must reach the front end — no hardcoded CMS content
 
