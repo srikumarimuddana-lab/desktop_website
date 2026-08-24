@@ -93,25 +93,73 @@ function validateResponse(r) {
 }
 
 // ============================================
-// LOCATION GUARD (preserved from original)
+// LOCATION GUARD
 // ============================================
-const NON_SASKATOON_CITIES = [
-  'regina', 'yorkton', 'moose jaw', 'prince albert', 'swift current', 'north battleford',
-  'estevan', 'weyburn', 'lloydminster', 'melfort', 'humboldt', 'martensville',
-  'warman', 'meadow lake', 'tisdale', 'nipawin', 'kindersley', 'melville',
-  'la ronge', 'battleford', 'canora', 'esterhazy', 'moosomin', 'shaunavon',
-  'assiniboia', 'outlook', 'watrous', 'indian head', 'fort qu\'appelle',
-  'lumsden', 'white city', 'pilot butte', 'balgonie', 'emerald park'
+/*
+ * Which cities Spinr serves — an ALLOW-list, not a deny-list.
+ *
+ * This was a list of 33 Saskatchewan towns, checked with substring matching.
+ * Two problems that only got worse as the company looked past one province:
+ *
+ *  1. Any city NOT enumerated fell straight through. Calgary, Edmonton,
+ *     Winnipeg, Vancouver, Toronto — none were listed, so "do you operate in
+ *     Calgary?" never triggered the guard and the model answered from
+ *     retrieval alone. A deny-list has to be exhaustive to work, and it never
+ *     is. An allow-list is right by construction: anything not served is not
+ *     served, whether or not somebody remembered to add it.
+ *
+ *  2. Substring matching false-positived. 'outlook' matched "what's the
+ *     outlook for winter", 'battleford' matched inside 'north battleford'.
+ *     Matching is on word boundaries now.
+ *
+ * Adding a market is a one-line change to SERVED_CITIES, and it must not
+ * happen before that market is actually approved and operating.
+ */
+const SERVED_CITIES = ['saskatoon']
+
+/* Cities we recognise well enough to say "not there" with confidence. Does
+ * not need to be exhaustive — an unrecognised place name simply gets no
+ * injected fact, and the system prompt still holds the model to Saskatoon. */
+const KNOWN_CITIES = [
+  // Saskatchewan
+  'saskatoon', 'regina', 'yorkton', 'moose jaw', 'prince albert', 'swift current',
+  'north battleford', 'battleford', 'estevan', 'weyburn', 'lloydminster', 'melfort',
+  'humboldt', 'martensville', 'warman', 'meadow lake', 'tisdale', 'nipawin',
+  'kindersley', 'melville', 'la ronge', 'canora', 'esterhazy', 'moosomin',
+  'shaunavon', 'assiniboia', 'watrous', 'indian head', "fort qu'appelle",
+  'lumsden', 'white city', 'pilot butte', 'balgonie', 'emerald park',
+  // the rest of Canada
+  'calgary', 'edmonton', 'red deer', 'lethbridge', 'medicine hat', 'fort mcmurray',
+  'banff', 'canmore', 'airdrie', 'grande prairie',
+  'winnipeg', 'brandon', 'thunder bay', 'toronto', 'ottawa', 'mississauga',
+  'hamilton', 'london', 'windsor', 'kitchener', 'waterloo', 'guelph', 'kingston',
+  'montreal', 'quebec city', 'laval', 'gatineau', 'sherbrooke',
+  'vancouver', 'victoria', 'surrey', 'burnaby', 'richmond', 'kelowna', 'kamloops',
+  'abbotsford', 'nanaimo', 'whistler',
+  'halifax', 'moncton', 'fredericton', 'saint john', "st john's", 'charlottetown',
+  'whitehorse', 'yellowknife', 'iqaluit',
+  // common cross-border asks
+  'seattle', 'minneapolis', 'chicago', 'new york', 'los angeles', 'london uk',
 ]
 
+/** Word-boundary match, so 'outlook' does not match "the outlook for winter". */
+function mentionsCity(q, city) {
+  const escaped = city.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`(^|[^a-z])${escaped}([^a-z]|$)`, 'i').test(q)
+}
+
+const titleCase = (c) => c.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+
 function locationGuard(question) {
-  const q = question.toLowerCase()
-  for (const city of NON_SASKATOON_CITIES) {
-    if (q.includes(city)) {
-      return `CRITICAL FACT: Spinr is NOT available in ${city.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}. Spinr is currently ONLY available in Saskatoon, Saskatchewan. We are NOT available in any other city at this time.`
-    }
-  }
-  return null
+  const q = String(question || '').toLowerCase()
+  const unserved = KNOWN_CITIES.filter(
+    (c) => !SERVED_CITIES.includes(c) && mentionsCity(q, c)
+  )
+  if (!unserved.length) return null
+
+  // longest match wins, so "north battleford" beats "battleford"
+  const city = unserved.sort((a, b) => b.length - a.length)[0]
+  return `CRITICAL FACT: Spinr does NOT operate in ${titleCase(city)}. Spinr operates only in Saskatoon, Saskatchewan. Do not say or imply that Spinr is available, launching, expanding or coming soon anywhere else — say plainly that we are not there, and do not speculate about future cities.`
 }
 
 // ============================================

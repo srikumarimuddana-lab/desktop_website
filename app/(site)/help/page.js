@@ -9,8 +9,8 @@ export const revalidate = 0
 
 export async function generateMetadata() {
   return previewMetadata('/help', {
-    title: 'Help | Spinr Design Sample',
-    description: 'Riding, driving and account help in one place. Design sample.',
+    title: 'Help centre | Spinr',
+    description: 'Riding, driving and account help in one place, plus an AI assistant that answers from the same help centre.',
   })
 }
 

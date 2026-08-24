@@ -6,7 +6,7 @@ import RefuseRail from './RefuseRail'
 import DollarSplit from './DollarSplit'
 
 /*
- * DESIGN SAMPLE — /about
+ * /about
  * The company page. Its motion identity is EDITORIAL: a marker pen that
  * sweeps through the manifesto as you read it, and a horizontal rail of the
  * things the product refuses to become. No invented dates, headcounts or
@@ -17,13 +17,13 @@ export const revalidate = 0
 
 export async function generateMetadata() {
   return previewMetadata('/about', {
-    title: 'About | Spinr Design Sample',
-    description: 'Why Spinr is built the way it is. Design sample.',
+    title: 'About Spinr | Proudly Canadian rideshare',
+    description: 'Spinr is a proudly Canadian rideshare platform: no commission on a driver’s fare, a flat $1 rider fee, and no surge pricing. Built around Canadian privacy and insurance rules from the start.',
   })
 }
 
 const HOME = [
-  ['Saskatoon first', 'One city, properly served, before anywhere else. There is no planned launch in another city — including Regina.'],
+  ['Saskatoon first', 'One city, served properly, before the next one. Everything here has to work here before it works anywhere.'],
   ['Canadian rules, by design', 'Privacy, insurance and trip-record obligations were the starting point of the build, not a compliance pass at the end.'],
   ['Money stays here', 'Proudly Canadian. The fare a Saskatoon rider pays is earned by a Saskatoon driver.'],
 ]
