@@ -804,9 +804,22 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-rhero-p{max-width:620px;margin:0 auto clamp(22px,3vw,30px);font-size:clamp(15.5px,1.4vw,18.5px);
   line-height:1.6;color:var(--ink-6)}
 .sp-rhero-road{position:absolute;left:-40px;right:-40px;bottom:22px;height:14px;
-  background:var(--ink);transform:rotate(-1.6deg);display:flex;align-items:center;gap:34px;
-  padding-left:20px;overflow:hidden}
-.sp-rhero-road i{flex:0 0 44px;height:3px;background:var(--sun)}
+  transform:rotate(-1.6deg);overflow:hidden;
+  background:repeating-linear-gradient(90deg,var(--sun) 0 44px,transparent 44px 78px) 0 50%/78px 3px repeat-x,var(--ink);
+  animation:sp-road-run 1.5s linear infinite}
+@keyframes sp-road-run{to{background-position:-78px 50%,0 0}}
+/* ride hero backdrop: beaded streets, river, flowing route */
+.sp-rroute{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.sp-rr-grid{stroke:#0B0B0B;opacity:.12}
+.sp-rr-water{stroke:var(--sky);opacity:.45}
+.sp-rr-bridge{stroke:#0B0B0B;opacity:.3}
+.sp-rr-path{stroke:#DB3344;opacity:.5;animation:sp-rr-flow 1.2s linear infinite}
+@keyframes sp-rr-flow{to{stroke-dashoffset:-11.1}}
+.sp-rr-ring{transform-box:fill-box;transform-origin:center;
+  animation:sp-cd-ping 3.4s cubic-bezier(.2,.6,.4,1) infinite}
+.sp-rr-ring-b{animation-delay:-1.7s}
+@media (prefers-reduced-motion:reduce){.sp-rhero-road,.sp-rr-path{animation:none}
+.sp-rr-ring{animation:none;opacity:.35}}
 
 /* the trip: pinned full-bleed canvas */
 .sp-jn{position:relative;min-height:400vh;background:var(--paper-3)}
