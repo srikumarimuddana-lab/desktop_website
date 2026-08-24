@@ -954,11 +954,8 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 @media(max-width:979px){.sp-dchart{right:auto;left:4%;top:88px;width:88%}
 .sp-dc-line{stroke-width:6px;opacity:.6}.sp-dc-base{stroke-width:4px}}
 .sp-dc-base{stroke:#0B0B0B;opacity:.22}
-.sp-dc-line{stroke:#DB3344;opacity:.5;animation:sp-dc-flow 1.25s linear infinite}
-@keyframes sp-dc-flow{to{stroke-dashoffset:-9.1}}
+.sp-dc-line{stroke:#DB3344;opacity:.5}
 .sp-dc-ring{opacity:.4}
-@media (prefers-reduced-motion:reduce){.sp-dc-line{animation:none}
-}
 
 /* the payday ledger */
 .sp-pd{position:relative;background:var(--paper-50);border-bottom:2px solid var(--ink)}
