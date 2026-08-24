@@ -942,7 +942,8 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 /* ════════════════ drive page ════════════════ */
 
 /* hero: the sun room */
-.sp-dhero{position:relative;background:var(--sun);border-bottom:2px solid var(--ink);
+.sp-dhero{position:relative;border-bottom:2px solid var(--ink);
+  background:radial-gradient(rgba(11,11,11,.13) 1.7px,transparent 2.1px) 0 0/17px 17px,var(--sun);
   margin-top:calc(-1 * clamp(52px,7vw,74px));padding:clamp(118px,16vh,180px) 0 0;overflow:hidden}
 .sp-dhero-in{display:grid;gap:clamp(20px,3vw,48px);align-items:end}
 @media(min-width:980px){.sp-dhero-in{grid-template-columns:1.05fr .95fr}}
@@ -952,6 +953,17 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
   line-height:1.6;color:rgba(11,11,11,.75)}
 .sp-dhero-btns{justify-content:flex-start;margin-bottom:clamp(30px,4vw,52px)}
 .sp-dhero-fan .sp-fan{height:clamp(280px,30vw,420px);margin-top:0}
+/* drive hero backdrop: the earnings line that only goes up */
+.sp-dchart{position:absolute;right:1.5%;top:98px;width:min(46%,600px);pointer-events:none}
+@media(max-width:979px){.sp-dchart{right:auto;left:4%;top:88px;width:88%}
+.sp-dc-line{stroke-width:6px;opacity:.6}.sp-dc-base{stroke-width:4px}}
+.sp-dc-base{stroke:#0B0B0B;opacity:.22}
+.sp-dc-line{stroke:#DB3344;opacity:.5;animation:sp-dc-flow 1.25s linear infinite}
+@keyframes sp-dc-flow{to{stroke-dashoffset:-9.1}}
+.sp-dc-ring{transform-box:fill-box;transform-origin:center;
+  animation:sp-cd-ping 3s cubic-bezier(.2,.6,.4,1) infinite}
+@media (prefers-reduced-motion:reduce){.sp-dc-line{animation:none}
+.sp-dc-ring{animation:none;opacity:.35}}
 
 /* the payday ledger */
 .sp-pd{position:relative;background:var(--paper-50);border-bottom:2px solid var(--ink)}
