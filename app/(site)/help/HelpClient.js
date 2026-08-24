@@ -145,6 +145,7 @@ export default function HelpClient({ faq = [], articles = [] }) {
   return (
     <div className="sp-help">
       <header className="sp-help-hero">
+        <span className="sp-help-mark sp-display" aria-hidden="true">?</span>
         <div className="sp-wrap">
           <span className="sp-kick">Help centre</span>
           <h1 className="sp-display sp-help-h">How can we help?</h1>
