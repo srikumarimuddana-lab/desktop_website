@@ -949,13 +949,6 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
   line-height:1.6;color:rgba(11,11,11,.75)}
 .sp-dhero-btns{justify-content:flex-start;margin-bottom:clamp(30px,4vw,52px)}
 .sp-dhero-fan .sp-fan{height:clamp(280px,30vw,420px);margin-top:0}
-/* drive hero backdrop: the earnings line that only goes up */
-.sp-dchart{position:absolute;right:1.5%;top:98px;width:min(46%,600px);pointer-events:none}
-@media(max-width:979px){.sp-dchart{right:auto;left:4%;top:88px;width:88%}
-.sp-dc-line{stroke-width:6px;opacity:.6}.sp-dc-base{stroke-width:4px}}
-.sp-dc-base{stroke:#0B0B0B;opacity:.22}
-.sp-dc-line{stroke:#DB3344;opacity:.5}
-.sp-dc-ring{opacity:.4}
 
 /* the payday ledger */
 .sp-pd{position:relative;background:var(--paper-50);border-bottom:2px solid var(--ink)}
