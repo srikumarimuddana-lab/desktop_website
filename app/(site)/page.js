@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { APP_URLS } from '@/lib/app-links'
 import FareCalc from './FareCalc'
 import PhoneFan from './PhoneFan'
+import CanadaDots from './CanadaDots'
 import HowItWorks from './HowItWorks'
 import AiChat from './AiChat'
 import { FinalCta } from './Chrome'
@@ -117,6 +118,7 @@ export default async function PreviewPage() {
     <>
         {/* ── Hero ──────────────────────────────────────────── */}
         <header className="sp-hero" id="top">
+          <CanadaDots />
           <span className="sp-hero-shelf" aria-hidden="true" />
 
           <div className="sp-hero-copy">

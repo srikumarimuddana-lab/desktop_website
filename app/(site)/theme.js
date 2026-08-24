@@ -160,6 +160,20 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
   background:#FFF6AE;border:2px solid var(--ink);border-bottom:0;
   border-radius:clamp(26px,3vw,44px) clamp(26px,3vw,44px) 0 0}
 .sp-hero-copy{position:relative;z-index:2;max-width:1020px;margin:0 auto}
+/* dotted Canada backdrop — soft texture, never competes with the copy */
+.sp-canmap{position:absolute;left:50%;top:clamp(48px,8vh,88px);transform:translateX(-50%);
+  width:min(94%,1120px);pointer-events:none}
+.sp-cd-l1,.sp-cd-l2,.sp-cd-l3{opacity:.14}
+.sp-cd-outline{opacity:.34}
+.sp-cd-ring{transform-box:fill-box;transform-origin:center;
+  animation:sp-cd-ping 2.6s cubic-bezier(.2,.6,.4,1) infinite}
+@keyframes sp-cd-ping{0%{transform:scale(.55);opacity:.75}75%,100%{transform:scale(2.1);opacity:0}}
+.sp-cd-l1{animation:sp-cd-tw 7s ease-in-out infinite}
+.sp-cd-l2{animation:sp-cd-tw 7s ease-in-out -2.3s infinite}
+.sp-cd-l3{animation:sp-cd-tw 7s ease-in-out -4.6s infinite}
+@keyframes sp-cd-tw{0%,100%{opacity:.08}50%{opacity:.19}}
+@media (prefers-reduced-motion:reduce){.sp-cd-l1,.sp-cd-l2,.sp-cd-l3,.sp-cd-ring{animation:none}}
+@media (max-width:720px){.sp-canmap{width:1000px;top:-40px;left:-244px;transform:none}}
 .sp-hero-badge{display:inline-flex;align-items:center;background:#fff;border:2px solid var(--ink);
   border-radius:999px;padding:8px 17px;font-size:11.5px;font-weight:800;letter-spacing:.06em;
   text-transform:uppercase;box-shadow:var(--hard-sm)}
