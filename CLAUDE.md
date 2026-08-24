@@ -82,7 +82,31 @@
 > `knowledge_base`, so an invented price would be quoted to drivers by the AI
 > assistant as fact.
 
-Spinr is a **Proudly Canadian rideshare platform**. Drivers keep 100% of net fare (0% commission). Riders pay a flat $1 platform fee per trip. No surge pricing. Currently available **only in Saskatoon, Saskatchewan** — there is no planned launch in any other city, including Regina.
+Spinr is a **Proudly Canadian rideshare platform**. Drivers keep 100% of net fare (0% commission). Riders pay a flat $1 platform fee per trip. No surge pricing. **Saskatoon, Saskatchewan is the only approved and operating market.**
+
+> ### ⚠️ Calgary — a planned second market, NOT an approved one
+>
+> Calgary is the intended next city. **Approval has not been granted.** Until
+> it is, nothing public may say, imply or hint that Spinr operates, is
+> launching, is expanding, or is "coming soon" to Calgary or anywhere outside
+> Saskatoon. That covers page copy, FAQs, SEO metadata, help articles,
+> promotions and anything the AI assistant can reach — a FAQ answer flows
+> through `lib/kb-sync.js` into `knowledge_base`, so a stray "coming to
+> Calgary" would be quoted back to riders by the assistant as fact.
+>
+> **Saying "not yet" is correct. Saying "soon" is not ours to say.**
+>
+> What this means for new work: do not add a *second* hardcoded city, but do
+> not hardcode Saskatoon any harder either. Where a city or province is
+> needed, prefer reading it from the service area. `SERVED_CITIES` in
+> `app/api/agent/search/route.js` is the single switch for what the assistant
+> will admit to serving; adding to it is a launch action, not a code tidy.
+>
+> Readiness, and what is genuinely in the way, is written up in
+> `docs/second-market-readiness.md`. The short version: per-area tax config
+> already exists and already names Alberta, but the compliance reporting,
+> insurance model and governing law of the legal documents are all
+> Saskatchewan-specific and are real blockers, not copy changes.
 
 ---
 
