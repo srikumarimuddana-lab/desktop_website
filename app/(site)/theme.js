@@ -1511,4 +1511,73 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 
 .sp-steps-cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;margin-top:clamp(26px,3.4vw,38px)}
 .sp-steps-cta span{font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.72);max-width:38ch}
+
+/* ── /ride/estimate — the fare result, Uber-style ────────────────────── */
+.sp-fe-sec{padding-top:clamp(96px,12vw,150px)}
+.sp-fe-wrap{max-width:1120px}
+.sp-fe-head{margin-bottom:clamp(20px,2.6vw,30px)}
+.sp-fe-h{font-size:clamp(26px,3.4vw,42px);line-height:1.1;margin:0 0 8px;text-transform:lowercase}
+.sp-fe-arrow{color:var(--red);padding:0 .18em}
+.sp-fe-sub{margin:0;font-size:14px}
+.sp-fe-sub a{color:var(--ink-6);text-decoration:underline;text-underline-offset:3px}
+.sp-fe-sub a:hover{color:var(--ink)}
+
+.sp-fe-grid{display:grid;gap:clamp(16px,2.2vw,26px)}
+@media(min-width:900px){.sp-fe-grid{grid-template-columns:1.15fr .85fr;align-items:start}}
+
+/* map */
+.sp-fe-map{position:relative;border:2px solid var(--ink);border-radius:22px;box-shadow:var(--hard);
+  overflow:hidden;background:var(--paper-50)}
+.sp-fe-map-canvas{height:clamp(280px,46vh,520px);width:100%}
+.sp-fe-map-loading{height:clamp(280px,46vh,520px);
+  background:repeating-linear-gradient(45deg,var(--paper-50),var(--paper-50) 12px,var(--paper-3) 12px,var(--paper-3) 24px)}
+.sp-fe-map-note{margin:0;padding:9px 14px;border-top:2px solid var(--ink);background:var(--paper-50);
+  font-size:12.5px;color:var(--ink-6)}
+/* Leaflet paints its own controls; keep them in the site's idiom */
+.sp-fe-map .leaflet-container{font:inherit;background:var(--paper-50)}
+.sp-fe-map .leaflet-control-zoom a{border-radius:0;color:var(--ink);font-weight:700}
+.sp-fe-map .leaflet-control-attribution{font-size:10.5px;background:rgba(255,255,255,.82)}
+.sp-map-pin{display:block;width:18px;height:18px;border-radius:999px;background:var(--pin,#0B0B0B);
+  border:3px solid #fff;box-shadow:0 0 0 2px var(--pin,#0B0B0B)}
+
+/* options panel */
+.sp-fe-panel{display:grid;gap:16px}
+.sp-fe-tiers{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.sp-fe-tier{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:15px 17px;text-align:left;cursor:pointer;font:inherit;
+  border:2px solid var(--ink);border-radius:16px;background:#fff;color:var(--ink);
+  transition:transform .14s var(--snap),box-shadow .14s}
+.sp-fe-tier:hover{transform:translate(-1px,1px);box-shadow:-3px 3px 0 var(--ink)}
+.sp-fe-tier.is-on{background:var(--paper-50);box-shadow:-4px 4px 0 var(--red-7);border-color:var(--red-7)}
+.sp-fe-tier-main{display:grid;gap:3px;min-width:0}
+.sp-fe-tier-main b{font-size:17px}
+.sp-fe-tier-meta{font-size:12.5px;color:var(--ink-5)}
+.sp-fe-tier-price{font-size:21px;flex:0 0 auto}
+
+.sp-fe-detail{border:2px solid var(--ink);border-radius:16px;background:#fff;padding:16px 18px}
+.sp-fe-rows{margin:0;display:grid;gap:9px}
+.sp-fe-rows>div{display:flex;align-items:baseline;justify-content:space-between;gap:14px;font-size:14px}
+.sp-fe-rows dt{color:var(--ink-6)}
+.sp-fe-rows dd{margin:0;font-weight:700}
+.sp-fe-rows-full{margin-top:12px;padding-top:12px;border-top:2px dashed var(--paper-3)}
+.sp-fe-toggle{margin-top:13px;background:none;border:0;padding:0;font:inherit;font-size:13.5px;font-weight:700;
+  color:var(--ink-6);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.sp-fe-toggle:hover{color:var(--ink)}
+
+.sp-fe-cta{border:2px solid var(--ink);border-radius:16px;background:var(--paper-50);padding:16px 18px}
+.sp-fe-cta-lede{margin:0 0 13px;font-size:14px;line-height:1.6;color:var(--ink-6)}
+.sp-fe-cta-btns{display:flex;flex-wrap:wrap;gap:10px}
+.sp-fe-cta-btns .sp-btn,.sp-fe-cta-btns .sp-btn-ghost{font-size:14px;padding:11px 17px}
+
+.sp-fe-empty{border:2px solid var(--ink);border-radius:16px;background:#fff;padding:clamp(20px,3vw,30px);display:grid;gap:12px;justify-items:start}
+.sp-fe-empty h2{margin:0;font-size:clamp(19px,2.2vw,24px)}
+.sp-fe-empty p{margin:0;font-size:14.5px;line-height:1.65;color:var(--ink-6)}
+
+.sp-fe-fine{margin:0;font-size:12.5px;line-height:1.65;color:var(--ink-5)}
+.sp-fe-lede{margin:0 0 20px;font-size:16px;line-height:1.65;color:var(--ink-6)}
+.sp-fe-lede a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+
+.sp-fe-mapcol{display:grid;gap:10px;align-content:start}
+.sp-fe-mapcol .sp-fe-map-note{margin:0;padding:11px 14px;border:2px solid var(--paper-3);border-radius:12px;
+  background:var(--paper-50);font-size:12.5px;line-height:1.55;color:var(--ink-6)}
 `

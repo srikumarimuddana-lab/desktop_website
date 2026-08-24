@@ -90,6 +90,24 @@ const stub = http.createServer((req, res) => {
     })
   }
 
+  if (url.pathname === '/rides/public-estimate' && req.method === 'POST') {
+    return read((b) => {
+      if (scenario === 'estimate_off') return send(503, { detail: 'Fare estimates are currently unavailable.' })
+      if (scenario === 'estimate_out_of_area') {
+        return send(400, spinrError('OUTSIDE_SERVICE_AREA', 'ERR_OUTSIDE_AREA', 'Pick a pickup inside Saskatoon'))
+      }
+      if (scenario === 'estimate_empty') return send(200, { estimates: [], route_polyline: null })
+      if (scenario === 'estimate_no_polyline') {
+        return send(200, { estimates: [STUB_ESTIMATE], route_polyline: null })
+      }
+      lastEstimateBody = b
+      send(200, {
+        estimates: [STUB_ESTIMATE, { ...STUB_ESTIMATE, vehicle_type: { id: 'vt-2', name: 'XL', capacity: 6 }, grand_total: '28.90' }],
+        route_polyline: [[52.13, -106.67], [52.14, -106.65], [52.15, -106.63]],
+      })
+    })
+  }
+
   if (url.pathname === '/service-areas') {
     if (scenario === 'no_areas') return send(200, [])
     return send(200, [{ id: 'area-1', name: 'Saskatoon', city: 'Saskatoon', is_active: true }])
@@ -152,6 +170,27 @@ const stub = http.createServer((req, res) => {
 })
 
 let lastRegisterBody = null
+let lastEstimateBody = null
+
+// Shaped like a real projected public estimate: money as exact decimal
+// strings, no driver_count / closest_driver_km / estimate_token.
+const STUB_ESTIMATE = {
+  vehicle_type: { id: 'vt-1', name: 'Standard', capacity: 4 },
+  distance_km: 8.42,
+  duration_minutes: 14,
+  base_fare: '3.50',
+  booking_fee: '1.00',
+  surge_multiplier: 1.0,
+  total_fare: '18.78',
+  grand_total: '20.14',
+  fare_breakdown: [
+    { label: 'Base fare', amount: '3.50' },
+    { label: 'Distance', amount: '10.08' },
+    { label: 'GST (5%)', amount: '0.94' },
+  ],
+  available: true,
+  eta_minutes: 4,
+}
 
 // ── harness ─────────────────────────────────────────────────────────────────
 
@@ -434,6 +473,47 @@ async function run() {
   {
     const { status, html } = await page('/help')
     check('a 500 on FAQs falls back to the local list', status === 200 && /Spinr Pass/.test(html))
+  }
+
+  console.log('\nFare estimate')
+  await setScenario('happy')
+  {
+    const { html } = await page('/ride/estimate?flat=52.13&flng=-106.67&tlat=52.15&tlng=-106.63&from=8th+St&to=Midtown')
+    check('the real backend price is rendered', /\$20\.14/.test(html))
+    check('both vehicle tiers are listed', /Standard/.test(html) && /XL/.test(html))
+    check('distance and ETA come through', /8\.4 km/.test(html) && /4 min/.test(html))
+    check('trip labels are echoed in the heading', /8th St/.test(html) && /Midtown/.test(html))
+    check('the app CTA is present', /Get the app for iPhone/.test(html))
+    check('the estimate disclaimer is present', /An estimate\./.test(html))
+    check('no invented fare constants survive', !/1\.2 per km|MIN_PER_KM/.test(html))
+    const sent = lastEstimateBody || {}
+    check('coordinates reach the backend unrounded', sent.pickup_lat === 52.13 && sent.dropoff_lng === -106.63)
+  }
+  {
+    const { status, html } = await page('/ride/estimate?flat=999&flng=-106.67&tlat=52.15&tlng=-106.63')
+    check('an out-of-range coordinate is refused, not forwarded', status === 200 && /could not read that trip/i.test(html))
+  }
+  await setScenario('estimate_out_of_area')
+  {
+    const { html } = await page('/ride/estimate?flat=52.13&flng=-106.67&tlat=60.0&tlng=-100.0')
+    check('outside the service area is stated plainly', /Outside our area/.test(html))
+    check('and does not promise expansion', !/coming soon|soon to|expanding/i.test(html))
+  }
+  await setScenario('estimate_off')
+  {
+    const { status, html } = await page('/ride/estimate?flat=52.13&flng=-106.67&tlat=52.15&tlng=-106.63')
+    check('a disabled flag renders an honest unavailable state', status === 200 && /No price right now/.test(html))
+  }
+  await setScenario('estimate_empty')
+  {
+    const { html } = await page('/ride/estimate?flat=52.13&flng=-106.67&tlat=52.15&tlng=-106.63')
+    check('zero vehicle types is handled, not blank', /No price right now|No vehicle types/.test(html))
+  }
+  await setScenario('estimate_no_polyline')
+  {
+    const { html } = await page('/ride/estimate?flat=52.13&flng=-106.67&tlat=52.15&tlng=-106.63')
+    check('a missing road route still prices the trip', /\$20\.14/.test(html))
+    check('and the map says the line is approximate', /Straight-line preview/.test(html))
   }
 
   console.log('\nUnknown routes')

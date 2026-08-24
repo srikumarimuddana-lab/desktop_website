@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 /*
  * The live trip estimator, carried across from the previous /ride page.
@@ -21,13 +22,17 @@ import { useEffect, useRef, useState } from 'react'
  * the app is named as the place you see the real number before booking.
  */
 
-const MIN_PER_KM = 1.2
-const MAX_PER_KM = 2.0
-const MIN_FARE = 4.0
-const AIRPORT_SURCHARGE = 2.0
-const BOOKING_FEE = 1.0
-
-const money = (n) => '$' + n.toFixed(2)
+/*
+ * This used to price the trip here, from those constants, against an OSRM
+ * distance. They were invented: they knew nothing about surge, area fees, tax,
+ * minimum fares or vehicle type, so the range shown had no relationship to
+ * what a rider was actually charged.
+ *
+ * Now the search just resolves two addresses to coordinates and hands off to
+ * /ride/estimate, which asks the backend's own fare engine — the same one the
+ * app quotes from — and renders the answer on a map. No fare arithmetic
+ * survives in this file, and none should come back.
+ */
 
 export default function TripEstimate() {
   const [pickup, setPickup] = useState('')
@@ -37,9 +42,9 @@ export default function TripEstimate() {
   const [suggestions, setSuggestions] = useState([])
   const [field, setField] = useState(null)
   const [busy, setBusy] = useState(false)
-  const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const boxRef = useRef(null)
+  const router = useRouter()
 
   // one lookup per pause in typing, not one per keystroke — Nominatim asks
   // for no more than a request a second and this is a public instance
@@ -74,36 +79,34 @@ export default function TripEstimate() {
     setField(null)
   }
 
-  const estimate = async () => {
-    if (!pickupAt || !dropoffAt) { setError('Pick both ends from the suggestions.'); return }
-    setBusy(true); setError(null); setResult(null)
-    try {
-      const res = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${pickupAt.lon},${pickupAt.lat};${dropoffAt.lon},${dropoffAt.lat}?overview=false`
-      )
-      if (!res.ok) throw new Error(`route ${res.status}`)
-      const data = await res.json()
-      const metres = data?.routes?.[0]?.distance
-      if (!metres) throw new Error('no route')
-      const km = metres / 1000
-
-      const airport = /\b(airport|yxe)\b/i.test(dropoff)
-      const surcharge = airport ? AIRPORT_SURCHARGE : 0
-      const low = Math.max(km * MIN_PER_KM + surcharge, MIN_FARE)
-      const high = Math.max(km * MAX_PER_KM + surcharge, MIN_FARE)
-      setResult({ km, low, high, airport, flat: low === high })
-    } catch (e) {
-      console.error('[estimate] route failed:', e.message)
-      setError('Could not measure that trip. Try two distinct Saskatoon addresses.')
-    } finally {
-      setBusy(false)
+  /**
+   * Hand off to /ride/estimate, which asks the backend for the real fare and
+   * draws the route. Coordinates go in the URL so the quote is linkable and
+   * the estimate page prices exactly the points that were picked here — no
+   * second geocode, which could resolve somewhere slightly different.
+   */
+  const goToEstimate = () => {
+    if (!pickupAt || !dropoffAt) {
+      setError('Pick both a pickup and a destination from the suggestions.')
+      return
     }
+    setError(null)
+    setBusy(true)
+    const params = new URLSearchParams({
+      flat: Number(pickupAt.lat).toFixed(6),
+      flng: Number(pickupAt.lon).toFixed(6),
+      tlat: Number(dropoffAt.lat).toFixed(6),
+      tlng: Number(dropoffAt.lon).toFixed(6),
+      from: pickup.slice(0, 120),
+      to: dropoff.slice(0, 120),
+    })
+    router.push(`/ride/estimate?${params.toString()}`)
   }
 
   const swap = () => {
     setPickup(dropoff); setDropoff(pickup)
     setPickupAt(dropoffAt); setDropoffAt(pickupAt)
-    setResult(null)
+    setError(null)
   }
 
   return (
@@ -146,34 +149,12 @@ export default function TripEstimate() {
         )}
       </div>
 
-      <button type="button" className="sp-btn sp-est-go" onClick={estimate} disabled={busy}>
-        {busy ? 'Measuring…' : 'Estimate this trip'}
+      <button type="button" className="sp-btn sp-est-go" onClick={goToEstimate} disabled={busy}>
+        {busy ? 'Getting prices…' : 'See prices'}
       </button>
 
       {error && <p className="sp-est-err" role="alert">{error}</p>}
 
-      {result && (
-        <div className="sp-est-out">
-          <div className="sp-est-headline">
-            <span className="sp-est-k">Fare estimate</span>
-            <b className="sp-display">
-              {result.flat ? money(result.low) : `${money(result.low)} – ${money(result.high)}`}
-            </b>
-          </div>
-          <dl className="sp-est-rows">
-            <div><dt>Driving distance</dt><dd>{result.km.toFixed(1)} km</dd></div>
-            <div><dt>To your driver</dt><dd>all of it</dd></div>
-            <div><dt>Booking fee</dt><dd>{money(BOOKING_FEE)}</dd></div>
-            {result.airport && <div><dt>Airport surcharge</dt><dd>{money(AIRPORT_SURCHARGE)}</dd></div>}
-            <div><dt>Surge</dt><dd>never</dd></div>
-          </dl>
-          <p className="sp-est-fine">
-            A distance estimate, so it does not know about traffic. Tax and any city
-            fee are added at checkout, each named. The app shows the exact number
-            before you confirm &mdash; and it is the number you pay.
-          </p>
-        </div>
-      )}
     </div>
   )
 }

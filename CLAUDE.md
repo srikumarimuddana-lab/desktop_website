@@ -277,6 +277,7 @@ terms should be.
 | `/legal/terms`, `/legal/privacy` | `GET /legal-documents?audience=rider&type=` | `legal_docs` table, then `app/(site)/legal/content.js` |
 | Chat widget | `POST /ai/public-chat` | local LangChain RAG, then keyword search |
 | Driver signup | `auth/send-otp`, `auth/verify-otp`, `drivers/register` | nothing — the form says applications are unavailable and points at the app |
+| Fare estimate | `POST /rides/public-estimate` | nothing — the page says it cannot price the trip. There is no honest fallback for a price. |
 
 Two things to know before touching this:
 
@@ -369,6 +370,52 @@ can — bad codes, lockouts, suspended accounts, conflicts, hung writes,
 non-JSON gateway errors, hollow legal documents, garbage FAQ payloads. There is
 no JS test runner in this repo, so this script is the regression net; run it
 after touching anything in this section.
+
+### Fare estimates come from the backend's engine — never from this repo
+
+`/ride` searches, `/ride/estimate` prices. Uber works this way and the split
+earns its keep: the URL *is* the trip, so a quote is linkable, back/forward
+work, and the page server-renders instead of flashing a spinner.
+
+```
+/ride  ──(Nominatim resolves 2 addresses)──▶  /ride/estimate?flat=&flng=&tlat=&tlng=&from=&to=
+                                                       │
+                                          POST /rides/public-estimate (SSR)
+```
+
+**No fare arithmetic belongs on this site.** `TripEstimate.js` used to price
+trips from `MIN_PER_KM 1.2 / MAX_PER_KM 2.0 / MIN_FARE 4.0` against an OSRM
+distance. Those constants were invented — they knew nothing about surge, area
+fees, tax, minimum fares or vehicle type, so the range shown had no
+relationship to what a rider was charged. The backend's
+`compute_ride_estimates` is the single fare path for every quoting surface;
+anything computed here would drift from the app the first time someone touched
+pricing. `EstimateClient.js` formats what it is given and multiplies nothing.
+
+Things that will bite:
+
+- **Coordinates travel in the URL, addresses do not.** The estimate page must
+  price the exact points the visitor picked. Re-geocoding the label here could
+  resolve somewhere slightly different and quote a different trip.
+- **Money arrives as exact decimal strings** (the backend uses Decimal, never
+  float). Prefix them with `$`; never `parseFloat` and re-round, which is how a
+  displayed price starts drifting from a charged one.
+- **The map draws the backend's polyline**, already decoded to `[[lat,lng],…]`.
+  Do not compute a route here — the line on screen should be the line the fare
+  was priced on. Leaflet over OSM tiles, so no Maps key is needed; ODbL
+  attribution is required and Leaflet renders it.
+- **`RouteMap` is `ssr:false`** because Leaflet touches `window`. Anything
+  inside it is invisible until hydration, so honesty caveats (the
+  straight-line-preview note) live in the parent's server-rendered markup.
+- **Every uncached estimate costs a Google Directions call** — pricing needs
+  the road distance. The backend caps this with `public_fare_estimate_enabled`
+  (off by default), a 10/minute per-IP limit and a 180s cache. Do not add a
+  poll or an on-keystroke estimate.
+- **Surge copy is deliberately absent when the multiplier is 1.** This site's
+  own copy says "No surge pricing" while the backend runs a surge engine with a
+  2.5× cap. Rather than pick a side, the page states an elevated quote when
+  there is one and says nothing about surge when there is not. Worth resolving
+  properly — see the note in `EstimateClient.js`.
 
 ### Admin edits must reach the front end — no hardcoded CMS content
 
@@ -476,6 +523,8 @@ Required in Vercel (and `.env.local` for local dev):
 SPINR_API_URL=https://api-spinr.spinr.ca/api/v1
 SPINR_API_TIMEOUT_MS=4000     # content reads, inside a server-rendered request
 SPINR_AI_TIMEOUT_MS=20000     # one assistant turn
+SPINR_WRITE_TIMEOUT_MS=15000  # driver-signup writes (otp/verify/register)
+SPINR_ESTIMATE_TIMEOUT_MS=10000  # a fare quote (backend waits on Google Directions)
 
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://cfrazforbupizntxvvtp.supabase.co
