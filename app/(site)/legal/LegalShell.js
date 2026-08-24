@@ -73,6 +73,10 @@ export default function LegalShell({ kicker, doc, other }) {
       </header>
 
       <div className="sp-wrap sp-legal-g">
+        {/* A document with no headings (a short policy, or one the converter
+            could not section) would otherwise render an empty "On this page"
+            rail with nothing under it. */}
+        {doc.sections.length > 0 && (
         <nav className="sp-legal-rail" aria-label="Sections">
           <span className="sp-legal-rail-k">On this page</span>
           {doc.sections.map((s) => (
@@ -81,6 +85,7 @@ export default function LegalShell({ kicker, doc, other }) {
             </a>
           ))}
         </nav>
+        )}
 
         <article className="sp-legal-body" ref={bodyRef}>
           {doc.intro.map((p, i) =>

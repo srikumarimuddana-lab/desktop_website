@@ -350,6 +350,26 @@ Service areas and vehicle types are read from the backend, so the form does not
 hardcode Saskatoon and cannot offer a vehicle type with no fare configured for
 the area.
 
+**Two error-handling rules that are easy to undo by accident:**
+
+- **A timed-out write is not a failed write.** `drivers/register` may complete
+  after we stop waiting, so that case returns its own `submit_uncertain`
+  outcome — the applicant is told we could not confirm it and how to check,
+  and the session is deliberately kept so a retry works. Retrying is safe
+  because register is an upsert. Do not collapse this back into a generic
+  error; telling someone their application failed when it succeeded is the
+  worst outcome this flow has.
+- **Signup writes use their own timeout** (`SPINR_WRITE_TIMEOUT_MS`, 15s), not
+  the 4s content-read budget. verify-otp and register do real work and 4s
+  would fail applications that were about to succeed.
+
+**Verifying it:** `scripts/verify-spinr-integration.mjs` drives the real routes
+over HTTP against a stub that can be told to misbehave in each way the backend
+can — bad codes, lockouts, suspended accounts, conflicts, hung writes,
+non-JSON gateway errors, hollow legal documents, garbage FAQ payloads. There is
+no JS test runner in this repo, so this script is the regression net; run it
+after touching anything in this section.
+
 ### Admin edits must reach the front end — no hardcoded CMS content
 
 **Rule: anything editable in `/spinr-internal` is READ AT REQUEST TIME, never

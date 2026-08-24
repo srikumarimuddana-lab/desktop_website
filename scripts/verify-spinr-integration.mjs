@@ -1,5 +1,8 @@
 /**
- * End-to-end edge-case suite for the driver signup flow.
+ * End-to-end edge-case suite for the Spinr backend integration.
+ *
+ * Covers driver signup (the bulk of it) plus the content fallbacks the FAQ
+ * and legal pages depend on.
  *
  * This repo has no JS test runner, and adding one is a bigger decision than
  * this feature should make on its own. But "we handle the error cases" is not
@@ -12,7 +15,7 @@
  *
  *   npm run build
  *   SPINR_API_URL=http://127.0.0.1:9911 npx next start -p 3111 &
- *   node scripts/verify-driver-signup.mjs
+ *   node scripts/verify-spinr-integration.mjs
  *
  * The stub listens on 9911 and is switched between scenarios by POSTing to
  * its /__control endpoint, so each case exercises the real proxy code path
@@ -61,6 +64,29 @@ const stub = http.createServer((req, res) => {
     return read((b) => {
       scenario = b.scenario || 'happy'
       send(200, { scenario })
+    })
+  }
+
+  if (url.pathname === '/faqs') {
+    if (scenario === 'faqs_500') return send(500, { detail: 'boom' })
+    if (scenario === 'faqs_empty') return send(200, [])
+    if (scenario === 'faqs_garbage') return send(200, { not: 'an array' })
+    return send(200, [{ id: '1', question: 'Backend FAQ question?', answer: 'Backend FAQ answer.', audience: 'both', sort_order: 0 }])
+  }
+
+  if (url.pathname === '/legal-documents') {
+    if (scenario === 'legal_500') return send(500, { detail: 'boom' })
+    // Published upstream but with no readable body — only a title and a date.
+    if (scenario === 'legal_hollow') {
+      return send(200, { audience: 'rider', type: 'tos', content: 'SPINR TERMS OF SERVICE\n\nLast updated: August 21, 2026\n', version: 4, updated_at: null })
+    }
+    if (scenario === 'legal_unpublished') return send(200, { audience: 'rider', type: 'tos', content: '', version: 0, updated_at: null })
+    return send(200, {
+      audience: 'rider',
+      type: 'tos',
+      content: 'SPINR TERMS OF SERVICE\n\nLast updated: August 21, 2026\n\nThis is the intro paragraph that\nwraps across two lines.\n\nFIRST SECTION\n\nBody of the first section.\n\n- bullet one\n- bullet two\n',
+      version: 4,
+      updated_at: '2026-08-21T00:00:00Z',
     })
   }
 
@@ -363,6 +389,51 @@ async function run() {
     const r = await call('otp', { phone: '3065550143' })
     check('a hung send-otp degrades to a retryable message', r.data?.code === 'unavailable')
     check('timeout wording differs from a flat failure', /too long/i.test(r.data?.message || ''), r.data?.message)
+  }
+
+  console.log('\nContent fallbacks')
+  const page = async (path) => {
+    const res = await fetch(`${SITE}${path}`)
+    return { status: res.status, html: await res.text() }
+  }
+  await setScenario('happy')
+  {
+    const { html } = await page('/legal/terms')
+    check('backend legal text renders with its sections', /data-sec="first-section"/.test(html))
+    check('hard-wrapped lines are rejoined', /wraps across two lines/.test(html))
+    check('bullets survive as list items', (html.match(/•/g) || []).length >= 2)
+    check('a published document carries no DRAFT stamp', !/pending legal review/.test(html))
+  }
+  await setScenario('legal_hollow')
+  {
+    const { html } = await page('/legal/terms')
+    check('a document that parses to nothing falls back instead of blanking', /pending legal review/.test(html))
+    check('the fallback still renders real terms', html.length > 5000)
+  }
+  await setScenario('legal_unpublished')
+  {
+    const { html } = await page('/legal/terms')
+    check('an unpublished document falls back', /pending legal review/.test(html))
+  }
+  await setScenario('legal_500')
+  {
+    const { status, html } = await page('/legal/terms')
+    check('a 500 from the backend still renders the page', status === 200 && html.length > 5000)
+  }
+  await setScenario('happy')
+  {
+    const { html } = await page('/help')
+    check('backend FAQs reach the help centre', /Backend FAQ question\?/.test(html))
+  }
+  await setScenario('faqs_garbage')
+  {
+    const { status, html } = await page('/help')
+    check('a non-array FAQ payload falls back rather than throwing', status === 200 && html.length > 5000)
+  }
+  await setScenario('faqs_500')
+  {
+    const { status, html } = await page('/help')
+    check('a 500 on FAQs falls back to the local list', status === 200 && /Spinr Pass/.test(html))
   }
 
   console.log('\nUnknown routes')

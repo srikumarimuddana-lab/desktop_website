@@ -118,6 +118,11 @@ function isTextHeading(block) {
 
 const UPDATED_RE = /^last updated\s*:/i
 
+/** Does this document actually have something to read? */
+function hasBody(doc) {
+  return doc.intro.length > 0 || doc.sections.some((s) => (s.paras || []).length > 0)
+}
+
 /** Backend plain text -> the { docTitle, updated, intro, sections } LegalShell wants. */
 function toPlainTextDoc({ content, updatedAt }, slug) {
   const blocks = textBlocks(content)
@@ -163,7 +168,15 @@ async function getLegalDoc(slug) {
     // ones a visitor here is agreeing to. Driver-specific documents live
     // behind the driver app, which fetches them with audience=driver.
     const doc = await fetchLegalDocument({ audience: 'rider', type: backendType })
-    if (doc) return toPlainTextDoc(doc, slug)
+    if (doc) {
+      const parsed = toPlainTextDoc(doc, slug)
+      // A document can be non-empty upstream and still parse to nothing here —
+      // content that is only a title and a date line, or a shape the converter
+      // does not recognise. Rendering that would replace readable terms with a
+      // blank page, which is the one outcome worse than slightly stale terms.
+      if (hasBody(parsed)) return parsed
+      console.error(`[legal] backend ${backendType} parsed to an empty document — falling back`)
+    }
   }
 
   if (isSupabaseConfigured()) {
