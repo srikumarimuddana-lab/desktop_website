@@ -1,6 +1,7 @@
 import { previewMetadata } from '@/lib/preview-content'
 import { FinalCta } from '../Chrome'
 import { Reveal, SplitText, Marquee } from '../Reveal'
+import CanadaDots from '../CanadaDots'
 import Manifesto from './Manifesto'
 import RefuseRail from './RefuseRail'
 import DollarSplit from './DollarSplit'
@@ -33,6 +34,7 @@ export default function AboutPage() {
     <>
       {/* ── hero ── */}
       <header className="sp-ahero" id="top">
+        <CanadaDots />
         <div className="sp-wrap">
           <span className="sp-hero-badge sp-ap" style={{ '--ap-delay': '500ms', '--ap-y': '16px' }}>
             About Spinr

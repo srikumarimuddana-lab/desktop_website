@@ -1032,12 +1032,18 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 
 /* ════════════════ about page ════════════════ */
 
-.sp-ahero{position:relative;background:var(--paper-50);border-bottom:2px solid var(--ink);
+.sp-ahero{position:relative;overflow:hidden;background:var(--paper-50);border-bottom:2px solid var(--ink);
   margin-top:calc(-1 * clamp(52px,7vw,74px));padding:clamp(122px,17vh,196px) 0 clamp(52px,7vw,92px);
   text-align:center}
 .sp-ahero-h{font-size:clamp(44px,8.4vw,112px);margin:clamp(16px,2.4vw,26px) 0 clamp(16px,2.2vw,22px)}
 .sp-ahero-hl{color:var(--red)}
 .sp-ahero-p{max-width:640px;margin:0 auto;font-size:clamp(16px,1.5vw,20px);line-height:1.6;color:var(--ink-6)}
+/* the same dotted Canada as the home hero, dialled back for cream */
+.sp-ahero .sp-canmap{left:50%;top:-6%;width:min(90%,1060px);opacity:.66}
+/* no pin here - the home hero carries the Saskatoon marker, and at this
+   crop it would land on the hero's closing rule */
+.sp-ahero .sp-cd-pin{display:none}
+@media(max-width:720px){.sp-ahero .sp-canmap{left:-38%;top:-8%;width:1000px;transform:none;opacity:.6}}
 .sp-ahero-rule{position:absolute;left:12%;right:12%;bottom:26px;height:3px;background:var(--ink);
   transform:rotate(-.5deg)}
 
@@ -1138,9 +1144,14 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 
 /* ════════════════ help page ════════════════ */
 
-.sp-help-hero{position:relative;background:var(--sky);border-bottom:2px solid var(--ink);
+.sp-help-hero{position:relative;overflow:hidden;border-bottom:2px solid var(--ink);
+  background:radial-gradient(rgba(11,11,11,.13) 1.7px,transparent 2.1px) 0 0/17px 17px,var(--sky);
   margin-top:calc(-1 * clamp(52px,7vw,74px));padding:clamp(118px,16vh,170px) 0 clamp(40px,5vw,60px)}
 .sp-help-h{font-size:clamp(40px,6.4vw,84px);margin:clamp(14px,2vw,22px) 0 10px}
+/* one quiet question mark in the hero's open right-hand space */
+.sp-help-mark{position:absolute;right:2%;bottom:-16%;line-height:.72;
+  font-size:clamp(300px,34vw,470px);color:var(--ink);opacity:.055;pointer-events:none;user-select:none}
+@media(max-width:979px){.sp-help-mark{right:-19%;bottom:-30%;font-size:330px;opacity:.045}}
 .sp-help-lede{margin:0;font-size:clamp(15.5px,1.4vw,18.5px);color:rgba(11,11,11,.72);font-weight:600}
 .sp-help-g{display:grid;gap:clamp(24px,4vw,64px);padding-block:clamp(36px,5vw,64px);align-items:start}
 @media(min-width:980px){.sp-help-g{grid-template-columns:250px minmax(0,1fr)}}
