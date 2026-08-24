@@ -128,16 +128,16 @@ export default async function PreviewPage() {
               <br />
               <SplitText as="span" className="sp-hero-hl" text="straight to the driver." start={300} />
             </h1>
-            {/* Says what Spinr IS before it says why it is better. The headline
-                leads with the differentiator, which only lands on someone who
-                already knows this is a rideshare — a first-time visitor could
-                read "every fare straight to the driver" as food delivery, a
-                courier, or a payments company. One plain line fixes that. */}
+            {/* One short line says WHAT this is; the differentiators are
+                chips a visitor scans, not sentences they have to read. */}
             <p className="sp-hero-p sp-ap" style={{ '--ap-delay': '700ms', '--ap-y': '22px' }}>
-              Spinr is a rideshare app for Saskatoon. Book a car in a couple of
-              taps &mdash; your driver keeps the fare, we add a flat $1, and there is
-              no surge pricing, ever.
+              The rideshare app for Saskatoon.
             </p>
+            <ul className="sp-hero-chips sp-ap" style={{ '--ap-delay': '760ms', '--ap-y': '20px' }}>
+              <li>Driver keeps the fare</li>
+              <li>Flat $1 per ride</li>
+              <li>No surge, ever</li>
+            </ul>
             <div className="sp-hero-btns sp-ap" style={{ '--ap-delay': '790ms', '--ap-y': '26px' }}>
               <a className="sp-btn" href={APP_URLS.rider.ios} target="_blank" rel="noopener noreferrer">
                 App Store

@@ -166,9 +166,12 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-hero-h{font-size:clamp(40px,8vw,102px);color:var(--ink);text-wrap:balance;
   margin:clamp(16px,2.4vw,26px) 0 clamp(20px,3vw,30px)}
 .sp-hero-hl{color:var(--red)}
-.sp-hero-p{max-width:50ch;margin:0 auto clamp(22px,3vw,30px);
-  font-size:clamp(16px,1.5vw,19.5px);line-height:1.55;font-weight:600;color:rgba(11,11,11,.76);
-  text-wrap:balance}
+.sp-hero-p{margin:0 auto clamp(12px,1.8vw,16px);
+  font-size:clamp(17px,1.6vw,21px);line-height:1.4;font-weight:700;color:rgba(11,11,11,.82)}
+.sp-hero-chips{list-style:none;display:flex;justify-content:center;flex-wrap:wrap;
+  gap:9px 10px;margin:0 0 clamp(22px,3vw,30px);padding:0}
+.sp-hero-chips li{border:2px solid var(--ink);background:#fff;border-radius:999px;
+  padding:7px 15px;font-size:13px;font-weight:700;box-shadow:var(--hard-sm)}
 .sp-hero-btns{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
 .sp-hero-alt{margin:clamp(14px,2vw,18px) 0 0;font-size:14px}
 .sp-hero-alt a{display:inline-block;font-weight:800;color:var(--ink);opacity:.72;
@@ -1048,7 +1051,7 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-ref-end span{margin-top:8px;font-size:14px;color:#B9B4AA}
 
 /* dollar split */
-.sp-split{background:var(--sky);border-bottom:2px solid var(--ink)}
+.sp-dsplit{background:var(--sky);border-bottom:2px solid var(--ink)}
 .sp-split-bar{position:relative;height:clamp(64px,7vw,92px);background:#fff;border:2px solid var(--ink);
   border-radius:16px;box-shadow:var(--hard);overflow:hidden;margin:clamp(8px,1.4vw,16px) 0 clamp(18px,2.4vw,26px)}
 .sp-split-fill{position:absolute;inset:0;background:var(--red);transform:scaleX(0);transform-origin:0 50%;
