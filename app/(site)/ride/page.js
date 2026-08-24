@@ -111,7 +111,6 @@ export default async function RidePage() {
             <a className="sp-btn-ghost" href={APP_URLS.rider.android} target="_blank" rel="noopener noreferrer">Google Play</a>
           </div>
         </div>
-        <span className="sp-rhero-road" aria-hidden="true" />
       </header>
 
       {/* ── the trip ── */}
