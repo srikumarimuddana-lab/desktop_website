@@ -4,6 +4,7 @@ import { APP_URLS } from '@/lib/app-links'
 import { FinalCta } from '../Chrome'
 import { Reveal, SplitText } from '../Reveal'
 import PhoneFan from '../PhoneFan'
+import EarnLine from './EarnLine'
 import Payday from './Payday'
 import SpinrPass from './SpinrPass'
 
@@ -54,6 +55,7 @@ export default function DrivePage() {
     <>
       {/* ── hero ── */}
       <header className="sp-dhero" id="top">
+        <EarnLine />
         <div className="sp-wrap sp-dhero-in">
           <div>
             <span className="sp-hero-badge sp-ap" style={{ '--ap-delay': '520ms', '--ap-y': '16px' }}>
