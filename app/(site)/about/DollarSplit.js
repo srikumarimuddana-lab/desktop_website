@@ -29,7 +29,7 @@ export default function DollarSplit() {
   }, [])
 
   return (
-    <section className="sp-sec sp-split" id="money" ref={ref}>
+    <section className="sp-sec sp-dsplit" id="money" ref={ref}>
       <div className="sp-wrap">
         <span className="sp-kick">What comes out of a fare</span>
         <h2 className="sp-display sp-h2">Follow one fare.</h2>
