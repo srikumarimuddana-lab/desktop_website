@@ -121,19 +121,20 @@ export default async function PreviewPage() {
 
           <div className="sp-hero-copy">
             <span className="sp-hero-badge sp-ap" style={{ '--ap-delay': '620ms', '--ap-y': '18px' }}>
-              Proudly Canadian &middot; Saskatoon
+              Proudly Canadian Rideshare
+            </span>
+            <span className="sp-hero-loc sp-ap" style={{ '--ap-delay': '680ms', '--ap-y': '14px' }}>
+              Saskatoon
             </span>
             <h1 className="sp-display sp-hero-h">
               <SplitText text="Every fare" start={120} />
               <br />
               <SplitText as="span" className="sp-hero-hl" text="straight to the driver." start={300} />
             </h1>
-            {/* One short line says WHAT this is; the differentiators are
+            {/* The badge names the category and the location line the city,
+                so no subhead sentence is needed; the differentiators are
                 chips a visitor scans, not sentences they have to read. */}
-            <p className="sp-hero-p sp-ap" style={{ '--ap-delay': '700ms', '--ap-y': '22px' }}>
-              The rideshare app for Saskatoon.
-            </p>
-            <ul className="sp-hero-chips sp-ap" style={{ '--ap-delay': '760ms', '--ap-y': '20px' }}>
+            <ul className="sp-hero-chips sp-ap" style={{ '--ap-delay': '720ms', '--ap-y': '20px' }}>
               <li>Driver keeps the fare</li>
               <li>Flat $1 per ride</li>
               <li>No surge, ever</li>

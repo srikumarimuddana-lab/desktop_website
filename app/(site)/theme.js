@@ -166,8 +166,10 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-hero-h{font-size:clamp(40px,8vw,102px);color:var(--ink);text-wrap:balance;
   margin:clamp(16px,2.4vw,26px) 0 clamp(20px,3vw,30px)}
 .sp-hero-hl{color:var(--red)}
-.sp-hero-p{margin:0 auto clamp(12px,1.8vw,16px);
-  font-size:clamp(17px,1.6vw,21px);line-height:1.4;font-weight:700;color:rgba(11,11,11,.82)}
+.sp-hero-loc{display:block;margin:11px 0 0;font-size:12.5px;font-weight:800;
+  letter-spacing:.14em;text-transform:uppercase;color:rgba(11,11,11,.62)}
+.sp-hero-loc::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--red);margin-right:7px;vertical-align:1px}
 .sp-hero-chips{list-style:none;display:flex;justify-content:center;flex-wrap:wrap;
   gap:9px 10px;margin:0 0 clamp(22px,3vw,30px);padding:0}
 .sp-hero-chips li{border:2px solid var(--ink);background:#fff;border-radius:999px;
