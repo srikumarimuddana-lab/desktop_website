@@ -5,6 +5,7 @@ import { hybridRetrieve } from '@/lib/hybrid-retriever'
 import { buildStructuredContext, formatUserMessage } from '@/lib/context-builder'
 import { audienceNote } from '@/lib/audience'
 import { polishAnswer } from '@/lib/polish'
+import { askSpinrAssistant, isSpinrApiConfigured } from '@/lib/spinr-api'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
 
 // ============================================
@@ -249,12 +250,58 @@ async function searchExistingContent(question) {
 // ============================================
 // HYBRID SEARCH ORCHESTRATOR
 // ============================================
-async function searchWithHybridApproach(q, ut, uid) {
+/*
+ * Answer order: Spinr backend -> local LangChain RAG -> keyword search.
+ *
+ * The backend assistant goes first because it is the same provider, model and
+ * FAQ corpus the rider and driver apps use, chosen in the spinrvm admin
+ * dashboard. Answering the same question two different ways depending on
+ * whether someone opened the app or the website was the thing worth fixing.
+ *
+ * Everything below it stays exactly as it was, and stays reachable. The
+ * backend ships that surface dark behind `ai_public_chat_enabled`, so until an
+ * admin turns it on EVERY call comes back 503 and this function behaves
+ * identically to before — that is the intended rollout, not a failure mode.
+ * The same fallback covers an unreachable backend, a timeout, or an unset
+ * SPINR_API_URL.
+ *
+ * One deliberate difference to know about: the local path injects a hard
+ * negative fact for any non-served city it recognises (locationGuard above).
+ * The backend has no equivalent injection — it holds the same line in its
+ * system prompt instead ("Saskatoon is the only city... never say, imply or
+ * hint that Spinr is launching, expanding or coming soon anywhere"). Same
+ * rule, enforced one layer up.
+ */
+async function searchWithHybridApproach(q, ut, uid, history) {
   const st = Date.now()
   const sa = sanitizeInput(q)
   const aiEnabled = process.env.AI_AGENT_ENABLED !== 'false'
   const c = getCachedResponse(sa, ut)
   if (c) return { ...c, source: 'cache', response_time_ms: Date.now() - st, tokens_used: 0 }
+
+  if (aiEnabled && isSpinrApiConfigured()) {
+    // 'anonymous' is this site's third user_type; the backend only tags FAQ
+    // rows rider/driver, and a visitor who has not said which they are is
+    // reading rider-facing pages far more often than not.
+    const spinr = await askSpinrAssistant({
+      message: sa,
+      history,
+      visitorType: ut === 'driver' ? 'driver' : 'rider',
+    })
+    if (spinr) {
+      // Same output hygiene the local path gets — validateResponse rewrites any
+      // support address the model invented back to the real one.
+      const r = {
+        answer: validateResponse(spinr.reply),
+        source: 'spinr_backend',
+        model_used: spinr.model,
+        response_time_ms: Date.now() - st,
+        tokens_used: 0,
+      }
+      setCachedResponse(sa, ut, r)
+      return r
+    }
+  }
 
   if (aiEnabled) {
     try {
@@ -311,7 +358,7 @@ export async function POST(request) {
     try { body = await request.json() } catch (e) {
       return handleCORS(NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }), request)
     }
-    const { question, user_type, user_id } = body
+    const { question, user_type, user_id, history } = body
     if (!question || typeof question !== 'string' || question.trim().length === 0) {
       return handleCORS(NextResponse.json({ error: 'Question is required' }, { status: 400 }), request)
     }
@@ -322,7 +369,10 @@ export async function POST(request) {
     if (!rl.ok) {
       return handleCORS(NextResponse.json({ error: 'Rate limit', retryAfter: rl.retry }, { status: 429 }), request)
     }
-    const sr = await searchWithHybridApproach(question, ut, user_id)
+    // history is optional and passed straight through: lib/spinr-api.js trims
+    // and normalizes it, and the backend re-validates and drops anything that
+    // is not plain user/assistant text. The widget does not send it today.
+    const sr = await searchWithHybridApproach(question, ut, user_id, Array.isArray(history) ? history : undefined)
     const cnv = await storeConversation(question, sr.answer, sr.source, sr.model_used, sr.tokens_used, sr.response_time_ms, ut, user_id)
     const res = { answer: sr.answer, source: sr.source, model_used: sr.model_used, conversation_id: cnv?.id || null, response_time_ms: sr.response_time_ms }
     if (sr.sources) res.sources = sr.sources
@@ -341,13 +391,17 @@ export async function GET(request) {
   return handleCORS(NextResponse.json({
     service: 'AI Agent Search',
     status: 'healthy',
-    version: 'langchain-hybrid-v2-audience',
+    version: 'spinr-backend-first-v3',
     timestamp: new Date().toISOString(),
     config: {
       ai_enabled: process.env.AI_AGENT_ENABLED !== 'false',
       fallback_enabled: process.env.FALLBACK_TO_KEYWORD_SEARCH !== 'false',
       llm_provider: 'langchain-openai-compatible',
       llm_model: process.env.LLM_MODEL_NAME || 'qwen-vl-max-2025-04-08',
+      // When configured, the Spinr backend assistant answers first and this
+      // local pipeline becomes the fallback. Reports reachability config only
+      // — whether the backend has the surface switched on is its own flag.
+      spinr_backend_configured: isSpinrApiConfigured(),
       audience_aware_retrieval: true,
       polish_model: process.env.POLISH_MODEL_NAME || null,
       rate_limit: RL_MAX + ' requests/minute'

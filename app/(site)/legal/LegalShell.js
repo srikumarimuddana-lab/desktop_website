@@ -11,10 +11,13 @@ import SafeHtml from '@/components/ui/SafeHtml'
  * stamp that stays visible. The stamp comes off when the text has been
  * signed off, not before.
  *
- * A document published through the admin dashboard is not a draft, so it does
- * not get the stamp: `doc.fromCms` distinguishes the two. Sections arrive
- * either as plain paragraphs (the checked-in drafts) or as an HTML fragment
- * (a CMS document split on its own headings), and both render here.
+ * A published document is not a draft, so it does not get the stamp:
+ * `doc.published` distinguishes the two. That is deliberately separate from
+ * `doc.fromCms`, which says only whether the body is HTML — the Spinr backend
+ * serves published legal text as PLAIN text, so it is published but not HTML,
+ * and one flag could not say both. Sections arrive either as plain paragraphs
+ * (the checked-in drafts, and backend documents) or as an HTML fragment (a CMS
+ * document split on its own headings), and both render here.
  */
 
 export default function LegalShell({ kicker, doc, other }) {
@@ -61,7 +64,7 @@ export default function LegalShell({ kicker, doc, other }) {
           <p className="sp-legal-updated">
             {doc.updated || 'Last updated: [pending publication]'}
           </p>
-          {!doc.fromCms && (
+          {!doc.published && (
             <span className="sp-legal-draft sp-display" role="note">
               Draft &middot; pending legal review
             </span>
@@ -70,6 +73,10 @@ export default function LegalShell({ kicker, doc, other }) {
       </header>
 
       <div className="sp-wrap sp-legal-g">
+        {/* A document with no headings (a short policy, or one the converter
+            could not section) would otherwise render an empty "On this page"
+            rail with nothing under it. */}
+        {doc.sections.length > 0 && (
         <nav className="sp-legal-rail" aria-label="Sections">
           <span className="sp-legal-rail-k">On this page</span>
           {doc.sections.map((s) => (
@@ -78,6 +85,7 @@ export default function LegalShell({ kicker, doc, other }) {
             </a>
           ))}
         </nav>
+        )}
 
         <article className="sp-legal-body" ref={bodyRef}>
           {doc.intro.map((p, i) =>

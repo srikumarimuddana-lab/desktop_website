@@ -159,6 +159,9 @@ export default function RequirementsPage() {
               <a href="mailto:support@spinr.ca">support@spinr.ca</a> before you
               apply &mdash; it is quicker than finding out halfway through.
             </p>
+            <p className="sp-rq-more">
+              <Link href="/drive/apply">Start your application &rarr;</Link>
+            </p>
           </Reveal>
         </div>
       </section>

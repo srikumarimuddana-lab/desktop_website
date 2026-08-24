@@ -254,6 +254,122 @@ often than facts, and guarding them rejected every honest rewrite.
 
 **Location guard:** Detects city names in queries and injects hard-negative context (Spinr is ONLY in Saskatoon). `NON_SASKATOON_CITIES` in `app/api/agent/search/route.js` is a deliberate not-served list — Regina is an entry there so the agent can never claim Regina service; it is not marketing copy.
 
+### The Spinr backend is the source of truth for FAQs, legal text and chat
+
+FAQs and legal documents are maintained in the **spinrvm** admin dashboard —
+that is the copy riders and drivers agree to in the app. This site used to keep
+its own separate copies, so the same question could be answered one way in the
+app and another way here. It now reads from the backend first:
+
+```
+spinrvm API  ->  website CMS (/spinr-internal)  ->  hardcoded draft
+```
+
+`lib/spinr-api.js` owns every call. It returns `null` on any failure — unset
+`SPINR_API_URL`, timeout, non-2xx, bad JSON — so each caller has exactly one
+fallback branch. **Both lower layers must stay wired up.** A legal page has to
+render; "the backend was slow" is not a reason to show a visitor nothing where
+terms should be.
+
+| Surface | Backend endpoint | Falls back to |
+|---|---|---|
+| Help centre FAQs | `GET /faqs?audience=` | `faqs` table, then the page's `pickFaqs()` list |
+| `/legal/terms`, `/legal/privacy` | `GET /legal-documents?audience=rider&type=` | `legal_docs` table, then `app/(site)/legal/content.js` |
+| Chat widget | `POST /ai/public-chat` | local LangChain RAG, then keyword search |
+| Driver signup | `auth/send-otp`, `auth/verify-otp`, `drivers/register` | nothing — the form says applications are unavailable and points at the app |
+
+Two things to know before touching this:
+
+- **Backend legal text is PLAIN TEXT, not HTML** — ALL-CAPS headings,
+  hard-wrapped paragraphs, `- ` bullets. `toPlainTextDoc()` in
+  `app/(site)/legal/[slug]/page.js` converts it; `toDoc()` right above it is
+  for the CMS's HTML blobs. They are not interchangeable. `LegalShell` keeps
+  two separate flags for this reason: `doc.published` controls the DRAFT stamp,
+  `doc.fromCms` controls whether the body is HTML. A backend document is
+  published but is not HTML.
+- **The chat surface ships dark.** The backend gates it behind
+  `ai_public_chat_enabled`, off by default, so until an admin enables it every
+  call returns 503 and the site answers from the local pipeline as before.
+  Seeing `source: "fallback_search"` is expected until that flag is flipped;
+  `source: "spinr_backend"` means it is live.
+
+Backend-side prerequisites for this to work at all: `ALLOWED_ORIGINS` on the
+Spinr backend must include this site's origin, and `ai_public_chat_enabled`
+must be on for the chat (the content endpoints need no flag).
+
+Note the assistant reached through `/ai/public-chat` answers from the
+**backend's** FAQ rows, not from `knowledge_base`. `lib/kb-sync.js` still
+serves the local fallback pipeline, so a FAQ added in `/spinr-internal` still
+reaches that — but a FAQ that should reach riders and drivers belongs in the
+spinrvm dashboard.
+
+### Driver signup runs against the backend, and holds no token in the browser
+
+`/drive/apply` creates a **real** account and a **real** `drivers` row through
+the existing spinrvm APIs — `auth/send-otp`, `auth/verify-otp`,
+`drivers/register`. An applicant who starts here lands in the spinrvm admin
+dashboard as `status: pending` immediately. It is not a lead form.
+
+```
+browser  ->  /api/driver-signup/{otp,verify,register}  ->  spinrvm
+                     (httpOnly cookie lives here)
+```
+
+Rules for anyone touching this:
+
+- **The bearer token never reaches client JavaScript.** verify-otp's token goes
+  into an httpOnly, Secure, SameSite=lax cookie scoped to `/api/driver-signup`,
+  is read back server-side for register, and is **deleted the moment the
+  application is submitted**. Do not move any of these calls into a client
+  component.
+- **The refresh token is discarded on purpose.** A 30-day refresh credential on
+  a marketing site buys nothing here — the flow completes in seconds. The
+  session is also capped at 20 minutes regardless of what the backend reports.
+- **The phone step is LAST, and that is deliberate.** It keeps the auth wall
+  out of the way and holds the token for seconds rather than the minutes
+  someone spends typing a VIN. Do not "improve" the flow by verifying first.
+- **Two backend error shapes exist.** `HTTPException` returns
+  `{ detail: "..." }` (prose for users); `SpinrException` returns
+  `{ success, error: { message, action_hint } }` where `message` can be a token
+  like `ERR_OTP_INVALID`. `backendMessage()` in the route handles both and
+  refuses to show a token-shaped string. Do not simplify it back to reading
+  `detail`.
+- **send-otp is metered per client IP backend-side**, so every applicant shares
+  the Vercel egress IP's 6/minute bucket. Never forge `CF-Connecting-IP` to
+  escape that — the backend treats it as authoritative. The route meters per
+  real client IP on its own side; the backend's per-phone send cap is the
+  actual control. If volume ever outgrows it, the fix is a trusted-caller
+  mechanism on the backend.
+- **The web flow does not finish an application.** Licence, insurance and
+  inspection photos and the CRC consent need the app. The last step is a
+  hand-off and must keep saying so — "application started", never "approved".
+- **Gender is deliberately not collected here** even though the backend accepts
+  it, because there is no stated purpose for it on a public web form.
+
+Service areas and vehicle types are read from the backend, so the form does not
+hardcode Saskatoon and cannot offer a vehicle type with no fare configured for
+the area.
+
+**Two error-handling rules that are easy to undo by accident:**
+
+- **A timed-out write is not a failed write.** `drivers/register` may complete
+  after we stop waiting, so that case returns its own `submit_uncertain`
+  outcome — the applicant is told we could not confirm it and how to check,
+  and the session is deliberately kept so a retry works. Retrying is safe
+  because register is an upsert. Do not collapse this back into a generic
+  error; telling someone their application failed when it succeeded is the
+  worst outcome this flow has.
+- **Signup writes use their own timeout** (`SPINR_WRITE_TIMEOUT_MS`, 15s), not
+  the 4s content-read budget. verify-otp and register do real work and 4s
+  would fail applications that were about to succeed.
+
+**Verifying it:** `scripts/verify-spinr-integration.mjs` drives the real routes
+over HTTP against a stub that can be told to misbehave in each way the backend
+can — bad codes, lockouts, suspended accounts, conflicts, hung writes,
+non-JSON gateway errors, hollow legal documents, garbage FAQ payloads. There is
+no JS test runner in this repo, so this script is the regression net; run it
+after touching anything in this section.
+
 ### Admin edits must reach the front end — no hardcoded CMS content
 
 **Rule: anything editable in `/spinr-internal` is READ AT REQUEST TIME, never
@@ -354,6 +470,13 @@ Combines BM25 full-text search + pgvector cosine similarity using Reciprocal Ran
 Required in Vercel (and `.env.local` for local dev):
 
 ```
+# Spinr backend (the `spinrvm` repo) — source of truth for FAQs, legal text
+# and the AI assistant. Unset = the site falls back to its own CMS and its own
+# retrieval stack, exactly as it behaved before the integration.
+SPINR_API_URL=https://api-spinr.spinr.ca/api/v1
+SPINR_API_TIMEOUT_MS=4000     # content reads, inside a server-rendered request
+SPINR_AI_TIMEOUT_MS=20000     # one assistant turn
+
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://cfrazforbupizntxvvtp.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<jwt>
