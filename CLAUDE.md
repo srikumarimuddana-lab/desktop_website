@@ -254,6 +254,54 @@ often than facts, and guarding them rejected every honest rewrite.
 
 **Location guard:** Detects city names in queries and injects hard-negative context (Spinr is ONLY in Saskatoon). `NON_SASKATOON_CITIES` in `app/api/agent/search/route.js` is a deliberate not-served list — Regina is an entry there so the agent can never claim Regina service; it is not marketing copy.
 
+### The Spinr backend is the source of truth for FAQs, legal text and chat
+
+FAQs and legal documents are maintained in the **spinrvm** admin dashboard —
+that is the copy riders and drivers agree to in the app. This site used to keep
+its own separate copies, so the same question could be answered one way in the
+app and another way here. It now reads from the backend first:
+
+```
+spinrvm API  ->  website CMS (/spinr-internal)  ->  hardcoded draft
+```
+
+`lib/spinr-api.js` owns every call. It returns `null` on any failure — unset
+`SPINR_API_URL`, timeout, non-2xx, bad JSON — so each caller has exactly one
+fallback branch. **Both lower layers must stay wired up.** A legal page has to
+render; "the backend was slow" is not a reason to show a visitor nothing where
+terms should be.
+
+| Surface | Backend endpoint | Falls back to |
+|---|---|---|
+| Help centre FAQs | `GET /faqs?audience=` | `faqs` table, then the page's `pickFaqs()` list |
+| `/legal/terms`, `/legal/privacy` | `GET /legal-documents?audience=rider&type=` | `legal_docs` table, then `app/(site)/legal/content.js` |
+| Chat widget | `POST /ai/public-chat` | local LangChain RAG, then keyword search |
+
+Two things to know before touching this:
+
+- **Backend legal text is PLAIN TEXT, not HTML** — ALL-CAPS headings,
+  hard-wrapped paragraphs, `- ` bullets. `toPlainTextDoc()` in
+  `app/(site)/legal/[slug]/page.js` converts it; `toDoc()` right above it is
+  for the CMS's HTML blobs. They are not interchangeable. `LegalShell` keeps
+  two separate flags for this reason: `doc.published` controls the DRAFT stamp,
+  `doc.fromCms` controls whether the body is HTML. A backend document is
+  published but is not HTML.
+- **The chat surface ships dark.** The backend gates it behind
+  `ai_public_chat_enabled`, off by default, so until an admin enables it every
+  call returns 503 and the site answers from the local pipeline as before.
+  Seeing `source: "fallback_search"` is expected until that flag is flipped;
+  `source: "spinr_backend"` means it is live.
+
+Backend-side prerequisites for this to work at all: `ALLOWED_ORIGINS` on the
+Spinr backend must include this site's origin, and `ai_public_chat_enabled`
+must be on for the chat (the content endpoints need no flag).
+
+Note the assistant reached through `/ai/public-chat` answers from the
+**backend's** FAQ rows, not from `knowledge_base`. `lib/kb-sync.js` still
+serves the local fallback pipeline, so a FAQ added in `/spinr-internal` still
+reaches that — but a FAQ that should reach riders and drivers belongs in the
+spinrvm dashboard.
+
 ### Admin edits must reach the front end — no hardcoded CMS content
 
 **Rule: anything editable in `/spinr-internal` is READ AT REQUEST TIME, never
@@ -354,6 +402,13 @@ Combines BM25 full-text search + pgvector cosine similarity using Reciprocal Ran
 Required in Vercel (and `.env.local` for local dev):
 
 ```
+# Spinr backend (the `spinrvm` repo) — source of truth for FAQs, legal text
+# and the AI assistant. Unset = the site falls back to its own CMS and its own
+# retrieval stack, exactly as it behaved before the integration.
+SPINR_API_URL=https://api-spinr.spinr.ca/api/v1
+SPINR_API_TIMEOUT_MS=4000     # content reads, inside a server-rendered request
+SPINR_AI_TIMEOUT_MS=20000     # one assistant turn
+
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://cfrazforbupizntxvvtp.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<jwt>
