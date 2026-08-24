@@ -8,7 +8,7 @@ import Payday from './Payday'
 import SpinrPass from './SpinrPass'
 
 /*
- * DESIGN SAMPLE — /drive
+ * /drive — the driver page.
  * The driver page. Its motion identity is THE PAYDAY: a pinned ledger where a
  * Friday night's trips land one by one and the commission line never moves.
  * Uses the DRIVER app store links, not the rider ones.
@@ -18,8 +18,8 @@ export const revalidate = 0
 
 export async function generateMetadata() {
   return previewMetadata('/drive', {
-    title: 'Drive | Spinr Design Sample',
-    description: 'Keep 100% of the fare. Design sample.',
+    title: 'Drive with Spinr | Keep 100% of your fare',
+    description: 'Drive with Spinr and keep 100% of the net fare. 0% commission — we never take a share of what you earn. Driving in Saskatoon, proudly Canadian.',
   })
 }
 

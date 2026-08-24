@@ -8,7 +8,7 @@ import RideJourney from './RideJourney'
 import TripEstimate from './TripEstimate'
 
 /*
- * DESIGN SAMPLE — /ride
+ * /ride — the rider page.
  * The rider page. Its motion identity is THE TRIP: one pinned, full-bleed
  * map that plays a single ride end to end as you scroll. Everything else on
  * the page stays quieter so the journey owns the middle.
@@ -18,8 +18,8 @@ export const revalidate = 0
 
 export async function generateMetadata() {
   return previewMetadata('/ride', {
-    title: 'Ride | Spinr Design Sample',
-    description: 'See the full fare before you book. Design sample.',
+    title: 'Ride with Spinr | Flat fee, no surge, ever',
+    description: 'See every line of the fare before you book — no surge multiplier, and the only fee Spinr keeps is a flat $1. Riding in Saskatoon with a proudly Canadian platform.',
   })
 }
 

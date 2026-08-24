@@ -1,5 +1,5 @@
 /*
- * Legal draft content for the /preview design sample.
+ * Legal draft content — the fallback used when no CMS document is published.
  *
  * SOURCE: spinrvm repo, docs/legal/terms-of-service.md and privacy-policy.md
  * (the paste-ready blocks), copied 2026-08-22. Those files are explicitly

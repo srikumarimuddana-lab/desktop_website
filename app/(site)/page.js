@@ -11,7 +11,7 @@ import SafeHtml from '@/components/ui/SafeHtml'
 import { Reveal, CountUp, Marquee, SplitText } from './Reveal'
 
 /*
- * DESIGN SAMPLE — /preview home.
+ * The home page.
  * A ledger-paper + hard-offset-shadow treatment of the Spinr homepage.
  * Shell (nav, footer, dock, cursor, stylesheet) lives in layout.js.
  */
@@ -106,8 +106,8 @@ export const revalidate = 0
 
 export async function generateMetadata() {
   return previewMetadata('/', {
-    title: 'Design Sample | Spinr',
-    description: 'Internal design sample. Not a live page.',
+    title: 'Spinr | Proudly Canadian Rideshare',
+    description: 'A Canadian rideshare platform. Drivers keep 100% of the net fare, riders pay a flat $1 fee, and there is no surge pricing. Riding in Saskatoon.',
   })
 }
 
