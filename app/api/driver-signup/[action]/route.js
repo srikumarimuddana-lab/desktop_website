@@ -87,13 +87,41 @@ function fail(code, message, status = 400) {
   return NextResponse.json({ ok: false, code, message }, { status })
 }
 
-/** Map a backend status onto something an applicant can act on. The backend's
- *  own `detail` is preferred where it is a plain string — those messages are
- *  written for users ("A code was just sent — please wait a moment"). */
+/** Machine tokens like ERR_OTP_INVALID or AUTH_REQUIRED. The backend returns
+ *  these as the `message` on some errors; they are for clients to branch on,
+ *  never for an applicant to read. */
+function looksLikeErrorCode(text) {
+  return /^[A-Z][A-Z0-9_]*$/.test(text.trim())
+}
+
+/**
+ * Pull a message an applicant can act on out of a backend error.
+ *
+ * There are two response shapes and they are not interchangeable:
+ *   - FastAPI HTTPException  -> { detail: "A code was just sent — wait a moment" }
+ *   - SpinrException         -> { success: false, error: { message, message_key,
+ *                                 action_hint, code } }
+ * The first carries prose written for users. The second's `message` is often a
+ * token (ERR_OTP_INVALID) with the human sentence in `action_hint` instead, so
+ * the hint is preferred and a token-shaped message is discarded in favour of
+ * our own copy. Showing someone "ERR_OTP_INVALID" is not an error message.
+ */
 function backendMessage(result, fallback) {
-  const detail = result?.data?.detail
-  if (typeof detail === 'string' && detail.length < 300) return detail
-  if (detail && typeof detail.message === 'string') return detail.message
+  const data = result?.data
+  const detail = data?.detail
+  if (typeof detail === 'string' && detail.trim() && !looksLikeErrorCode(detail)) {
+    return detail.slice(0, 300)
+  }
+  if (detail && typeof detail.message === 'string' && !looksLikeErrorCode(detail.message)) {
+    return detail.message.slice(0, 300)
+  }
+  const err = data?.error
+  if (err && typeof err.action_hint === 'string' && err.action_hint.trim()) {
+    return err.action_hint.slice(0, 300)
+  }
+  if (err && typeof err.message === 'string' && err.message.trim() && !looksLikeErrorCode(err.message)) {
+    return err.message.slice(0, 300)
+  }
   return fallback
 }
 

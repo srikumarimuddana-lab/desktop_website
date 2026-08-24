@@ -44,7 +44,7 @@ const REQS = [
 ]
 
 const STEPS = [
-  ['Apply in the app', 'Ten minutes, from your phone. No office visit.'],
+  ['Apply online', 'Ten minutes, from this page or the app. No office visit.'],
   ['Get screened', 'Background check and vehicle inspection — we walk you through both.'],
   ['Go online', 'Take your first trip and keep the whole fare.'],
 ]
@@ -156,6 +156,10 @@ export default function DrivePage() {
               </Reveal>
             ))}
           </ol>
+          <Reveal delay={380} className="sp-steps-cta">
+            <Link className="sp-btn" href="/drive/apply">Start your application</Link>
+            <span>Or do the whole thing in the driver app &mdash; either way you end up in the same place.</span>
+          </Reveal>
         </div>
       </section>
 

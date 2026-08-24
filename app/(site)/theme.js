@@ -1508,4 +1508,7 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 
 .sp-ap-fine{max-width:640px;margin:clamp(20px,2.6vw,28px) 0 0;font-size:12.5px;line-height:1.6;color:var(--ink-5)}
 .sp-ap-fine a{color:var(--ink-6)}
+
+.sp-steps-cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;margin-top:clamp(26px,3.4vw,38px)}
+.sp-steps-cta span{font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.72);max-width:38ch}
 `
