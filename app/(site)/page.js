@@ -128,7 +128,17 @@ export default async function PreviewPage() {
               <br />
               <SplitText as="span" className="sp-hero-hl" text="straight to the driver." start={300} />
             </h1>
-            <div className="sp-hero-btns sp-ap" style={{ '--ap-delay': '740ms', '--ap-y': '26px' }}>
+            {/* Says what Spinr IS before it says why it is better. The headline
+                leads with the differentiator, which only lands on someone who
+                already knows this is a rideshare — a first-time visitor could
+                read "every fare straight to the driver" as food delivery, a
+                courier, or a payments company. One plain line fixes that. */}
+            <p className="sp-hero-p sp-ap" style={{ '--ap-delay': '700ms', '--ap-y': '22px' }}>
+              Spinr is a rideshare app for Saskatoon. Book a car in a couple of
+              taps &mdash; your driver keeps the fare, we add a flat $1, and there is
+              no surge pricing, ever.
+            </p>
+            <div className="sp-hero-btns sp-ap" style={{ '--ap-delay': '790ms', '--ap-y': '26px' }}>
               <a className="sp-btn" href={APP_URLS.rider.ios} target="_blank" rel="noopener noreferrer">
                 App Store
               </a>
@@ -136,6 +146,9 @@ export default async function PreviewPage() {
                 Google Play
               </a>
             </div>
+            <p className="sp-hero-alt sp-ap" style={{ '--ap-delay': '860ms', '--ap-y': '18px' }}>
+              <a href="#how">Or see how a ride works &rarr;</a>
+            </p>
           </div>
 
           <PhoneFan />

@@ -166,7 +166,17 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-hero-h{font-size:clamp(40px,8vw,102px);color:var(--ink);text-wrap:balance;
   margin:clamp(16px,2.4vw,26px) 0 clamp(20px,3vw,30px)}
 .sp-hero-hl{color:var(--red)}
+.sp-hero-p{max-width:50ch;margin:0 auto clamp(22px,3vw,30px);
+  font-size:clamp(16px,1.5vw,19.5px);line-height:1.55;font-weight:600;color:rgba(11,11,11,.76);
+  text-wrap:balance}
 .sp-hero-btns{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
+.sp-hero-alt{margin:clamp(14px,2vw,18px) 0 0;font-size:14px}
+.sp-hero-alt a{display:inline-block;font-weight:800;color:var(--ink);opacity:.72;
+  text-decoration:none;padding-bottom:2px;
+  background:linear-gradient(var(--ink),var(--ink)) no-repeat left 100%/100% 2px;
+  transition:opacity .15s ease,transform .14s var(--snap)}
+.sp-hero-alt a:hover{opacity:1;transform:translateX(3px)}
+.sp-hero-alt a:active{transform:translateX(1px) scale(.98)}
 
 /* ── the phone fan ── */
 .sp-fan{position:relative;z-index:3;display:flex;justify-content:center;
