@@ -75,7 +75,16 @@ export default function ApplyClient({ serviceAreas, backendReachable }) {
   const [errors, setErrors] = useState({})
   const [notice, setNotice] = useState(null)
   const [done, setDone] = useState(null)
+  // A terminal state a retry cannot fix (a number already belonging to another
+  // driver). Rendered as its own screen with a route out, not as a notice
+  // above a button that will fail again.
+  const [deadEnd, setDeadEnd] = useState(null)
+  const [optionsFailed, setOptionsFailed] = useState(false)
   const headingRef = useRef(null)
+  // `busy` drives the UI, but state updates are async — two fast clicks can
+  // both read busy === false. This ref flips synchronously and is the actual
+  // guard against a double submit creating two verify attempts.
+  const inFlight = useRef(false)
 
   const set = (key) => (e) => {
     const value = e.target.value
@@ -90,16 +99,22 @@ export default function ApplyClient({ serviceAreas, backendReachable }) {
     if (!form.service_area_id) return
     let cancelled = false
     fetch(`/api/driver-signup/options?service_area_id=${encodeURIComponent(form.service_area_id)}`)
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         if (cancelled) return
         const types = d?.vehicle_types || []
         setVehicleTypes(types)
+        // A failed lookup is not the same as an area with no types. Only the
+        // former is worth telling the applicant about, and neither should
+        // block the application — vehicle type is optional on the backend.
+        setOptionsFailed(d === null)
         // Drop a selection that the new area does not offer.
         setForm((f) => (types.some((t) => t.id === f.vehicle_type_id) ? f : { ...f, vehicle_type_id: '' }))
       })
       .catch(() => {
-        if (!cancelled) setVehicleTypes([])
+        if (cancelled) return
+        setVehicleTypes([])
+        setOptionsFailed(true)
       })
     return () => {
       cancelled = true
@@ -116,7 +131,22 @@ export default function ApplyClient({ serviceAreas, backendReachable }) {
   // is not left at the bottom of the previous step's markup.
   useEffect(() => {
     headingRef.current?.focus()
-  }, [step, done])
+  }, [step, done, deadEnd])
+
+  // Nothing is persisted anywhere — deliberately, since this form holds a
+  // licence number and an email and browser storage is the wrong home for
+  // either. That makes an accidental refresh or back-navigation expensive, so
+  // the browser is asked to confirm once there is something to lose.
+  useEffect(() => {
+    const started = Boolean(form.first_name || form.last_name || form.email || form.vehicle_make)
+    if (!started || done) return
+    const warn = (e) => {
+      e.preventDefault()
+      e.returnValue = ''
+    }
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [form.first_name, form.last_name, form.email, form.vehicle_make, done])
 
   const selectedArea = useMemo(
     () => serviceAreas.find((a) => a.id === form.service_area_id),
@@ -144,7 +174,13 @@ export default function ApplyClient({ serviceAreas, backendReachable }) {
     if (index === 1) {
       if (!form.vehicle_make.trim()) next.vehicle_make = 'Required.'
       if (!form.vehicle_model.trim()) next.vehicle_model = 'Required.'
+      const year = parseInt(form.vehicle_year, 10)
+      const nextYear = new Date().getFullYear() + 1
       if (!/^\d{4}$/.test(form.vehicle_year.trim())) next.vehicle_year = 'Enter a 4-digit year.'
+      // A model year one ahead of the calendar is normal; anything beyond that
+      // or before 1980 is a typo, not a car.
+      else if (year > nextYear) next.vehicle_year = `That year is in the future. Did you mean ${nextYear}?`
+      else if (year < 1980) next.vehicle_year = 'Enter a valid vehicle year.'
       if (!form.license_plate.trim()) next.license_plate = 'Required.'
     }
     if (index === 2) {
@@ -163,28 +199,64 @@ export default function ApplyClient({ serviceAreas, backendReachable }) {
     if (validateStep(step)) setStep((s) => Math.min(s + 1, STEPS.length - 1))
   }
 
+  /**
+   * POST to our own proxy. NEVER throws.
+   *
+   * This used to let fetch reject. An offline phone, a dropped connection or a
+   * DNS blip would then propagate out of the caller, `setBusy(false)` would
+   * never run, and the button stayed on "Submitting…" for good — the worst
+   * possible failure on the last step of a ten-minute form. Every fault now
+   * comes back as a normal { ok: false } result.
+   */
   const post = useCallback(async (action, body) => {
-    const res = await fetch(`/api/driver-signup/${action}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    // A non-JSON body here means an edge error, not an application error.
-    const data = await res.json().catch(() => ({ ok: false, message: 'Something went wrong. Please try again.' }))
-    return data
+    // navigator.onLine has false negatives but no false positives worth
+    // worrying about: if the browser is certain it is offline, say so plainly
+    // rather than making them wait for a timeout.
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      return { ok: false, code: 'offline', message: 'You appear to be offline. Reconnect and try again.' }
+    }
+    try {
+      const res = await fetch(`/api/driver-signup/${action}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      // A non-JSON body means an edge/platform error, not an application one.
+      const data = await res.json().catch(() => null)
+      if (data && typeof data === 'object') return data
+      return {
+        ok: false,
+        code: res.status === 504 ? 'submit_uncertain' : 'unavailable',
+        message: 'Something went wrong. Please try again.',
+      }
+    } catch {
+      return {
+        ok: false,
+        code: 'offline',
+        message: 'We could not reach Spinr. Check your connection and try again.',
+      }
+    }
   }, [])
 
   async function sendCode() {
+    if (inFlight.current) return
     setNotice(null)
-    if (!/^\d{10}$/.test(phone.replace(/\D/g, '').replace(/^1/, ''))) {
+    const digits = phone.replace(/\D/g, '')
+    const ten = digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits
+    if (!/^\d{10}$/.test(ten)) {
       setErrors({ phone: 'Enter a 10-digit Canadian mobile number.' })
       return
     }
     setErrors({})
+    inFlight.current = true
     setBusy(true)
     const data = await post('otp', { phone })
+    inFlight.current = false
     setBusy(false)
     if (!data.ok) {
+      // A 429 carries the backend's real Retry-After. Start the countdown from
+      // it so the resend button is not offered before it can possibly work.
+      if (data.retry_after) setCooldown(Math.min(data.retry_after, 3600))
       setNotice({ tone: 'bad', text: data.message })
       return
     }
@@ -194,6 +266,9 @@ export default function ApplyClient({ serviceAreas, backendReachable }) {
   }
 
   async function submit() {
+    // Synchronous guard: `busy` is state and lags a fast second click, which
+    // would otherwise spend the applicant's one-use OTP on a duplicate verify.
+    if (inFlight.current) return
     setNotice(null)
     if (!/^\d{4}$/.test(code.trim())) {
       setErrors({ code: 'Enter the 4-digit code.' })
@@ -204,13 +279,37 @@ export default function ApplyClient({ serviceAreas, backendReachable }) {
       return
     }
     setErrors({})
+    inFlight.current = true
     setBusy(true)
 
     const verified = await post('verify', { phone, code, consent_accepted: true })
     if (!verified.ok) {
+      inFlight.current = false
       setBusy(false)
-      if (verified.code === 'bad_code') setErrors({ code: verified.message })
-      else setNotice({ tone: 'bad', text: verified.message })
+      if (verified.code === 'blocked') {
+        setDeadEnd({ kind: 'blocked', message: verified.message })
+        return
+      }
+      if (verified.code === 'bad_code') {
+        setErrors({ code: verified.message })
+        return
+      }
+      if (verified.retry_after) setCooldown(Math.min(verified.retry_after, 3600))
+      setNotice({ tone: 'bad', text: verified.message })
+      return
+    }
+
+    // The account already has a driver record. Registering again would upsert
+    // over it, which is not what someone checking on an existing application
+    // means to do — stop and point them at the app instead.
+    if (verified.already_driver) {
+      inFlight.current = false
+      setBusy(false)
+      setDeadEnd({
+        kind: 'existing',
+        message:
+          'You already have a Spinr driver account on this number. Open the driver app and sign in — your application status is there.',
+      })
       return
     }
 
@@ -219,20 +318,34 @@ export default function ApplyClient({ serviceAreas, backendReachable }) {
     const registered = await post('register', {
       ...form,
       city: selectedArea?.city || selectedArea?.name || '',
-      // The account may already carry a name from a previous rider signup;
-      // what was typed here is what the applicant means to submit.
-      first_name: form.first_name.trim(),
-      last_name: form.last_name.trim(),
-      email: form.email.trim(),
+      // What was typed here is what the applicant means to submit, but an
+      // account carried over from a previous rider signup can fill a blank.
+      first_name: form.first_name.trim() || verified.prefill?.first_name || '',
+      last_name: form.last_name.trim() || verified.prefill?.last_name || '',
+      email: form.email.trim() || verified.prefill?.email || '',
     })
+    inFlight.current = false
     setBusy(false)
 
     if (!registered.ok) {
       if (registered.code === 'session_expired') {
         // Nothing typed is lost — they re-confirm the number and submit again.
+        // The OTP has already been spent, so a fresh one is needed; the
+        // cooldown is cleared so the resend is available immediately.
         setCodeSent(false)
         setCode('')
+        setCooldown(0)
         setNotice({ tone: 'bad', text: registered.message })
+        return
+      }
+      if (registered.code === 'already_registered') {
+        setDeadEnd({ kind: 'existing', message: registered.message })
+        return
+      }
+      if (registered.code === 'submit_uncertain') {
+        // Not a failure and not a success. Saying either would be a guess, and
+        // the wrong guess leaves someone believing they never applied.
+        setDeadEnd({ kind: 'uncertain', message: registered.message })
         return
       }
       setNotice({ tone: 'bad', text: registered.message })
@@ -255,6 +368,38 @@ export default function ApplyClient({ serviceAreas, backendReachable }) {
         <a className="sp-btn" href={APP_URLS.driver.ios} target="_blank" rel="noopener noreferrer">
           Get the driver app
         </a>
+      </Shell>
+    )
+  }
+
+  // ── terminal states a retry cannot fix ────────────────────────────────────
+
+  if (deadEnd) {
+    const heading =
+      deadEnd.kind === 'uncertain'
+        ? 'We could not confirm that'
+        : deadEnd.kind === 'blocked'
+          ? 'We cannot take this application'
+          : 'You already have an account'
+    return (
+      <Shell heading={heading} headingRef={headingRef}>
+        <p className="sp-ap-lede">{deadEnd.message}</p>
+        {deadEnd.kind !== 'blocked' && (
+          <div className="sp-ap-actions">
+            <a className="sp-btn" href={APP_URLS.driver.ios} target="_blank" rel="noopener noreferrer">
+              Open on iPhone
+            </a>
+            <a className="sp-btn-ghost" href={APP_URLS.driver.android} target="_blank" rel="noopener noreferrer">
+              Open on Android
+            </a>
+          </div>
+        )}
+        <p className="sp-ap-fine">
+          {deadEnd.kind === 'uncertain'
+            ? 'If it is not there, come back and submit again — nothing will be duplicated.'
+            : 'Not what you expected?'}{' '}
+          Email <a href="mailto:support@spinr.ca">support@spinr.ca</a>.
+        </p>
       </Shell>
     )
   }
@@ -355,6 +500,12 @@ export default function ApplyClient({ serviceAreas, backendReachable }) {
             <Field label="VIN" hint="Optional now — you will need it before your inspection.">
               <input value={form.vehicle_vin} onChange={set('vehicle_vin')} maxLength={17} />
             </Field>
+            {optionsFailed && (
+              <p className="sp-ap-note">
+                We could not load the vehicle types for your area just now. You can carry on — we
+                will confirm which type your car qualifies for during review.
+              </p>
+            )}
             {vehicleTypes.length > 0 && (
               <Field label="Vehicle type" hint="What you will be dispatched for.">
                 <select value={form.vehicle_type_id} onChange={set('vehicle_type_id')}>

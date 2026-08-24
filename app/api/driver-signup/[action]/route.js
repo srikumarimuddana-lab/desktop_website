@@ -83,8 +83,43 @@ function clientIp(request) {
   return request.headers.get('x-real-ip') || 'unknown'
 }
 
-function fail(code, message, status = 400) {
-  return NextResponse.json({ ok: false, code, message }, { status })
+function fail(code, message, status = 400, extra) {
+  return NextResponse.json({ ok: false, code, message, ...extra }, { status })
+}
+
+/** Nothing this route accepts is large. App Router imposes no body limit of
+ *  its own on route handlers, so without this a single request could ask the
+ *  function to parse an arbitrary amount of JSON. */
+const MAX_BODY_BYTES = 8 * 1024
+
+/** Read and parse the JSON body, or return null. Rejects an oversized or
+ *  malformed body rather than letting either reach the parser or the backend. */
+async function readBody(request) {
+  const declared = parseInt(request.headers.get('content-length') || '', 10)
+  if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) return null
+  let text
+  try {
+    text = await request.text()
+  } catch {
+    return null
+  }
+  // Content-Length is a claim, not a guarantee — check what actually arrived.
+  if (text.length > MAX_BODY_BYTES) return null
+  try {
+    const parsed = JSON.parse(text)
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+/** Trim and cap a free-text field before it is forwarded. The backend has its
+ *  own column limits, but a 10,000-character vehicle colour should never get
+ *  as far as finding out. */
+function boundedField(value, max = 120) {
+  if (typeof value === 'number') return String(value).slice(0, max)
+  if (typeof value !== 'string') return ''
+  return value.trim().slice(0, max)
 }
 
 /** Machine tokens like ERR_OTP_INVALID or AUTH_REQUIRED. The backend returns
@@ -128,27 +163,51 @@ function backendMessage(result, fallback) {
 // ── handlers ────────────────────────────────────────────────────────────────
 
 async function handleOtp(request) {
-  const body = await request.json().catch(() => null)
-  const phone = toE164(body?.phone)
+  const body = await readBody(request)
+  if (!body) return fail('bad_request', 'Something went wrong. Please try again.')
+  const phone = toE164(body.phone)
   if (!phone) return fail('bad_phone', 'Enter a 10-digit Canadian mobile number.')
 
   if (rateLimited(clientIp(request))) {
-    return fail('rate_limited', 'Too many code requests. Try again in a few minutes.', 429)
+    return fail('rate_limited', 'Too many code requests. Try again in a few minutes.', 429, { retry_after: 60 })
   }
 
   const result = await sendDriverOtp(phone)
   if (!result.ok) {
-    if (result.status === 429) return fail('rate_limited', backendMessage(result, 'Too many code requests — please wait a moment.'), 429)
-    if (result.status === 400 || result.status === 422) return fail('bad_phone', backendMessage(result, 'That number was not accepted.'))
-    return fail('unavailable', 'We could not send a code just now. Please try again shortly.', 503)
+    if (result.status === 429) {
+      // The backend's send cap carries a real Retry-After (30s between codes,
+      // longer once the hourly ceiling is hit). Pass it on so the UI counts
+      // down truthfully rather than inviting a retry that will also fail.
+      return fail('rate_limited', backendMessage(result, 'Too many code requests — please wait a moment.'), 429, {
+        retry_after: result.retryAfter ?? 30,
+      })
+    }
+    if (result.status === 400 || result.status === 422) {
+      return fail('bad_phone', backendMessage(result, 'That number was not accepted. Check it and try again.'))
+    }
+    // 503 here is the backend's own "auth service temporarily unavailable",
+    // which it returns when Redis is down and it fails the send CLOSED rather
+    // than risk unbounded SMS. Its wording is better than ours.
+    return fail('unavailable', backendMessage(result, unavailableText(result, 'send a code')), 503)
   }
   return NextResponse.json({ ok: true })
 }
 
+/** Distinguishes "we never reached the backend" from "the backend said no",
+ *  so the applicant is told something true about which it was. */
+function unavailableText(result, action) {
+  if (result.reason === 'timeout') return `That took too long. Please try to ${action} again in a moment.`
+  if (result.reason === 'network' || result.status === 0) {
+    return `We could not reach Spinr just now. Please check your connection and try again.`
+  }
+  return `We could not ${action} just now. Please try again shortly.`
+}
+
 async function handleVerify(request) {
-  const body = await request.json().catch(() => null)
-  const phone = toE164(body?.phone)
-  const code = String(body?.code || '').trim()
+  const body = await readBody(request)
+  if (!body) return fail('bad_request', 'Something went wrong. Please try again.')
+  const phone = toE164(body.phone)
+  const code = String(body.code || '').trim()
 
   if (!phone) return fail('bad_phone', 'Enter a 10-digit Canadian mobile number.')
   if (!/^\d{4}$/.test(code)) return fail('bad_code', 'Enter the 4-digit code we sent you.')
@@ -160,9 +219,22 @@ async function handleVerify(request) {
 
   const result = await verifyDriverOtp({ phone, code, consentAccepted: true })
   if (!result.ok) {
-    if (result.status === 400) return fail('bad_code', backendMessage(result, 'That code is not right. Check it and try again.'))
-    if (result.status === 429) return fail('rate_limited', backendMessage(result, 'Too many attempts. Try again later.'), 429)
-    return fail('unavailable', 'We could not verify that code just now. Please try again shortly.', 503)
+    if (result.status === 400 || result.status === 422) {
+      return fail('bad_code', backendMessage(result, 'That code is not right. Check it and try again.'))
+    }
+    if (result.status === 429) {
+      // Five wrong codes in an hour trips a 24-hour lockout backend-side. The
+      // backend's own message says so; ours must not imply a quick retry.
+      return fail('rate_limited', backendMessage(result, 'Too many attempts. Please try again later.'), 429, {
+        retry_after: result.retryAfter ?? null,
+      })
+    }
+    if (result.status === 403) {
+      // Suspended / deactivated account. Not something a retry fixes, and not
+      // something this form should paper over.
+      return fail('blocked', backendMessage(result, 'This number cannot be used to apply. Please contact support@spinr.ca.'), 403)
+    }
+    return fail('unavailable', backendMessage(result, unavailableText(result, 'verify that code')), 503)
   }
 
   const token = result.data?.token
@@ -231,35 +303,83 @@ async function handleRegister(request) {
     return fail('session_expired', 'Your verification expired. Please confirm your phone number again.', 401)
   }
 
-  const body = await request.json().catch(() => null)
-  if (!body || typeof body !== 'object') return fail('bad_request', 'Something went wrong. Please try again.')
+  const body = await readBody(request)
+  if (!body) return fail('bad_request', 'Something went wrong. Please try again.')
 
   const payload = {}
   for (const key of REGISTER_FIELDS) {
-    const value = body[key]
-    if (value !== undefined && value !== null && String(value).trim() !== '') {
-      payload[key] = typeof value === 'string' ? value.trim() : value
-    }
+    const value = boundedField(body[key], key === 'vehicle_vin' ? 17 : 120)
+    if (value) payload[key] = value
   }
   const missing = REQUIRED_FIELDS.filter((f) => !payload[f])
   if (missing.length) return fail('incomplete', 'Some required details are missing.', 400)
 
+  // Validated here as well as in the form, because the form is not the only
+  // thing that can call this route. A junk year would otherwise be written
+  // straight onto the driver row and only surface at inspection.
+  const year = parseInt(payload.vehicle_year, 10)
+  const thisYear = new Date().getFullYear()
+  if (!/^\d{4}$/.test(payload.vehicle_year) || year < 1980 || year > thisYear + 1) {
+    return fail('bad_year', 'Enter a valid 4-digit vehicle year.')
+  }
+  if (payload.license_expiry_date && !/^\d{4}-\d{2}-\d{2}$/.test(payload.license_expiry_date)) {
+    return fail('bad_request', 'That licence expiry date was not understood.')
+  }
+
   const result = await registerDriver(token, payload)
   if (!result.ok) {
-    if (result.status === 401) {
+    if (result.status === 401 || result.status === 403) {
       jar.delete({ name: SESSION_COOKIE, path: '/api/driver-signup' })
       return fail('session_expired', 'Your verification expired. Please confirm your phone number again.', 401)
     }
-    // 409: the phone already belongs to a different driver account. The
-    // backend's message tells them to log in to that account instead — pass it
-    // through rather than inventing one.
-    if (result.status === 409) return fail('already_registered', backendMessage(result, 'A driver account already exists for this number.'), 409)
-    return fail('unavailable', 'We could not submit your application just now. Please try again shortly.', 503)
+    // 409: the phone already belongs to a DIFFERENT driver account. Retrying
+    // cannot fix it, so the client renders a dead end with a route out rather
+    // than an inviting "try again".
+    if (result.status === 409) {
+      return fail('already_registered', backendMessage(result, 'A driver account already exists for this number.'), 409)
+    }
+    if (result.status === 400 || result.status === 422) {
+      return fail('rejected', backendMessage(result, 'Some of those details were not accepted. Please check them and try again.'), 400)
+    }
+
+    // A timed-out or dropped write is AMBIGUOUS: /drivers/register may well
+    // have completed on the backend after we stopped waiting. Telling someone
+    // it failed is a guess, and the wrong one leaves them thinking they never
+    // applied. It gets its own code so the client can say "we are not sure"
+    // and offer to check, and the session is deliberately KEPT so a retry
+    // works — register is an upsert keyed on the user, so retrying is safe
+    // and idempotent either way.
+    if (result.status === 0) {
+      console.error(`[driver-signup] register outcome unknown (${result.reason})`)
+      return fail(
+        'submit_uncertain',
+        'We lost the connection while submitting, so we could not confirm it went through. Open the driver app and sign in with this number — if your application is there, it worked.',
+        504
+      )
+    }
+
+    // A 5xx from the backend. Its own message can be specific and useful here
+    // (the register handler returns "Driver registration partially failed"
+    // when the driver row was written but the role flip was not), so prefer it.
+    return fail('unavailable', backendMessage(result, unavailableText(result, 'submit your application')), 503)
   }
 
-  // The application is in. Clear the session immediately — it has no further
-  // use on this site, and leaving a live driver token in the browser after the
-  // one action it was minted for would be careless.
+  // The application is in, so drop the session: it has no further use here,
+  // and leaving a live driver token in the browser after the one action it was
+  // minted for would be careless.
+  //
+  // Be precise about what this does. It emits a cookie-clearing Set-Cookie, so
+  // any browser stops sending it. It does NOT revoke the token — that is a
+  // short-lived stateless JWT the backend will keep accepting until it
+  // expires, and there is no denylist to add it to. Someone who has already
+  // extracted the raw cookie value could therefore replay it until then.
+  //
+  // That residual is small and bounded on purpose: the cookie is httpOnly so
+  // page JavaScript cannot read it, it is scoped to this path, the session is
+  // capped at 20 minutes, and the only thing the token authorises here is an
+  // upsert of the holder's OWN driver row. Extracting it already implies
+  // control of the device. Closing the gap properly would need server-side
+  // session state this surface has no store for.
   jar.delete({ name: SESSION_COOKIE, path: '/api/driver-signup' })
 
   return NextResponse.json({
@@ -273,7 +393,8 @@ async function handleRegister(request) {
  *  no session involved — the form needs it to offer real choices rather than a
  *  free-text city box. */
 async function handleOptions(request) {
-  const areaId = new URL(request.url).searchParams.get('service_area_id')
+  // Bounded before it is forwarded — this reaches a backend query string.
+  const areaId = boundedField(new URL(request.url).searchParams.get('service_area_id'), 64)
   const [areas, vehicleTypes] = await Promise.all([
     fetchServiceAreas(),
     areaId ? fetchVehicleTypes(areaId) : Promise.resolve(null),
