@@ -5,6 +5,7 @@ import { pickFaqs } from '@/lib/faq-fallback'
 import SafeHtml from '@/components/ui/SafeHtml'
 import { Reveal, SplitText } from '../Reveal'
 import RideJourney from './RideJourney'
+import RideRoute from './RideRoute'
 import TripEstimate from './TripEstimate'
 
 /*
@@ -91,6 +92,7 @@ export default async function RidePage() {
     <>
       {/* ── hero ── */}
       <header className="sp-rhero" id="top">
+        <RideRoute />
         <div className="sp-wrap">
           <span className="sp-hero-badge sp-ap" style={{ '--ap-delay': '520ms', '--ap-y': '16px' }}>
             Riding with Spinr
@@ -109,7 +111,7 @@ export default async function RidePage() {
             <a className="sp-btn-ghost" href={APP_URLS.rider.android} target="_blank" rel="noopener noreferrer">Google Play</a>
           </div>
         </div>
-        <span className="sp-rhero-road" aria-hidden="true"><i /><i /><i /></span>
+        <span className="sp-rhero-road" aria-hidden="true" />
       </header>
 
       {/* ── the trip ── */}
