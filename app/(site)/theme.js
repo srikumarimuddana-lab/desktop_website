@@ -168,14 +168,12 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-cd-lbl{font-size:15px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
   fill:#0B0B0B;opacity:.78}
 .sp-cd-lbl-e{display:none}
-.sp-cd-ring{transform-box:fill-box;transform-origin:center;
-  animation:sp-cd-ping 2.6s cubic-bezier(.2,.6,.4,1) infinite}
-@keyframes sp-cd-ping{0%{transform:scale(.55);opacity:.75}75%,100%{transform:scale(2.1);opacity:0}}
+.sp-cd-ring{opacity:.4}
 .sp-cd-l1{animation:sp-cd-tw 4.8s ease-in-out infinite}
 .sp-cd-l2{animation:sp-cd-tw 4.8s ease-in-out -1.6s infinite}
 .sp-cd-l3{animation:sp-cd-tw 4.8s ease-in-out -3.2s infinite}
 @keyframes sp-cd-tw{0%,100%{opacity:.05}50%{opacity:.3}}
-@media (prefers-reduced-motion:reduce){.sp-cd-l1,.sp-cd-l2,.sp-cd-l3,.sp-cd-ring{animation:none}}
+@media (prefers-reduced-motion:reduce){.sp-cd-l1,.sp-cd-l2,.sp-cd-l3{animation:none}}
 @media (max-width:720px){.sp-canmap{width:1000px;top:-52px;left:-244px;transform:none}
 .sp-cd-lbl-w{display:none}.sp-cd-lbl-e{display:block}}
 .sp-hero-badge{display:inline-flex;align-items:center;background:#fff;border:2px solid var(--ink);
@@ -815,11 +813,9 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-rr-bridge{stroke:#0B0B0B;opacity:.3}
 .sp-rr-path{stroke:#DB3344;opacity:.5;animation:sp-rr-flow 1.2s linear infinite}
 @keyframes sp-rr-flow{to{stroke-dashoffset:-11.1}}
-.sp-rr-ring{transform-box:fill-box;transform-origin:center;
-  animation:sp-cd-ping 3.4s cubic-bezier(.2,.6,.4,1) infinite}
-.sp-rr-ring-b{animation-delay:-1.7s}
+.sp-rr-ring{opacity:.4}
 @media (prefers-reduced-motion:reduce){.sp-rhero-road,.sp-rr-path{animation:none}
-.sp-rr-ring{animation:none;opacity:.35}}
+}
 
 /* the trip: pinned full-bleed canvas */
 .sp-jn{position:relative;min-height:400vh;background:var(--paper-3)}
@@ -960,10 +956,9 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-dc-base{stroke:#0B0B0B;opacity:.22}
 .sp-dc-line{stroke:#DB3344;opacity:.5;animation:sp-dc-flow 1.25s linear infinite}
 @keyframes sp-dc-flow{to{stroke-dashoffset:-9.1}}
-.sp-dc-ring{transform-box:fill-box;transform-origin:center;
-  animation:sp-cd-ping 3s cubic-bezier(.2,.6,.4,1) infinite}
+.sp-dc-ring{opacity:.4}
 @media (prefers-reduced-motion:reduce){.sp-dc-line{animation:none}
-.sp-dc-ring{animation:none;opacity:.35}}
+}
 
 /* the payday ledger */
 .sp-pd{position:relative;background:var(--paper-50);border-bottom:2px solid var(--ink)}
