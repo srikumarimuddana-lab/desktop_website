@@ -163,17 +163,21 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 /* dotted Canada backdrop — soft texture, never competes with the copy */
 .sp-canmap{position:absolute;left:50%;top:clamp(48px,8vh,88px);transform:translateX(-50%);
   width:min(94%,1120px);pointer-events:none}
-.sp-cd-l1,.sp-cd-l2,.sp-cd-l3{opacity:.14}
+.sp-cd-l1,.sp-cd-l2,.sp-cd-l3{opacity:.16;fill:#0B0B0B}
 .sp-cd-outline{opacity:.34}
+.sp-cd-lbl{font-size:15px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  fill:#0B0B0B;opacity:.78}
+.sp-cd-lbl-e{display:none}
 .sp-cd-ring{transform-box:fill-box;transform-origin:center;
   animation:sp-cd-ping 2.6s cubic-bezier(.2,.6,.4,1) infinite}
 @keyframes sp-cd-ping{0%{transform:scale(.55);opacity:.75}75%,100%{transform:scale(2.1);opacity:0}}
-.sp-cd-l1{animation:sp-cd-tw 7s ease-in-out infinite}
-.sp-cd-l2{animation:sp-cd-tw 7s ease-in-out -2.3s infinite}
-.sp-cd-l3{animation:sp-cd-tw 7s ease-in-out -4.6s infinite}
-@keyframes sp-cd-tw{0%,100%{opacity:.08}50%{opacity:.19}}
+.sp-cd-l1{animation:sp-cd-tw 4.8s ease-in-out infinite}
+.sp-cd-l2{animation:sp-cd-tw 4.8s ease-in-out -1.6s infinite}
+.sp-cd-l3{animation:sp-cd-tw 4.8s ease-in-out -3.2s infinite}
+@keyframes sp-cd-tw{0%,100%{opacity:.05}50%{opacity:.3}}
 @media (prefers-reduced-motion:reduce){.sp-cd-l1,.sp-cd-l2,.sp-cd-l3,.sp-cd-ring{animation:none}}
-@media (max-width:720px){.sp-canmap{width:1000px;top:-40px;left:-244px;transform:none}}
+@media (max-width:720px){.sp-canmap{width:1000px;top:-52px;left:-244px;transform:none}
+.sp-cd-lbl-w{display:none}.sp-cd-lbl-e{display:block}}
 .sp-hero-badge{display:inline-flex;align-items:center;background:#fff;border:2px solid var(--ink);
   border-radius:999px;padding:8px 17px;font-size:11.5px;font-weight:800;letter-spacing:.06em;
   text-transform:uppercase;box-shadow:var(--hard-sm)}
