@@ -178,6 +178,7 @@ export function SiteFooter() {
             <Link href="/help">Help centre</Link>
             <Link href="/legal/terms">Terms of service</Link>
             <Link href="/legal/privacy">Privacy policy</Link>
+            <Link href="/account-deletion">Delete your account</Link>
           </nav>
         </div>
       </div>
