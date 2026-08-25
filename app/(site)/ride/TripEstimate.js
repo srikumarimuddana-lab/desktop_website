@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { APP_URLS, detectPlatform } from '@/lib/app-links'
 
 /*
  * The live trip estimator, carried across from the previous /ride page.
@@ -37,6 +38,8 @@ export default function TripEstimate() {
   const [suggestions, setSuggestions] = useState([])
   const [field, setField] = useState(null)
   const [busy, setBusy] = useState(false)
+  /* which store to lead with; resolved after mount so SSR stays stable */
+  const [platform, setPlatform] = useState('ios')
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const boxRef = useRef(null)
@@ -73,6 +76,8 @@ export default function TripEstimate() {
     setSuggestions([])
     setField(null)
   }
+
+  useEffect(() => { setPlatform(detectPlatform()) }, [])
 
   const estimate = async () => {
     if (!pickupAt || !dropoffAt) { setError('Pick both ends from the suggestions.'); return }
@@ -168,10 +173,29 @@ export default function TripEstimate() {
             <div><dt>Surge</dt><dd>never</dd></div>
           </dl>
           <p className="sp-est-fine">
-            A distance estimate, so it does not know about traffic. Tax and any city
-            fee are added at checkout, each named. The app shows the exact number
-            before you confirm &mdash; and it is the number you pay.
+            A distance estimate, so it does not know about traffic. The {money(BOOKING_FEE)} booking
+            fee, tax and any city fee are added at checkout, each named. The app shows
+            the exact number before you confirm &mdash; and it is the number you pay.
           </p>
+          {/* the estimate is the pitch; the app is where the trip actually happens */}
+          <div className="sp-est-cta">
+            <a
+              className="sp-btn"
+              href={APP_URLS.rider[platform]}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Book this trip in the app
+            </a>
+            <a
+              className="sp-btn-ghost"
+              href={APP_URLS.rider[platform === 'ios' ? 'android' : 'ios']}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {platform === 'ios' ? 'Google Play' : 'App Store'}
+            </a>
+          </div>
         </div>
       )}
     </div>
