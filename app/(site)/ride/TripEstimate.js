@@ -177,6 +177,11 @@ export default function TripEstimate() {
             fee, tax and any city fee are added at checkout, each named. The app shows
             the exact number before you confirm &mdash; and it is the number you pay.
           </p>
+          {/* this estimate is list price: it cannot see an account's promos */}
+          <p className="sp-est-fine sp-est-promo">
+            This estimate is before any discount. Promo codes and other offers are
+            applied in the app, so what you actually pay can be less.
+          </p>
           {/* the estimate is the pitch; the app is where the trip actually happens */}
           <div className="sp-est-cta">
             <a

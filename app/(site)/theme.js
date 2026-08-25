@@ -1345,6 +1345,7 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
   border-bottom:1.5px dashed rgba(11,11,11,.14);font-size:13.5px}
 .sp-est-rows dt{margin:0;color:var(--ink-5);font-weight:600}
 .sp-est-rows dd{margin:0 0 0 auto;font-weight:800;color:var(--ink)}
+.sp-est-promo{margin-top:8px;padding-top:9px;border-top:1px dashed rgba(11,11,11,.18);font-weight:700;color:var(--ink)}
 .sp-est-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:clamp(16px,2vw,20px)}
 .sp-est-fine{margin:14px 0 0;font-size:12.5px;line-height:1.6;color:var(--ink-5)}
 
