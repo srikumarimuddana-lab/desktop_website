@@ -192,38 +192,56 @@ compliance the company already makes internally but has not published.
 
 ---
 
-## Recommendation on how to close it
+## How it is closed
 
-**Do not fork the content.** Copying 55 answers into a second database creates
-two sources of truth that will drift the first time someone edits one — and the
-website already disagrees with the backend on fare maths, which is exactly what
-that drift looks like.
+**Corrected 2026-08-25.** An earlier version of this document recommended
+adding a public FAQ endpoint to spinrvm. That was unnecessary — the backend
+already exposes this content safely, and the website now reads it directly.
 
-Preferred order:
+The `faqs` table in the backend's Supabase project carries an RLS policy,
+**"Public read faqs"**, granting SELECT to everyone `WHERE is_active = true`,
+with no insert, update or delete policy alongside it. Verified against the live
+database: as the `anon` role all 55 active rows are readable, and an attempted
+insert as `anon` was refused with nothing written. So the project's anon key
+reads exactly the published question set and can do nothing else.
 
-1. **Add a public read-only FAQ endpoint to spinrvm.** Today the only `/faqs`
-   route is `backend/routes/admin/faqs.py`, mounted behind
-   `require_module("support")`, so nothing anonymous can read it.
-   `backend/routes/legal_documents.py` is the pattern to copy — a plain
-   `APIRouter` serving published content with no auth. The website already
-   talks to the backend through `lib/spinr-api.js` and would need one more
-   reader function.
-2. **Point the website's help centre at it**, keeping `lib/faq-fallback.js` as
-   the offline fallback it already is.
-3. **Only if 1 is not happening soon**, run `scripts/seed-faqs.mjs` (below) as
-   a stopgap, and re-run it whenever the backend content changes.
+`lib/backend-faqs.js` uses that. Configure two variables, both from the
+**backend's** Supabase project (not this website's):
 
-Also worth doing regardless: the backend's `faqs` table carries two columns
-the website's does not.
+```
+BACKEND_SUPABASE_URL=https://<backend-project>.supabase.co
+BACKEND_SUPABASE_ANON_KEY=<the anon / publishable key — never the service key>
+```
 
-- `audience` (`rider` / `driver` / `both`) — the website has no equivalent, so
-  a driver-only answer cannot be hidden from riders even though the help page
-  already has a rider/driver toggle. The data model is behind the UI.
-- `service_area_ids` — the backend can scope an FAQ to a city. The website
-  cannot, which becomes a correctness problem the day a second market opens
-  (see `docs/second-market-readiness.md`): a Saskatchewan-specific answer would
-  show to everyone.
+The module refuses to run if the key decodes to `role: service_role`, since
+that would hand a public marketing site write access to the app's database.
 
-The seed script carries `audience` across as a `audience:<value>` tag, which
-needs no migration, but a real column is the better fix if the toggle is ever
-meant to filter the list rather than just steer the assistant.
+### Why not the endpoint that already exists
+
+`backend/routes/admin/faqs.py` serves `/api/v1/admin/faqs`, mounted behind
+`get_admin_user` and `require_module("support")`. Reaching it would mean
+storing an admin credential in this site's environment, and that backend trusts
+admin JWTs completely — role, email and granted modules are read straight from
+the claims. Far too much authority for a website that only needs to read
+published answers, and the token expires hourly besides.
+
+### A bug this uncovered
+
+`lib/spinr-api.js#fetchFaqs` has been calling `GET {SPINR_API_URL}/faqs` since
+it was written. No such route exists — the only one is the admin path above — so
+that call has always failed and the help centre has always silently fallen back
+to the website's own nearly-empty table. That is a large part of why the site
+looked so thin. The HTTP attempt is left in place (it costs one 404 and would
+start working if a public route is ever added), with the Supabase read behind
+it as the path that actually returns content.
+
+### Still worth doing
+
+- Merge the two duplicate pairs listed above, in the backend, before they show
+  up on the website.
+- Write the eight missing compliance answers, starting with trip-data
+  retention, passenger-side insurance, and the Vulnerable Sector Check.
+- The website's own `faqs` table still has no `audience` or `service_area_ids`
+  column. Reading from the backend sidesteps both for now, because the filter
+  happens there — but anything an admin adds in the website CMS remains
+  unscoped, and will show to everyone.
