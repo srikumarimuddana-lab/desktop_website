@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { faqSlug } from '@/lib/help-slug'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { getLLM } from '@/lib/langchain'
 import { hybridRetrieve } from '@/lib/hybrid-retriever'
@@ -225,7 +226,16 @@ async function searchWithLangChainRAG(question, userType) {
     model_used: llm.model,
     polished: polished.polished,
     polish_reason: polished.reason,
-    sources: entries.map(e => ({ title: e.title, category: e.category, affinity: e._affinity })),
+    /* a title the reader cannot open is not much of a source; link the ones
+       that came from CMS content, which is everything with a source_id */
+    sources: entries.map(e => ({
+      title: e.title,
+      category: e.category,
+      affinity: e._affinity,
+      url: e.source === 'cms_article' && e.slug ? '/help/' + e.slug
+        : e.source === 'cms_faq' && e.title ? '/help/' + faqSlug(e.title)
+        : undefined,
+    })),
     tokens_used: response.usage_metadata?.total_tokens || 0
   }
 }
@@ -243,8 +253,23 @@ async function searchExistingContent(question) {
   }
   let answer = ''
   if (faqs.length > 0) answer += 'From our FAQ\n\n' + faqs.map(f => 'Q: ' + f.question + '\nA: ' + f.answer + '\n\n').join('')
-  if (articles.length > 0) answer += 'From our Help Center:\n\n' + articles.map(a => '- ' + a.title + '\n').join('')
-  return { answer: answer || 'I could not find relevant information. Please contact support@spinr.ca for help.', related_articles: articles }
+  /* Titles alone were a dead end — "- Delete my account" told the reader
+     nothing and gave them nowhere to go. Every one of these has a real answer
+     page at /help/<slug>, so send the reader there. */
+  if (articles.length > 0) {
+    answer += 'From our help centre:\n\n' + articles
+      .map(a => '- ' + a.title + (a.slug ? ' — /help/' + a.slug : '') + '\n')
+      .join('')
+  }
+  const sources = [
+    ...faqs.map(f => ({ title: f.question, url: '/help/' + faqSlug(f.question) })),
+    ...articles.filter(a => a.slug).map(a => ({ title: a.title, url: '/help/' + a.slug })),
+  ]
+  return {
+    answer: answer || 'I could not find relevant information. Please contact support@spinr.ca for help.',
+    related_articles: articles,
+    sources,
+  }
 }
 
 // ============================================
@@ -318,7 +343,7 @@ async function searchWithHybridApproach(q, ut, uid, history) {
   const fe = process.env.FALLBACK_TO_KEYWORD_SEARCH !== 'false'
   if (fe) {
     const f = await searchExistingContent(sa)
-    return { answer: f.answer, source: 'fallback_search', model_used: null, response_time_ms: Date.now() - st, tokens_used: 0, related_articles: f.related_articles }
+    return { answer: f.answer, source: 'fallback_search', model_used: null, response_time_ms: Date.now() - st, tokens_used: 0, related_articles: f.related_articles, sources: f.sources }
   }
   return { answer: 'Service unavailable. Please contact support@spinr.ca for assistance.', source: 'fallback_search', model_used: null, response_time_ms: Date.now() - st, tokens_used: 0 }
 }

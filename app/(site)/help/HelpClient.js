@@ -91,7 +91,14 @@ function AskBox() {
           <p>{state.answer}</p>
           {state.sources?.length > 0 && (
             <p className="sp-ask-src">
-              Answered from: {state.sources.map((s) => s.title).join(' · ')}
+              Answered from:{' '}
+              {state.sources.map((s, i) => (
+                <span key={s.url || s.title}>
+                  {i > 0 && ' · '}
+                  {/* a source you can open beats a source you can only read */}
+                  {s.url ? <Link href={s.url}>{s.title}</Link> : s.title}
+                </span>
+              ))}
             </p>
           )}
         </div>

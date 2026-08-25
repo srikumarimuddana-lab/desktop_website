@@ -101,6 +101,7 @@ export default function ChatWidget() {
                 id: Date.now() + 1,
                 type: 'bot',
                 content: data.answer,
+                sources: Array.isArray(data.sources) ? data.sources.filter(x => x && x.url) : [],
                 source: data.source,
                 model_used: data.model_used,
                 conversation_id: data.conversation_id,
@@ -258,6 +259,22 @@ export default function ChatWidget() {
                                             )}
                                             <div className="flex-1">
                                                 <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                                                {/* the pages the answer came from, so the reader can go
+                                                    read the whole thing rather than just be told it exists */}
+                                                {message.sources?.length > 0 && (
+                                                    <ul className="mt-2 space-y-1">
+                                                        {message.sources.map((s) => (
+                                                            <li key={s.url}>
+                                                                <a
+                                                                    href={s.url}
+                                                                    className="text-xs font-semibold underline underline-offset-2"
+                                                                >
+                                                                    {s.title}
+                                                                </a>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                )}
                                                 {message.source && message.source !== 'error' && (
                                                     <div className="mt-2 flex items-center gap-2">
                                                         <span className="text-xs opacity-70">
