@@ -1084,8 +1084,7 @@ export default function CanadaDots() {
       <g className="sp-cd-pin">
         <circle className="sp-cd-ring" cx="304.4" cy="614.8" r="12" fill="none" stroke="#DB3344" strokeWidth="3" />
         <circle cx="304.4" cy="614.8" r="7" fill="#DB3344" stroke="#0B0B0B" strokeWidth="2" />
-        <text className="sp-cd-lbl sp-cd-lbl-w" x="288.4" y="619.8" textAnchor="end">Saskatoon</text>
-        <text className="sp-cd-lbl sp-cd-lbl-e" x="320.4" y="619.8">Saskatoon</text>
+        <text className="sp-cd-lbl" x="288.4" y="619.8" textAnchor="end">Saskatoon</text>
       </g>
     </svg>
   )

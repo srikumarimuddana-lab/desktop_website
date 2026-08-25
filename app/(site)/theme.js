@@ -167,7 +167,6 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-cd-outline{opacity:.34}
 .sp-cd-lbl{font-size:15px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
   fill:#0B0B0B;opacity:.78}
-.sp-cd-lbl-e{display:none}
 .sp-cd-ring{opacity:.4}
 .sp-cd-l1{animation:sp-cd-tw 4.8s ease-in-out infinite}
 .sp-cd-l2{animation:sp-cd-tw 4.8s ease-in-out -1.6s infinite}
@@ -175,7 +174,8 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 @keyframes sp-cd-tw{0%,100%{opacity:.05}50%{opacity:.3}}
 @media (prefers-reduced-motion:reduce){.sp-cd-l1,.sp-cd-l2,.sp-cd-l3{animation:none}}
 @media (max-width:720px){.sp-canmap{width:1000px;top:-52px;left:-244px;transform:none}
-.sp-cd-lbl-w{display:none}.sp-cd-lbl-e{display:block}}
+/* no room for the pin at this crop - it lands on the copy */
+.sp-cd-pin{display:none}}
 .sp-hero-badge{display:inline-flex;align-items:center;background:#fff;border:2px solid var(--ink);
   border-radius:999px;padding:8px 17px;font-size:11.5px;font-weight:800;letter-spacing:.06em;
   text-transform:uppercase;box-shadow:var(--hard-sm)}
