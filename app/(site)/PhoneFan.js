@@ -93,8 +93,19 @@ export default function PhoneFan({ force }) {
         )
       })}
 
-      <span className="sp-fan-tag sp-display" aria-hidden="true">
-        {cast === 'driver' ? 'You keep 100%' : 'Just ask'}
+      {/* the sticker rides the right-hand phone rather than the panel edge,
+          so it never drifts off on its own on a wide hero */}
+      <span
+        className="sp-fan-tagwrap"
+        aria-hidden="true"
+        style={{
+          '--tag-x': (mix(LAYOUT[2].x, spread) * reach / 100).toFixed(3),
+          '--tag-y': mix(LAYOUT[2].y, spread).toFixed(1),
+        }}
+      >
+        <span className="sp-fan-tag sp-display">
+          {cast === 'driver' ? 'You keep 100%' : 'Just ask'}
+        </span>
       </span>
     </div>
   )
