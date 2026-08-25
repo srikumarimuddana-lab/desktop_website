@@ -9,8 +9,9 @@ import { ScrollProgress, StickyCta, RevealFooter, Cursor } from './Reveal'
  *
  * This is a route group — the (site) folder does not appear in any URL, so
  * these pages live at /, /ride, /drive, /about, /help and /legal/[slug].
- * Pages still on the previous design (safety, support, promotions, the store
- * redirect) sit outside the group and bring their own header and footer.
+ * Everything public now lives in here. Two pages still carry the previous
+ * body styling inside this shell — /promotions (noindex, campaign-only) and
+ * /app (a store redirect that shows for a moment) — rather than outside it.
  */
 
 export default function SiteLayout({ children }) {

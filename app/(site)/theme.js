@@ -279,6 +279,22 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
   .sp-fan-p,.sp-fan-tag{transition:none}
 }
 
+/* ── 404 and the error boundary ─────────────────────────────────────── */
+.sp-404{padding-block:clamp(90px,14vh,150px);text-align:center}
+.sp-404-h{font-size:clamp(40px,7vw,88px);margin:clamp(14px,2vw,22px) 0 clamp(16px,2vw,22px)}
+.sp-404-hl{color:var(--red)}
+.sp-404-p{max-width:52ch;margin:0 auto clamp(24px,3vw,32px);font-size:clamp(15.5px,1.4vw,18px);
+  line-height:1.6;color:var(--ink-6)}
+.sp-404-btns{display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
+.sp-404-ways{list-style:none;display:flex;justify-content:center;flex-wrap:wrap;
+  gap:10px 22px;margin:clamp(26px,3.4vw,38px) 0 0;padding:0}
+.sp-404-ways a{font-weight:800;font-size:14px;color:var(--ink);opacity:.72;text-decoration:none;
+  padding-bottom:2px;background:linear-gradient(var(--ink),var(--ink)) no-repeat left 100%/100% 2px;
+  transition:opacity .15s ease}
+.sp-404-ways a:hover{opacity:1}
+.sp-404-digest{margin:clamp(20px,2.6vw,28px) 0 0;font-size:12.5px;color:var(--ink-5);
+  font-variant-numeric:tabular-nums}
+
 /* ── trust band: the numbers on one ledger row, the screening on its own ── */
 .sp-band{border-block:2px solid var(--ink);background:var(--paper-50)}
 .sp-band-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));
