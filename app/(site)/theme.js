@@ -201,8 +201,9 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 
 /* ── the phone fan ── */
 .sp-fan{position:relative;z-index:3;display:flex;justify-content:center;
+  --fan-pw:clamp(146px,15.5vw,214px);
   height:clamp(292px,36vw,486px);margin-top:clamp(20px,3.4vw,42px)}
-.sp-fan-p{position:absolute;top:0;width:clamp(146px,15.5vw,214px);aspect-ratio:9/19;
+.sp-fan-p{position:absolute;top:0;width:var(--fan-pw);aspect-ratio:9/19;
   border:3px solid var(--ink);border-radius:clamp(18px,2vw,28px);background:var(--paper-50);
   box-shadow:6px 6px 0 var(--ink);overflow:hidden;transform-origin:50% 92%;
   display:flex;flex-direction:column;
@@ -210,7 +211,11 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-fan.ready .sp-fan-p{opacity:1}
 .sp-fan-notch{position:absolute;top:7px;left:50%;margin-left:-17%;width:34%;height:8px;
   background:var(--ink);border-radius:999px;z-index:5}
-.sp-fan-tag{position:absolute;z-index:6;right:clamp(2px,4vw,88px);top:clamp(-6px,1vw,18px);
+/* the wrapper does the tracking (no transition, so it follows the phone
+   exactly); the sticker itself only does its own entrance */
+.sp-fan-tagwrap{position:absolute;z-index:6;left:50%;top:0;
+  transform:translate(calc(var(--fan-pw) * (var(--tag-x,1) + .18)),calc(var(--tag-y,26) * 1px - 22px))}
+.sp-fan-tag{display:inline-block;white-space:nowrap;
   background:var(--sun);color:var(--ink);border:2px solid var(--ink);
   border-radius:999px;padding:9px 16px;font-size:15px;letter-spacing:.03em;box-shadow:4px 4px 0 var(--ink);
   opacity:0;transform:rotate(-9deg) scale(.55);
@@ -266,7 +271,8 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-fs-bars i{flex:1;background:var(--red);border:1.5px solid var(--ink);border-radius:3px 3px 0 0}
 @media(max-width:700px){
   /* no room beside the phones down here — the sticker sits above them */
-  .sp-fan-tag{top:-12px;right:4px;font-size:12.5px;padding:7px 12px}
+  .sp-fan-tagwrap{transform:translate(calc(var(--fan-pw) * (var(--tag-x,1) + .02)),calc(var(--tag-y,26) * 1px - 30px))}
+  .sp-fan-tag{font-size:12.5px;padding:7px 12px}
 }
 @media(prefers-reduced-motion:reduce){
   .sp-fs-typing{display:none}
