@@ -40,7 +40,18 @@ export default async function DriverApplyPage() {
   // null (backend unreachable) and [] (configured but empty) are different
   // problems, and the client renders a different message for each: one is
   // "try again shortly", the other is "we are not open where you are yet".
-  const areas = isSpinrApiConfigured() ? await fetchServiceAreas() : null
+  // A backend that answers badly logs itself in lib/spinr-api; an UNSET
+  // SPINR_API_URL used to be silent, which is the likeliest cause of the
+  // "applications are unavailable" fallback on a fresh deploy and the hardest
+  // to see. Say so in the server log rather than only in the visitor's copy.
+  const configured = isSpinrApiConfigured()
+  if (!configured) {
+    console.error(
+      '[drive/apply] SPINR_API_URL is not set — the application form cannot be ' +
+        'shown and every visitor sees the unavailable fallback'
+    )
+  }
+  const areas = configured ? await fetchServiceAreas() : null
 
   return (
     <ApplyClient
