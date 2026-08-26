@@ -244,32 +244,50 @@ async function searchWithLangChainRAG(question, userType) {
 // FALLBACK: Keyword search (preserved from original)
 // ============================================
 async function searchExistingContent(question) {
-  const q = question.toLowerCase()
+  const q = question.toLowerCase().trim()
   let faqs = [], articles = []
+
+  /* Title hits before body hits. Matching the body treats every passing
+     mention as a match — asking "delete" returned "Adding and managing payment
+     methods" because its text happens to say "delete a card" — so the body is
+     only consulted when nothing matches on the question or title. */
   if (isSupabaseConfigured()) {
-    const { data: faqD } = await supabase.from('faqs').select('*').or('question.ilike.%' + q + '%,answer.ilike.%' + q + '%').limit(3)
-    const { data: artD } = await supabase.from('help_articles').select('*').or('title.ilike.%' + q + '%,content.ilike.%' + q + '%').limit(3)
-    faqs = faqD || []; articles = artD || []
+    const { data: faqByQ } = await supabase.from('faqs').select('*').ilike('question', `%${q}%`).limit(3)
+    faqs = faqByQ || []
+    if (faqs.length === 0) {
+      const { data: faqByA } = await supabase.from('faqs').select('*').ilike('answer', `%${q}%`).limit(2)
+      faqs = faqByA || []
+    }
+    const { data: artByT } = await supabase.from('help_articles').select('*').ilike('title', `%${q}%`).limit(3)
+    articles = artByT || []
+    if (articles.length === 0) {
+      const { data: artByC } = await supabase.from('help_articles').select('*').ilike('content', `%${q}%`).limit(2)
+      articles = artByC || []
+    }
   }
-  let answer = ''
-  if (faqs.length > 0) answer += 'From our FAQ\n\n' + faqs.map(f => 'Q: ' + f.question + '\nA: ' + f.answer + '\n\n').join('')
-  /* Titles alone were a dead end — "- Delete my account" told the reader
-     nothing and gave them nowhere to go. Every one of these has a real answer
-     page at /help/<slug>, so send the reader there. */
-  if (articles.length > 0) {
-    answer += 'From our help centre:\n\n' + articles
-      .map(a => '- ' + a.title + (a.slug ? ' — /help/' + a.slug : '') + '\n')
-      .join('')
+
+  /* The reader wants an answer, not a bibliography. If an FAQ matched we have
+     a real one — show it. Otherwise say plainly that we do not, and let the
+     linked list below do the work. Paths are never written into the prose;
+     they are links in `sources`. */
+  let answer
+  if (faqs.length > 0) {
+    answer = String(faqs[0].answer || '').trim()
+  } else if (articles.length > 0) {
+    answer = 'I don\u2019t have a direct answer written for that yet. These help pages look closest:'
+  } else {
+    answer = 'I couldn\u2019t find anything on that. Email support@spinr.ca and a person will pick it up.'
   }
+
   const sources = [
     ...faqs.map(f => ({ title: f.question, url: '/help/' + faqSlug(f.question) })),
     ...articles.filter(a => a.slug).map(a => ({ title: a.title, url: '/help/' + a.slug })),
   ]
-  return {
-    answer: answer || 'I could not find relevant information. Please contact support@spinr.ca for help.',
-    related_articles: articles,
-    sources,
-  }
+  /* the first FAQ's text is already the answer above; keep it out of the list
+     unless there is more than one thing to offer */
+  const trimmed = faqs.length === 1 && articles.length === 0 ? [] : sources
+
+  return { answer, related_articles: articles, sources: trimmed }
 }
 
 // ============================================
