@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { faqSlug } from '@/lib/help-slug'
+import { fetchBackendFaqs } from '@/lib/backend-faqs'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { getLLM } from '@/lib/langchain'
 import { hybridRetrieve } from '@/lib/hybrid-retriever'
@@ -241,6 +242,62 @@ async function searchWithLangChainRAG(question, userType) {
 }
 
 // ============================================
+// FALLBACK: the backend's published FAQ set
+// ============================================
+/*
+ * Scores the backend's questions against what was asked and returns the best
+ * one if it clears a floor. Deliberately simple word overlap rather than
+ * another embedding round-trip: these are 55 short questions, the comparison
+ * costs nothing, and a wrong answer here is worse than no answer.
+ */
+const STOP = new Set(['a','an','the','do','i','my','is','are','and','or','to','for','of','on','in','it',
+  'can','what','how','when','where','does','with','me','you','your','spinr','app','get','be','if','that'])
+
+/* crude singularisation so "refund" finds "How do refunds work?" — a real
+   stemmer is not worth a dependency for 55 short questions */
+const stem = (w) => (w.length > 4 && w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w)
+
+const words = (s) => new Set(String(s).toLowerCase().replace(/[^a-z0-9 ]/g, ' ')
+  .split(/\s+/).filter((w) => w.length > 2 && !STOP.has(w)).map(stem))
+
+async function answerFromBackendFaqs(question, audience) {
+  let rows
+  try {
+    rows = await fetchBackendFaqs({ audience })
+  } catch (e) {
+    console.error('[backend-faq] lookup failed:', e.message)
+    return null
+  }
+  if (!Array.isArray(rows) || rows.length === 0) return null
+
+  const asked = words(question)
+  if (asked.size === 0) return null
+
+  const scored = rows
+    .map(([q, a]) => {
+      const qs = words(q)
+      if (qs.size === 0) return null
+      const overlap = [...asked].filter((w) => qs.has(w)).length
+      return { q, a, overlap, score: overlap / Math.max(asked.size, 1) }
+    })
+    .filter(Boolean)
+    .sort((x, y) => y.score - x.score)
+
+  /* One shared word is enough for a one-word question ("refund", "insurance")
+     but not for a longer one: "what does a ride cost" overlapping "ride" with
+     "How do I book a ride?" is a coincidence, not an answer. */
+  const minOverlap = asked.size >= 2 ? 2 : 1
+  const best = scored[0]
+  if (!best || best.score < 0.5 || best.overlap < minOverlap) return null
+
+  const others = scored.slice(1, 3).filter((r) => r.score >= 0.34 && r.overlap >= minOverlap)
+  return {
+    answer: best.a,
+    sources: [best, ...others].map((r) => ({ title: r.q, url: '/help/' + faqSlug(r.q) })),
+  }
+}
+
+// ============================================
 // FALLBACK: Keyword search (preserved from original)
 // ============================================
 async function searchExistingContent(question) {
@@ -356,6 +413,17 @@ async function searchWithHybridApproach(q, ut, uid, history) {
         return r
       }
     } catch (e) { console.error('[RAG] LangChain RAG failed:', e.message, e.stack) }
+  }
+
+  /* The backend's own FAQ set - 55 written, audience-tagged answers the rider
+     and driver apps already show - is readable under its "Public read faqs"
+     RLS policy. Consult it before falling back to keyword search over this
+     site's tables, which carry far less. This is content that already exists;
+     not using it was why the assistant kept answering with titles. */
+  const fromBackendFaqs = await answerFromBackendFaqs(sa, audience)
+  if (fromBackendFaqs) {
+    return { ...fromBackendFaqs, source: 'backend_faq', model_used: null,
+             response_time_ms: Date.now() - st, tokens_used: 0 }
   }
 
   const fe = process.env.FALLBACK_TO_KEYWORD_SEARCH !== 'false'
