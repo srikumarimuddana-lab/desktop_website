@@ -1460,8 +1460,18 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 .sp-ask-out{margin-top:14px;background:#fff;border:2px solid var(--ink);border-radius:16px;
   padding:16px 18px;box-shadow:var(--hard-sm)}
 .sp-ask-out p{margin:0;font-size:15px;line-height:1.65;color:var(--ink)}
-.sp-ask-src{margin-top:10px !important;font-size:11.5px !important;font-weight:800;
-  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-4) !important}
+/* answers arrive as plain text with real paragraph breaks; keep them */
+.sp-ask-answer{white-space:pre-line}
+.sp-ask-src{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(11,11,11,.2)}
+.sp-ask-src-lbl{display:block;font-size:11px;font-weight:800;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-5);margin-bottom:7px}
+.sp-ask-src ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.sp-ask-src li{margin:0}
+.sp-ask-src a{display:inline-block;font-size:14px;font-weight:700;color:var(--ink);
+  text-decoration:none;padding-bottom:1px;
+  background:linear-gradient(var(--red),var(--red)) no-repeat left 100%/100% 2px;
+  transition:transform .14s var(--snap),color .14s ease}
+.sp-ask-src a:hover{color:var(--red);transform:translateX(3px)}
 .sp-ask-err{background:var(--red-1)}
 
 /* ── the Spinr Pass: subscription vs commission ── */

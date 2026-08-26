@@ -88,18 +88,27 @@ function AskBox() {
 
       {state.status === 'done' && (
         <div className="sp-ask-out">
-          <p>{state.answer}</p>
+          <p className="sp-ask-answer">{state.answer}</p>
           {state.sources?.length > 0 && (
-            <p className="sp-ask-src">
-              Answered from:{' '}
-              {state.sources.map((s, i) => (
-                <span key={s.url || s.title}>
-                  {i > 0 && ' · '}
-                  {/* a source you can open beats a source you can only read */}
-                  {s.url ? <Link href={s.url}>{s.title}</Link> : s.title}
-                </span>
-              ))}
-            </p>
+            <div className="sp-ask-src">
+              <span className="sp-ask-src-lbl">
+                {state.sources.length === 1 ? 'Read more' : 'Related pages'}
+              </span>
+              <ul>
+                {state.sources.map((s) => (
+                  <li key={s.url || s.title}>
+                    {s.url ? (
+                      <Link href={s.url}>
+                        {s.title}
+                        <span aria-hidden="true"> &rarr;</span>
+                      </Link>
+                    ) : (
+                      s.title
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       )}
