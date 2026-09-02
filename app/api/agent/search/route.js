@@ -9,7 +9,6 @@ import { audienceNote } from '@/lib/audience'
 import { polishAnswer } from '@/lib/polish'
 import { askSpinrAssistant, isSpinrApiConfigured } from '@/lib/spinr-api'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
-import { createRequire } from 'node:module'
 
 // ============================================
 // CORS (preserved from original)
@@ -544,22 +543,13 @@ export async function GET(request) {
       // needs require(esm) (Node ^20.19 || ^22.12 || >=24), and the only way
       // to know what Vercel is executing is to ask the process.
       node_version: process.version,
-      // Does this runtime let CommonJS require() an ES module, and does the
-      // exact require that has been failing under jsdom succeed here? The
-      // home page 500s come from that require, so probe it where it can be
-      // read instead of guessing from the Node version alone.
+      // Does this runtime let CommonJS require() an ES module? Vercel starts
+      // these functions with --no-experimental-require-module, which is why
+      // the jsdom-backed sanitizer could not load and was replaced — keep the
+      // flag visible so a runtime change is noticed rather than guessed at.
       require_esm: {
         feature: process.features?.require_module ?? null,
         exec_argv: process.execArgv,
-        node_options: process.env.NODE_OPTIONS || null,
-        probe: (() => {
-          try {
-            createRequire(import.meta.url)('@exodus/bytes/encoding-lite.js')
-            return 'ok'
-          } catch (e) {
-            return `${e.code || e.name}: ${String(e.message).slice(0, 200)}`
-          }
-        })(),
       },
       audience_aware_retrieval: true,
       polish_model: process.env.POLISH_MODEL_NAME || null,
