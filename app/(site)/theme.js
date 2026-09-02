@@ -736,7 +736,11 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 
 /* ── pointer: a drawn arrow with the tip on the hotspot ── */
 .sp-cursor-on,.sp-cursor-on *{cursor:none !important}
-.sp-cur{position:fixed;inset:0;z-index:200;pointer-events:none;opacity:0;transition:opacity .2s ease}
+/* z-index must clear the chat widget shell (z-[1000], mounted outside .sp in
+   app/layout.js) and the Radix Select menu it opens (z-[1001], portalled to
+   <body>) — the native cursor is hidden everywhere by .sp-cursor-on, so if the
+   drawn one slips under either the visitor has no pointer at all */
+.sp-cur{position:fixed;inset:0;z-index:1200;pointer-events:none;opacity:0;transition:opacity .2s ease}
 .sp-cursor-live .sp-cur{opacity:1}
 .sp-cur-arrow{position:absolute;top:0;left:0;display:block;margin:-3px 0 0 -3px}
 .sp-cur-arrow svg{display:block;transform-origin:4px 3px;

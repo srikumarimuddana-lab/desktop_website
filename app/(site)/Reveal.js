@@ -308,7 +308,7 @@ export function Cursor() {
       if (!seen) { seen = true; root.classList.add('sp-cursor-live') }
       el.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`
       const hot = e.target instanceof Element
-        ? e.target.closest('a, button, summary, [role="button"], input, .sp-k')
+        ? e.target.closest('a, button, summary, [role="button"], [role="option"], input, .sp-k')
         : null
       el.classList.toggle('hot', Boolean(hot))
     }

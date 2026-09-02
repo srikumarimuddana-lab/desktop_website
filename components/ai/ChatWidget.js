@@ -221,7 +221,11 @@ export default function ChatWidget() {
                                     <SelectTrigger className="w-24 h-8">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    {/* Rendered in a portal at <body>, so it does not inherit
+                                        the shell's z-[1000]; the shadcn default z-50 put the
+                                        open menu BEHIND this card. Above the shell, below the
+                                        drawn cursor (.sp-cur, 1200). */}
+                                    <SelectContent className="z-[1001]">
                                         <SelectItem value="rider">Rider</SelectItem>
                                         <SelectItem value="driver">Driver</SelectItem>
                                     </SelectContent>
