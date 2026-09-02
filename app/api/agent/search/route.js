@@ -539,6 +539,10 @@ export async function GET(request) {
       // local pipeline becomes the fallback. Reports reachability config only
       // — whether the backend has the surface switched on is its own flag.
       spinr_backend_configured: isSpinrApiConfigured(),
+      // Which Node the functions actually run on. jsdom's dependency chain
+      // needs require(esm) (Node ^20.19 || ^22.12 || >=24), and the only way
+      // to know what Vercel is executing is to ask the process.
+      node_version: process.version,
       audience_aware_retrieval: true,
       polish_model: process.env.POLISH_MODEL_NAME || null,
       rate_limit: RL_MAX + ' requests/minute'
