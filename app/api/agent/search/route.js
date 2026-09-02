@@ -300,6 +300,30 @@ async function answerFromBackendFaqs(question, audience) {
 // ============================================
 // FALLBACK: Keyword search (preserved from original)
 // ============================================
+/*
+ * The website CMS (/spinr-internal/faqs) stores answers as Tiptap HTML, but
+ * every consumer of this route — ChatWidget, the help page's AskBox — renders
+ * `answer` as text with whitespace preserved. Without this the visitor saw
+ * literal <p> and <strong> tags in the chat. Block-level closers become line
+ * breaks so a multi-paragraph answer still reads as one.
+ */
+function htmlToText(html) {
+  return String(html || '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|div|li|h[1-6]|blockquote|tr)>/gi, '\n')
+    .replace(/<li[^>]*>/gi, '\u2022 ')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
 async function searchExistingContent(question) {
   const q = question.toLowerCase().trim()
   let faqs = [], articles = []
@@ -329,7 +353,8 @@ async function searchExistingContent(question) {
      they are links in `sources`. */
   let answer
   if (faqs.length > 0) {
-    answer = String(faqs[0].answer || '').trim()
+    // CMS answers are Tiptap HTML; the widget renders text
+    answer = htmlToText(faqs[0].answer)
   } else if (articles.length > 0) {
     answer = 'I don\u2019t have a direct answer written for that yet. These help pages look closest:'
   } else {
@@ -420,7 +445,8 @@ async function searchWithHybridApproach(q, ut, uid, history) {
      RLS policy. Consult it before falling back to keyword search over this
      site's tables, which carry far less. This is content that already exists;
      not using it was why the assistant kept answering with titles. */
-  const fromBackendFaqs = await answerFromBackendFaqs(sa, audience)
+  // 'anonymous' is not an FAQ audience; unscoped means rider+driver+both rows.
+  const fromBackendFaqs = await answerFromBackendFaqs(sa, ut === 'anonymous' ? undefined : ut)
   if (fromBackendFaqs) {
     return { ...fromBackendFaqs, source: 'backend_faq', model_used: null,
              response_time_ms: Date.now() - st, tokens_used: 0 }
@@ -513,6 +539,18 @@ export async function GET(request) {
       // local pipeline becomes the fallback. Reports reachability config only
       // — whether the backend has the surface switched on is its own flag.
       spinr_backend_configured: isSpinrApiConfigured(),
+      // Which Node the functions actually run on. jsdom's dependency chain
+      // needs require(esm) (Node ^20.19 || ^22.12 || >=24), and the only way
+      // to know what Vercel is executing is to ask the process.
+      node_version: process.version,
+      // Does this runtime let CommonJS require() an ES module? Vercel starts
+      // these functions with --no-experimental-require-module, which is why
+      // the jsdom-backed sanitizer could not load and was replaced — keep the
+      // flag visible so a runtime change is noticed rather than guessed at.
+      require_esm: {
+        feature: process.features?.require_module ?? null,
+        exec_argv: process.execArgv,
+      },
       audience_aware_retrieval: true,
       polish_model: process.env.POLISH_MODEL_NAME || null,
       rate_limit: RL_MAX + ' requests/minute'
