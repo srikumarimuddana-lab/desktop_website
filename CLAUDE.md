@@ -481,18 +481,47 @@ SPINR_AI_TIMEOUT_MS=20000     # one assistant turn
 NEXT_PUBLIC_SUPABASE_URL=https://cfrazforbupizntxvvtp.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<jwt>
 
-# LLM (Alibaba DashScope — OpenAI-compatible)
-LLM_API_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions
-LLM_API_KEY=<key>
-LLM_MODEL_NAME=qwen-vl-max-2025-04-08
+# ---------------------------------------------------------------------------
+# The local RAG fallback's provider. lib/langchain.js builds both clients from
+# these vars via an OpenAI-compatible baseURL, so switching provider is
+# configuration, not code. Two documented options follow — set ONE.
+# ---------------------------------------------------------------------------
 
-# Embeddings (Alibaba DashScope)
-EMBEDDING_API_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1/embeddings
-EMBEDDING_API_KEY=<key>
-EMBEDDING_MODEL_NAME=text-embedding-v4
+# OPTION A — Vercel AI Gateway (OpenAI-compatible; one key for every provider).
+# Model ids are `provider/model`. The gateway also accepts a `models` array for
+# server-side failover, which lib/langchain.js does not send today.
+LLM_API_URL=https://ai-gateway.vercel.sh/v1/chat/completions
+LLM_API_KEY=<AI_GATEWAY_API_KEY>
+LLM_MODEL_NAME=anthropic/claude-opus-5
 
-# IMPORTANT: Also set OPENAI_API_KEY to the same DashScope key
-# (the openai npm package reads this automatically)
+EMBEDDING_API_URL=https://ai-gateway.vercel.sh/v1/embeddings
+EMBEDDING_API_KEY=<AI_GATEWAY_API_KEY>
+EMBEDDING_MODEL_NAME=openai/text-embedding-3-small
+
+# REQUIRED with any 1536-native embedding model. knowledge_base.embedding is
+# vector(1024) and hybrid_search takes vector(1024) — both hard-typed. The
+# text-embedding-3-* family accepts `dimensions` to emit a 1024-wide prefix,
+# which keeps the existing column and RPC intact. Unset = send no `dimensions`
+# field, correct only for a model that already returns 1024.
+EMBEDDING_DIMENSIONS=1024
+
+# OPTION B — Alibaba DashScope (the original provider; returns 1024 natively,
+# so EMBEDDING_DIMENSIONS is not needed).
+# LLM_API_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions
+# LLM_API_KEY=<key>
+# LLM_MODEL_NAME=qwen-vl-max-2025-04-08
+# EMBEDDING_API_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1/embeddings
+# EMBEDDING_API_KEY=<key>
+# EMBEDDING_MODEL_NAME=text-embedding-v4
+
+# CHANGING EMBEDDING_MODEL_NAME REQUIRES A FULL RE-EMBED. Vectors from a
+# different model live in a different space, so matching the width is not
+# enough — old and new rows in one column degrade retrieval silently rather
+# than erroring. Re-run `node scripts/ingest-documents.js --force` and re-save
+# CMS-sourced FAQs/articles so lib/kb-sync.js regenerates their vectors.
+
+# IMPORTANT: Also set OPENAI_API_KEY to the SAME key as LLM_API_KEY above,
+# whichever option you chose (the openai npm package reads this automatically).
 OPENAI_API_KEY=<same key as LLM_API_KEY>
 
 # Feature flags
