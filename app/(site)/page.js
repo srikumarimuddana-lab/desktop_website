@@ -6,10 +6,28 @@ import CanadaDots from './CanadaDots'
 import HowItWorks from './HowItWorks'
 import AiChat from './AiChat'
 import { FinalCta } from './Chrome'
-import { getFaqs, previewMetadata } from '@/lib/preview-content'
+import { getFaqs, previewMetadata, SITE_URL } from '@/lib/preview-content'
 import { pickFaqs } from '@/lib/faq-fallback'
 import SafeHtml from '@/components/ui/SafeHtml'
+import JsonLdInjector from '@/components/seo/JsonLdInjector'
 import { Reveal, CountUp, Marquee, SplitText } from './Reveal'
+
+/* Site identity for search engines — only facts already stated on the page
+ * (name, description, Saskatoon service area). No rating, review count or
+ * address is invented; none exist to publish. */
+const ORG_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Spinr',
+  url: SITE_URL,
+  logo: `${SITE_URL}/logo.png`,
+  description: 'A Canadian rideshare platform. Drivers keep 100% of the net fare, riders pay a flat $1 fee, and there is no surge pricing.',
+  areaServed: {
+    '@type': 'City',
+    name: 'Saskatoon',
+    containedInPlace: { '@type': 'AdministrativeArea', name: 'Saskatchewan' },
+  },
+}
 
 /*
  * The home page.
@@ -116,6 +134,8 @@ export default async function PreviewPage() {
   const faq = await getFaqs({ categories: ['general', 'rider'], limit: 5, fallback: FAQ_FALLBACK })
   return (
     <>
+        <JsonLdInjector data={ORG_JSONLD} />
+
         {/* ── Hero ──────────────────────────────────────────── */}
         <header className="sp-hero" id="top">
           <CanadaDots />

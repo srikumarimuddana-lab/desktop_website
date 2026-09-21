@@ -1,11 +1,21 @@
 import Link from 'next/link'
-import { previewMetadata } from '@/lib/preview-content'
+import { previewMetadata, SITE_URL } from '@/lib/preview-content'
 import { APP_URLS } from '@/lib/app-links'
 import { FinalCta } from '../Chrome'
 import { Reveal, SplitText } from '../Reveal'
 import PhoneFan from '../PhoneFan'
 import Payday from './Payday'
 import SpinrPass from './SpinrPass'
+import JsonLdInjector from '@/components/seo/JsonLdInjector'
+
+const SERVICE_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  serviceType: 'Rideshare driving',
+  provider: { '@type': 'Organization', name: 'Spinr', url: SITE_URL },
+  areaServed: { '@type': 'City', name: 'Saskatoon' },
+  description: 'Drive with Spinr and keep 100% of the net fare — 0% commission, in Saskatoon.',
+}
 
 /*
  * /drive — the driver page.
@@ -52,6 +62,8 @@ const STEPS = [
 export default function DrivePage() {
   return (
     <>
+      <JsonLdInjector data={SERVICE_JSONLD} />
+
       {/* ── hero ── */}
       <header className="sp-dhero" id="top">
         <div className="sp-wrap sp-dhero-in">
