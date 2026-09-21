@@ -53,8 +53,22 @@ const nextConfig = {
       {
         source: "/(.*)",
         headers: [
-          { key: "X-Frame-Options", value: "ALLOWALL" },
-          { key: "Content-Security-Policy", value: "frame-ancestors *;" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          // CSP frame-ancestors takes precedence over X-Frame-Options in browsers
+          // that support both, so this must agree with SAMEORIGIN above, not widen it.
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self';" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+        ],
+      },
+      {
+        // CORS/API headers scoped to /api/* only — a marketing page has no
+        // business serving Access-Control-Allow-* on every route, and doing
+        // so previously widened Access-Control-Allow-Origin: * (or an unset
+        // CORS_ORIGINS falling back to it) to the whole site, not just the API.
+        source: "/api/:path*",
+        headers: [
           { key: "Access-Control-Allow-Origin", value: process.env.CORS_ORIGINS || "*" },
           { key: "Access-Control-Allow-Methods", value: "GET, POST, PUT, DELETE, OPTIONS" },
           { key: "Access-Control-Allow-Headers", value: "*" },

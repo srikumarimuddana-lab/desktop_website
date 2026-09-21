@@ -1,12 +1,22 @@
 import { APP_URLS } from '@/lib/app-links'
 import { FinalCta } from '../Chrome'
-import { getFaqs, previewMetadata } from '@/lib/preview-content'
+import { getFaqs, previewMetadata, SITE_URL } from '@/lib/preview-content'
 import { pickFaqs } from '@/lib/faq-fallback'
 import SafeHtml from '@/components/ui/SafeHtml'
+import JsonLdInjector from '@/components/seo/JsonLdInjector'
 import { Reveal, SplitText } from '../Reveal'
 import RideJourney from './RideJourney'
 import RideRoute from './RideRoute'
 import TripEstimate from './TripEstimate'
+
+const SERVICE_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  serviceType: 'Rideshare',
+  provider: { '@type': 'Organization', name: 'Spinr', url: SITE_URL },
+  areaServed: { '@type': 'City', name: 'Saskatoon' },
+  description: 'Book a ride with a flat $1 booking fee and no surge pricing, in Saskatoon.',
+}
 
 /*
  * /ride — the rider page.
@@ -90,6 +100,8 @@ export default async function RidePage() {
   const faq = await getFaqs({ categories: ['rider'], limit: 6, fallback: FAQ_FALLBACK })
   return (
     <>
+      <JsonLdInjector data={SERVICE_JSONLD} />
+
       {/* ── hero ── */}
       <header className="sp-rhero" id="top">
         <RideRoute />
