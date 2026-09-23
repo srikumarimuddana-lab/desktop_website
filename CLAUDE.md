@@ -588,10 +588,17 @@ Ingests Word docs from `spinrhelpfiles/` into `knowledge_base`:
 3. **OPENAI_API_KEY**: Must be set in Vercel env vars to the DashScope key — the `openai` npm package reads it directly, overriding what LangChain passes
 4. **Vector dimensions**: Embeddings are 1024-dimensional (DashScope text-embedding-v4), not 1536 (OpenAI ada-002). The `knowledge_base.embedding` column is `vector(1024)`.
 5. **Auth bypass in dev**: If Supabase is not configured AND `NODE_ENV=development`, admin auth is bypassed. Never deploy with this.
-6. **CORS headers**: `X-Frame-Options: ALLOWALL` in `next.config.js` — allows clickjacking. Should be `DENY` or `SAMEORIGIN` in production.
-7. **Catch-all route is large**: `app/api/[[...path]]/route.js` is ~915 lines. Consider splitting if it grows further.
+6. **Catch-all route is large**: `app/api/[[...path]]/route.js` is ~915 lines. Consider splitting if it grows further.
+7. **No lint/test tooling configured**: `.github/workflows/ci.yml` (added Sep 2026) runs `next build` only — no ESLint config or `test` script exists in this repo today. A red CI gate from adding lint blind is worse than the current gap; triage existing violations before turning it on.
 
 ---
+
+## Recent Changes (September 2026)
+
+- Fixed `X-Frame-Options: ALLOWALL` (was a clickjacking hole) → `SAMEORIGIN`, matched with a `Content-Security-Policy: frame-ancestors 'self'` (the two must agree — CSP `frame-ancestors` overrides a plain `X-Frame-Options` in browsers honoring both). Added missing `X-Content-Type-Options`, `Referrer-Policy`, `Strict-Transport-Security`. Scoped `Access-Control-Allow-*` to `/api/:path*` instead of every route.
+- Added `.github/workflows/ci.yml` — `npm ci` + `next build` on every PR/push to `main`. This repo had no CI before.
+- Wired the previously-unused `JsonLdInjector` component into home, `/ride`, `/drive` (Organization/Service schema). `/help/[slug]` already had its own inline JSON-LD; `/about` still has none — no schema.org type fits it without fabricating fields.
+- Fixed all 27 `npm audit` findings (1 critical, 16 high, 9 moderate, 1 low) → 0. The critical one was `next` itself (16.1.7 fell inside a vulnerable range with unauthenticated RCE/DoS advisories) → bumped to `16.3.5`. Also `sharp` → `0.35.4`, `uuid` → `14.0.2`.
 
 ## Recent Changes (April 2026)
 
