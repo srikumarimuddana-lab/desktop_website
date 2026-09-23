@@ -22,7 +22,12 @@ import { supabase } from '@/lib/supabase'
  * dangerouslySetInnerHTML. You can put whatever HTML you want — this component is fully
  * generic. Only <script> tags get special treatment because they literally won't work
  * otherwise.
- * 
+ *
+ * position === 'head' is the one exception: its non-script HTML is server-rendered by
+ * app/layout.js (via CustomHeadHtml/lib/sanitize-html.js) instead of here, so it's
+ * present in the initial HTML for crawlers that don't run JS. This component still
+ * fetches and renders that position's <script> tags, unaffected.
+ *
  * @param {string} position - 'head' | 'body_start' | 'body_end'
  */
 
@@ -80,27 +85,9 @@ export default function CustomScripts({ position }) {
         fetchScripts()
     }, [pathname, position])
 
-    useEffect(() => {
-        if (position === 'head' && nonScriptHtml) {
-            const tempDiv = document.createElement('div')
-            tempDiv.innerHTML = nonScriptHtml
-            const nodesToInsert = Array.from(tempDiv.childNodes)
-
-            nodesToInsert.forEach(node => {
-                document.head.appendChild(node)
-            })
-
-            return () => {
-                nodesToInsert.forEach(node => {
-                    if (node.parentNode) {
-                        node.parentNode.removeChild(node)
-                    }
-                })
-            }
-        }
-    }, [nonScriptHtml, position])
-
-    if (!scripts.length && !nonScriptHtml) return null
+    // Non-script HTML for position === 'head' is server-rendered instead —
+    // see app/layout.js (CustomHeadHtml) — so it's never injected here.
+    if (!scripts.length && !(nonScriptHtml && position !== 'head')) return null
 
     return (
         <>
