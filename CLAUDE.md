@@ -595,6 +595,20 @@ Ingests Word docs from `spinrhelpfiles/` into `knowledge_base`:
 
 ## Recent Changes (September 2026)
 
+- Fixed 5 SEO/metadata findings from a site audit: added `metadataBase` to the root
+  layout so relative OG/Twitter image URLs resolve; `lib/seo.js` now falls back to a
+  site-wide default OG image (`/logo.png`, the same asset used in the Organization
+  JSON-LD) and always sets `twitter: { card: 'summary_large_image' }`, so every page
+  gets a working link-preview card even with no `seo_pages.og_image` row; the admin's
+  `custom_head` HTML (`seo_pages.custom_head`, non-`<script>` part) is now
+  server-rendered via `components/seo/CustomHeadHtml.js` + `lib/sanitize-html.js`'s new
+  `parseHeadFragment()`, instead of only reaching the DOM client-side via
+  `CustomScripts.js` — a new `proxy.js` (Next 16 renamed `middleware.js`) threads the
+  current pathname to the root layout via an `x-pathname` header since `app/layout.js`
+  has no other way to know it; `<script>` tags in `custom_head` are unaffected, still
+  handled by `CustomScripts.js` via `next/script`; `/app` (the app-store redirect) now
+  has its own `robots: { index: false }`; and three unused components under
+  `components/home/` (`HeroMockUI`, `PhoneMockupUI`, `RiderImageUI`) were deleted.
 - Fixed `X-Frame-Options: ALLOWALL` (was a clickjacking hole) → `SAMEORIGIN`, matched with a `Content-Security-Policy: frame-ancestors 'self'` (the two must agree — CSP `frame-ancestors` overrides a plain `X-Frame-Options` in browsers honoring both). Added missing `X-Content-Type-Options`, `Referrer-Policy`, `Strict-Transport-Security`. Scoped `Access-Control-Allow-*` to `/api/:path*` instead of every route.
 - Added `.github/workflows/ci.yml` — `npm ci` + `next build` on every PR/push to `main`. This repo had no CI before.
 - Wired the previously-unused `JsonLdInjector` component into home, `/ride`, `/drive` (Organization/Service schema). `/help/[slug]` already had its own inline JSON-LD; `/about` still has none — no schema.org type fits it without fabricating fields.
