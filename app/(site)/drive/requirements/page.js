@@ -143,7 +143,7 @@ export default function RequirementsPage() {
           </Reveal>
           <div className="sp-rq-docs">
             {DOCS.map(([t, p], i) => (
-              <Reveal key={t} delay={i * 60} className="sp-rq-doc">
+              <Reveal key={t} delay={i * 60} className="sp-rq-doc" variant="flip">
                 <span className="sp-rq-doc-n sp-display" aria-hidden="true">{i + 1}</span>
                 <div>
                   <b>{t}</b>

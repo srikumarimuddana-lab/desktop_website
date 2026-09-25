@@ -109,13 +109,13 @@ export default function DrivePage() {
             <h2 className="sp-display sp-h2">Spot the difference.</h2>
           </Reveal>
           <div className="sp-cmp-g">
-            <Reveal className="sp-cmp-card sp-cmp-them" delay={60}>
+            <Reveal className="sp-cmp-card sp-cmp-them" delay={60} variant="left">
               <h3 className="sp-display">A typical app</h3>
               {COMPARE.typical.map(([k, v]) => (
                 <div key={k} className="sp-cmp-row"><span>{k}</span><b className="sp-display">{v}</b></div>
               ))}
             </Reveal>
-            <Reveal className="sp-cmp-card sp-cmp-us" delay={180}>
+            <Reveal className="sp-cmp-card sp-cmp-us" delay={180} variant="right">
               <h3 className="sp-display">Spinr</h3>
               {COMPARE.spinr.map(([k, v]) => (
                 <div key={k} className="sp-cmp-row"><span>{k}</span><b className="sp-display">{v}</b></div>
@@ -139,7 +139,7 @@ export default function DrivePage() {
           </Reveal>
           <div className="sp-req-g">
             {REQS.map(([t, p], i) => (
-              <Reveal key={t} delay={i * 90} className="sp-req-card">
+              <Reveal key={t} delay={i * 90} className="sp-req-card" variant="flip">
                 <span className="sp-req-check" aria-hidden="true">&#10003;</span>
                 <h3 className="sp-display">{t}</h3>
                 <p>{p}</p>
@@ -161,7 +161,7 @@ export default function DrivePage() {
           </Reveal>
           <ol className="sp-steps-g">
             {STEPS.map(([t, p], i) => (
-              <Reveal as="li" key={t} delay={i * 120} className="sp-steps-card">
+              <Reveal as="li" key={t} delay={i * 120} className="sp-steps-card" variant="flip">
                 <span className="sp-display sp-steps-n">{i + 1}</span>
                 <h3 className="sp-display">{t}</h3>
                 <p>{p}</p>

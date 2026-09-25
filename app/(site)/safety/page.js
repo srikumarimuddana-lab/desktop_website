@@ -80,7 +80,7 @@ export default function SafetyPage() {
           </Reveal>
           <div className="sp-sf-g">
             {SCREENING.map(([t, p], i) => (
-              <Reveal key={t} delay={i * 80} className="sp-sf-card">
+              <Reveal key={t} delay={i * 80} className="sp-sf-card" variant="flip">
                 <span className="sp-sf-n sp-display" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
                 <h3 className="sp-display">{t}</h3>
                 <p>{p}</p>
@@ -98,7 +98,7 @@ export default function SafetyPage() {
           </Reveal>
           <div className="sp-sf-g">
             {VEHICLE.map(([t, p], i) => (
-              <Reveal key={t} delay={i * 80} className="sp-sf-card">
+              <Reveal key={t} delay={i * 80} className="sp-sf-card" variant="flip">
                 <span className="sp-sf-n sp-display" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
                 <h3 className="sp-display">{t}</h3>
                 <p>{p}</p>
@@ -116,7 +116,7 @@ export default function SafetyPage() {
             <h2 className="sp-display sp-h2 sp-sos-h">The SOS button, honestly.</h2>
           </Reveal>
           <div className="sp-sos-g">
-            <Reveal className="sp-sos-does" delay={80}>
+            <Reveal className="sp-sos-does" delay={80} variant="left">
               <span className="sp-sos-lbl">What it does</span>
               <ul>
                 <li>Alerts the emergency contacts you have saved</li>
@@ -124,7 +124,7 @@ export default function SafetyPage() {
                 <li>Offers one-tap 911, already dialled, ready to send</li>
               </ul>
             </Reveal>
-            <Reveal className="sp-sos-not" delay={180}>
+            <Reveal className="sp-sos-not" delay={180} variant="right">
               <span className="sp-sos-lbl">What it does not</span>
               <ul>
                 <li>It does not call 911 for you</li>
@@ -148,7 +148,7 @@ export default function SafetyPage() {
           </Reveal>
           <div className="sp-sf-g">
             {INAPP.map(([t, p], i) => (
-              <Reveal key={t} delay={i * 80} className="sp-sf-card">
+              <Reveal key={t} delay={i * 80} className="sp-sf-card" variant="flip">
                 <span className="sp-sf-n sp-display" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
                 <h3 className="sp-display">{t}</h3>
                 <p>{p}</p>

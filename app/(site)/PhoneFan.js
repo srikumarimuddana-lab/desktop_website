@@ -20,11 +20,15 @@ import AppMap from './AppMap'
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v))
 
-/* stacked (0) -> fanned (1). x in % of a phone's own width. */
+/* stacked (0) -> fanned (1). x in % of a phone's own width.
+ * d is depth in px: the fan is a 3D group that turns toward the pointer
+ * (theme.js, .sp-fan), and the phones sit on separate planes so it reads
+ * as a hand of cards rather than one flat picture. Depth order matches z,
+ * because inside a 3D group the browser sorts by depth, not z-index. */
 const LAYOUT = [
-  { x: [-20, -104], y: [44, 14], r: [-7, -14], s: [0.86, 0.9], z: 1 },
-  { x: [0, 0],      y: [0, 0],   r: [-2, -3],  s: [1, 1],      z: 3 },
-  { x: [20, 104],   y: [56, 26], r: [6, 13],   s: [0.82, 0.88], z: 2 },
+  { x: [-20, -104], y: [44, 14], r: [-7, -14], s: [0.86, 0.9], z: 1, d: 0 },
+  { x: [0, 0],      y: [0, 0],   r: [-2, -3],  s: [1, 1],      z: 3, d: 64 },
+  { x: [20, 104],   y: [56, 26], r: [6, 13],   s: [0.82, 0.88], z: 2, d: 30 },
 ]
 
 const mix = (pair, t) => pair[0] + (pair[1] - pair[0]) * t
@@ -84,6 +88,7 @@ export default function PhoneFan({ force }) {
               '--ap-delay': `${820 + i * 130}ms`,
               transform:
                 `translate(${(mix(l.x, spread) * reach).toFixed(2)}%, ${mix(l.y, spread).toFixed(1)}px)` +
+                ` translateZ(${l.d}px)` +
                 ` rotate(${mix(l.r, spread).toFixed(2)}deg) scale(${mix(l.s, spread).toFixed(3)})`,
             }}
           >

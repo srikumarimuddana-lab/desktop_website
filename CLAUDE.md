@@ -595,6 +595,19 @@ Ingests Word docs from `spinrhelpfiles/` into `knowledge_base`:
 
 ## Recent Changes (September 2026)
 
+- Added a site-wide depth & motion layer. `app/(site)/Depth.js` (mounted once in
+  the (site) layout) runs one scroll + one pointer listener and writes CSS variables
+  only — no React state per frame: hero parallax (`--hero-p`), a pointer-turned 3D
+  phone fan (`--mx`/`--my`), "Why Spinr" sticky cards that sink back as the next one
+  covers them (`--cover`), a ticker that leans with scroll speed (`--mq-skew`), a nav
+  that tightens once scrolled (`html[data-sp-scrolled]`), and 3D pointer tilt on the
+  card classes listed in its `TILT` constant (or any `[data-tilt]`).
+  `app/(site)/template.js` adds a curtain wipe between routes — never on first load.
+  `Reveal` takes `variant="flip" | "left" | "right" | "zoom"`. FAQ `<details>` animate
+  open via `::details-content`. Smooth anchor scrolling is on, and `<html>` carries
+  `data-scroll-behavior="smooth"` so route changes still jump to the top. All of it is
+  off under `prefers-reduced-motion`. Gotcha: `theme.js` is one JS template literal —
+  a backtick anywhere in it, even inside a CSS comment, breaks the module.
 - Fixed 5 SEO/metadata findings from a site audit: added `metadataBase` to the root
   layout so relative OG/Twitter image URLs resolve; `lib/seo.js` now falls back to a
   site-wide default OG image (`/logo.png`, the same asset used in the Organization

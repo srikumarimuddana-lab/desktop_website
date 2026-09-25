@@ -73,7 +73,7 @@ export default function AboutPage() {
           </Reveal>
           <div className="sp-home-g">
             {HOME.map(([t, p], i) => (
-              <Reveal key={t} delay={i * 100} className="sp-home-card">
+              <Reveal key={t} delay={i * 100} className="sp-home-card" variant="flip">
                 <h3 className="sp-display">{t}</h3>
                 <p>{p}</p>
               </Reveal>

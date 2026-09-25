@@ -204,7 +204,7 @@ export default async function RidePage() {
           </Reveal>
           <div className="sp-safe-g">
             {SAFETY.map(([t, p], i) => (
-              <Reveal key={t} delay={i * 90} className="sp-safe-card">
+              <Reveal key={t} delay={i * 90} className="sp-safe-card" variant="flip">
                 <span className="sp-safe-n sp-display" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
                 <h3 className="sp-display">{t}</h3>
                 <p>{p}</p>
