@@ -125,7 +125,7 @@ export default function DrivePage() {
           </div>
           <p className="sp-cmp-fine">
             *Illustrative — commissions on other platforms commonly run in the 20&ndash;30% range and vary by market.
-            Spinr&rsquo;s $0.00 is not illustrative.
+            Spinr&rsquo;s 0% commission is not illustrative.
           </p>
         </div>
       </section>
