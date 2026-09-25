@@ -8,6 +8,7 @@ import { buildStructuredContext, formatUserMessage } from '@/lib/context-builder
 import { audienceNote } from '@/lib/audience'
 import { polishAnswer } from '@/lib/polish'
 import { askSpinrAssistant, isSpinrApiConfigured } from '@/lib/spinr-api'
+import { clientIpFrom } from '@/lib/spinr-signing'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
 
 // ============================================
@@ -407,7 +408,7 @@ async function searchExistingContent(question) {
  * hint that Spinr is launching, expanding or coming soon anywhere"). Same
  * rule, enforced one layer up.
  */
-async function searchWithHybridApproach(q, ut, uid, history) {
+async function searchWithHybridApproach(q, ut, uid, history, clientIp) {
   const st = Date.now()
   const sa = sanitizeInput(q)
   const aiEnabled = process.env.AI_AGENT_ENABLED !== 'false'
@@ -422,6 +423,7 @@ async function searchWithHybridApproach(q, ut, uid, history) {
       message: sa,
       history,
       visitorType: ut === 'driver' ? 'driver' : 'rider',
+      clientIp,
     })
     if (spinr) {
       // Same output hygiene the local path gets — validateResponse rewrites any
@@ -519,7 +521,7 @@ export async function POST(request) {
     // history is optional and passed straight through: lib/spinr-api.js trims
     // and normalizes it, and the backend re-validates and drops anything that
     // is not plain user/assistant text. The widget does not send it today.
-    const sr = await searchWithHybridApproach(question, ut, user_id, Array.isArray(history) ? history : undefined)
+    const sr = await searchWithHybridApproach(question, ut, user_id, Array.isArray(history) ? history : undefined, clientIpFrom(request))
     const cnv = await storeConversation(question, sr.answer, sr.source, sr.model_used, sr.tokens_used, sr.response_time_ms, ut, user_id)
     const res = { answer: sr.answer, source: sr.source, model_used: sr.model_used, conversation_id: cnv?.id || null, response_time_ms: sr.response_time_ms }
     if (sr.sources) res.sources = sr.sources

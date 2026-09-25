@@ -293,9 +293,39 @@ Two things to know before touching this:
   Seeing `source: "fallback_search"` is expected until that flag is flipped;
   `source: "spinr_backend"` means it is live.
 
-Backend-side prerequisites for this to work at all: `ALLOWED_ORIGINS` on the
-Spinr backend must include this site's origin, and `ai_public_chat_enabled`
-must be on for the chat (the content endpoints need no flag).
+Backend-side prerequisites for this to work at all: `ai_public_chat_enabled`
+must be on for the chat (the content endpoints need no flag), and **every call
+must be signed** — see below. (`ALLOWED_ORIGINS` is a browser/CORS setting and
+does not apply: every one of these calls leaves from this site's server.)
+
+### Calls to the backend are signed — that is how they get past App Check
+
+The backend enforces Firebase App Check on `/api/*`, which only a registered
+mobile build can satisfy. Unsigned, the chat, service areas, legal documents
+and `drivers/register` all 401 ("App Check token required") — as of
+2026-09-25 the production chat 401s on every message for exactly this reason.
+
+`lib/spinr-signing.js` HMAC-signs every request `lib/spinr-api.js` makes with
+`SPINR_WEB_SIGNING_SECRET`; spinrvm `backend/core/web_caller.py` verifies it
+against `WEB_CALLER_SIGNING_SECRETS` (same value) and lets an exact allow-list
+of routes past App Check. The visitor's IP travels inside the signature, so
+the backend rate-limits per visitor instead of per Vercel egress IP.
+
+- **The secret must never reach the browser.** `spinr-signing.js` and
+  `spinr-api.js` are server-only. Never prefix the variable `NEXT_PUBLIC_`.
+- **Sign the bytes you send.** The signature covers method, path, query, a
+  SHA-256 of the exact body string, and the client IP. Serialise the body once
+  and send that string — re-stringifying an object after signing breaks it.
+- **Unset secret = unsigned calls**, exactly the pre-signing behaviour. A
+  wrong secret is logged backend-side (`Web caller: signature not accepted`)
+  and the call falls through to App Check, i.e. the old 401.
+- **The format is pinned on both sides** by the same golden vector
+  (`scripts/verify-spinr-integration.mjs` here, `test_web_caller_signature.py`
+  there). Change one, change both.
+- **A new backend route the site calls** must be added to `WEB_CALLER_ROUTES`
+  in `web_caller.py` — the allow-list is exact (method, path), not a prefix.
+- **Rotation:** the backend accepts a comma-separated list. Add the new value
+  there, redeploy this site with it, then drop the old one.
 
 Note the assistant reached through `/ai/public-chat` answers from the
 **backend's** FAQ rows, not from `knowledge_base`. `lib/kb-sync.js` still
@@ -334,12 +364,12 @@ Rules for anyone touching this:
   like `ERR_OTP_INVALID`. `backendMessage()` in the route handles both and
   refuses to show a token-shaped string. Do not simplify it back to reading
   `detail`.
-- **send-otp is metered per client IP backend-side**, so every applicant shares
-  the Vercel egress IP's 6/minute bucket. Never forge `CF-Connecting-IP` to
-  escape that — the backend treats it as authoritative. The route meters per
-  real client IP on its own side; the backend's per-phone send cap is the
-  actual control. If volume ever outgrows it, the fix is a trusted-caller
-  mechanism on the backend.
+- **send-otp is metered per client IP backend-side.** With signing on, that
+  IP is the applicant's (carried inside the signature); without it, every
+  applicant shares the Vercel egress IP's bucket. Never forge
+  `CF-Connecting-IP` to escape that — the backend treats it as authoritative.
+  The route also meters per real client IP on its own side; the backend's
+  per-phone send cap is the actual control.
 - **The web flow does not finish an application.** Licence, insurance and
   inspection photos and the CRC consent need the app. The last step is a
   hand-off and must keep saying so — "application started", never "approved".
@@ -476,6 +506,11 @@ Required in Vercel (and `.env.local` for local dev):
 SPINR_API_URL=https://api-spinr.spinr.ca/api/v1
 SPINR_API_TIMEOUT_MS=4000     # content reads, inside a server-rendered request
 SPINR_AI_TIMEOUT_MS=20000     # one assistant turn
+# Signs every backend call (lib/spinr-signing.js). SAME value as the backend's
+# WEB_CALLER_SIGNING_SECRETS. Without it the backend's App Check rejects the
+# chat, service areas, legal docs and driver registration. Server-only — never
+# NEXT_PUBLIC_. Generate: python -c 'import secrets; print(secrets.token_urlsafe(48))'
+SPINR_WEB_SIGNING_SECRET=<≥32 chars>
 
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://cfrazforbupizntxvvtp.supabase.co

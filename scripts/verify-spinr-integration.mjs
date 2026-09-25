@@ -20,13 +20,50 @@
  * The stub listens on 9911 and is switched between scenarios by POSTing to
  * its /__control endpoint, so each case exercises the real proxy code path
  * rather than a mock of it.
+ *
+ * Request signing (lib/spinr-signing.js) is checked in both modes. Start the
+ * site with SPINR_WEB_SIGNING_SECRET and pass the same value to this script,
+ * and the stub verifies every backend call's signature with its own
+ * implementation written from the spec — not by importing the signer. Leave
+ * it unset on both, and the stub asserts no call carries signature headers.
  */
 
 import http from 'node:http'
+import { createHash, createHmac } from 'node:crypto'
+import { signingHeaders } from '../lib/spinr-signing.js'
 
 const STUB_PORT = 9911
 const SITE = process.env.VERIFY_SITE_URL || 'http://127.0.0.1:3111'
 const GOOD_CODE = '4321'
+const SIGNING_SECRET = process.env.SPINR_WEB_SIGNING_SECRET || ''
+const VISITOR_IP = '203.0.113.9'
+
+// Every backend request the site made, for the signing checks at the end.
+const seen = []
+function recordSignature(req, url, raw) {
+  const h = req.headers
+  const ts = h['x-spinr-web-timestamp']
+  let valid = false
+  if (SIGNING_SECRET && ts) {
+    const canonical = [
+      'v1',
+      ts,
+      req.method,
+      url.pathname,
+      url.search.replace(/^\?/, ''),
+      createHash('sha256').update(raw).digest('hex'),
+      h['x-spinr-web-client-ip'] ?? '',
+    ].join('\n')
+    const want = 'v1=' + createHmac('sha256', SIGNING_SECRET).update(canonical).digest('hex')
+    valid = h['x-spinr-web-signature'] === want && Math.abs(Date.now() / 1000 - Number(ts)) <= 300
+  }
+  seen.push({
+    call: `${req.method} ${url.pathname}`,
+    signed: 'x-spinr-web-signature' in h,
+    valid,
+    clientIp: h['x-spinr-web-client-ip'],
+  })
+}
 
 // ── the stub ────────────────────────────────────────────────────────────────
 
@@ -57,8 +94,12 @@ const stub = http.createServer((req, res) => {
   const read = (fn) => {
     let raw = ''
     req.on('data', (c) => (raw += c))
-    req.on('end', () => fn(JSON.parse(raw || '{}')))
+    req.on('end', () => {
+      if (url.pathname !== '/__control') recordSignature(req, url, raw)
+      fn(JSON.parse(raw || '{}'))
+    })
   }
+  if (req.method === 'GET') recordSignature(req, url, '')
 
   if (url.pathname === '/__control' && req.method === 'POST') {
     return read((b) => {
@@ -177,7 +218,8 @@ async function setScenario(name) {
 }
 
 async function call(action, body, cookie) {
-  const headers = { 'Content-Type': 'application/json' }
+  // Stands in for the visitor IP Vercel's edge would set.
+  const headers = { 'Content-Type': 'application/json', 'X-Forwarded-For': VISITOR_IP }
   if (cookie) headers.Cookie = cookie
   const res = await fetch(`${SITE}/api/driver-signup/${action}`, {
     method: 'POST',
@@ -444,6 +486,42 @@ async function run() {
   {
     const res = await fetch(`${SITE}/api/driver-signup/register`)
     check('GET on a POST-only action is a 404', res.status === 404)
+  }
+
+  console.log(SIGNING_SECRET ? '\nrequest signing (secret set)' : '\nrequest signing (secret unset)')
+  {
+    // Pinned in spinrvm backend/tests/test_web_caller_signature.py too — the
+    // two languages must produce the same bytes.
+    const h = signingHeaders({
+      secret: 's'.repeat(48),
+      method: 'post',
+      url: 'https://api.example/api/v1/ai/public-chat',
+      body: '{"message":"hi"}',
+      clientIp: '203.0.113.7',
+      now: 1790000000 * 1000,
+    })
+    check(
+      'signer matches the backend golden vector',
+      h['X-Spinr-Web-Signature'] === 'v1=4d5fe08dfe1a4670303b28748f8eb133d73c9df720cbed6c2305487b5db79863',
+      h['X-Spinr-Web-Signature']
+    )
+  }
+  {
+    const backendCalls = seen.filter((s) => s.call !== 'GET /__control')
+    check('the site made backend calls to check', backendCalls.length > 0)
+    if (SIGNING_SECRET) {
+      const bad = backendCalls.filter((s) => !s.valid).map((s) => s.call)
+      check('every backend call carries a valid signature', bad.length === 0, [...new Set(bad)].join(', '))
+      const signup = backendCalls.filter((s) => /\/(auth|drivers)\//.test(s.call))
+      check(
+        'signup calls sign the visitor IP, not the server\'s',
+        signup.length > 0 && signup.every((s) => s.clientIp === VISITOR_IP),
+        JSON.stringify(signup.slice(0, 3))
+      )
+    } else {
+      const signed = backendCalls.filter((s) => s.signed).map((s) => s.call)
+      check('with no secret, no call carries signature headers', signed.length === 0, signed.join(', '))
+    }
   }
 
   console.log(`\n${passed} passed, ${failures.length} failed`)

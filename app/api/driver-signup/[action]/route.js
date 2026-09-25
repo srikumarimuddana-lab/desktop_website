@@ -9,6 +9,7 @@ import {
   fetchServiceAreas,
   fetchVehicleTypes,
 } from '@/lib/spinr-api'
+import { clientIpFrom } from '@/lib/spinr-signing'
 
 /*
  * Driver signup — server-side proxy to the Spinr backend.
@@ -78,9 +79,7 @@ setInterval(() => {
 }, OTP_WINDOW_MS).unref?.()
 
 function clientIp(request) {
-  const fwd = request.headers.get('x-forwarded-for')
-  if (fwd) return fwd.split(',')[0].trim()
-  return request.headers.get('x-real-ip') || 'unknown'
+  return clientIpFrom(request) || 'unknown'
 }
 
 function fail(code, message, status = 400, extra) {
@@ -172,7 +171,7 @@ async function handleOtp(request) {
     return fail('rate_limited', 'Too many code requests. Try again in a few minutes.', 429, { retry_after: 60 })
   }
 
-  const result = await sendDriverOtp(phone)
+  const result = await sendDriverOtp(phone, { clientIp: clientIpFrom(request) })
   if (!result.ok) {
     if (result.status === 429) {
       // The backend's send cap carries a real Retry-After (30s between codes,
@@ -217,7 +216,7 @@ async function handleVerify(request) {
     return fail('consent_required', 'Please accept the Terms of Service and Privacy Policy to continue.')
   }
 
-  const result = await verifyDriverOtp({ phone, code, consentAccepted: true })
+  const result = await verifyDriverOtp({ phone, code, consentAccepted: true, clientIp: clientIpFrom(request) })
   if (!result.ok) {
     if (result.status === 400 || result.status === 422) {
       return fail('bad_code', backendMessage(result, 'That code is not right. Check it and try again.'))
@@ -326,7 +325,7 @@ async function handleRegister(request) {
     return fail('bad_request', 'That licence expiry date was not understood.')
   }
 
-  const result = await registerDriver(token, payload)
+  const result = await registerDriver(token, payload, { clientIp: clientIpFrom(request) })
   if (!result.ok) {
     if (result.status === 401 || result.status === 403) {
       jar.delete({ name: SESSION_COOKIE, path: '/api/driver-signup' })
@@ -396,8 +395,8 @@ async function handleOptions(request) {
   // Bounded before it is forwarded — this reaches a backend query string.
   const areaId = boundedField(new URL(request.url).searchParams.get('service_area_id'), 64)
   const [areas, vehicleTypes] = await Promise.all([
-    fetchServiceAreas(),
-    areaId ? fetchVehicleTypes(areaId) : Promise.resolve(null),
+    fetchServiceAreas({ clientIp: clientIpFrom(request) }),
+    areaId ? fetchVehicleTypes(areaId, { clientIp: clientIpFrom(request) }) : Promise.resolve(null),
   ])
   return NextResponse.json({
     ok: true,
