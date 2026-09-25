@@ -4,7 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { APP_URLS } from '@/lib/app-links'
+import { QRCodeSVG } from 'qrcode.react'
+import { APP_URLS, appDownloadUrl } from '@/lib/app-links'
 import { Tilt } from './Reveal'
 
 /* The shared shell pieces: nav, final CTA, footer. */
@@ -126,7 +127,8 @@ export function SiteNav() {
 /* Every page ends on the same red room — only the words change. The #get id
  * is what the docked CTA watches for. */
 export function FinalCta({ title, sub, store = 'rider' }) {
-  const urls = APP_URLS[store] || APP_URLS.rider
+  const app = store === 'driver' ? 'driver' : 'rider'
+  const urls = APP_URLS[app]
   return (
     <section className="sp-sec sp-final" id="get">
       <div className="sp-wrap sp-final-in">
@@ -141,7 +143,18 @@ export function FinalCta({ title, sub, store = 'rider' }) {
           </div>
         </div>
         <Tilt className="sp-qr" max={5}>
-          <Image src="/spinr_qr_code.png" alt="Scan to download Spinr" width={150} height={150} />
+          {/* Generated, not an image file: the old picture only looked like a QR
+              code and did not scan. It goes to /app, which sends the phone that
+              scanned it to its own store. */}
+          <QRCodeSVG
+            value={appDownloadUrl(app)}
+            size={150}
+            level="M"
+            marginSize={2}
+            fgColor="#0B0B0B"
+            bgColor="#ffffff"
+            title={app === 'driver' ? 'Scan to download the Spinr Driver app' : 'Scan to download the Spinr app'}
+          />
         </Tilt>
       </div>
     </section>

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import { ArrowRight } from 'lucide-react'
 
-import { APP_URLS, detectPlatform } from '@/lib/app-links'
+import { APP_URLS, appDownloadUrl, detectPlatform } from '@/lib/app-links'
 
 export default function SmartAppLink({
     appType = 'rider', // 'rider' or 'driver'
@@ -43,7 +43,7 @@ export default function SmartAppLink({
             <div className="bg-white p-2 rounded-xl border border-gray-100 shrink-0">
                 <QRCodeSVG
                     title={`QR code to download the Spinr ${appType} app`}
-                    value={url}
+                    value={appDownloadUrl(appType)}
                     size={qrSize}
                     level="H"
                     fgColor="#000000"

@@ -563,7 +563,7 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-final .sp-btn{background:#fff;color:var(--ink)}
 .sp-final .sp-btn:hover{color:var(--ink)}
 .sp-qr{background:#fff;border:2px solid var(--ink);border-radius:18px;padding:14px;box-shadow:var(--hard)}
-.sp-qr img{display:block}
+.sp-qr img,.sp-qr svg{display:block}
 
 /* ── footer ── */
 .sp-foot{background:var(--ink);color:var(--paper)}
