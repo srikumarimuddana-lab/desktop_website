@@ -26,7 +26,10 @@ export default async function RootLayout({ children }) {
   const customHead = await getCustomHead(pathname)
 
   return (
-    <html lang="en">
+    // data-scroll-behavior: the site scrolls smoothly to in-page anchors, but
+    // a route change should land at the top instantly — this tells Next to
+    // switch smooth scrolling off for the length of a navigation.
+    <html lang="en" data-scroll-behavior="smooth">
       <head>
         <CustomScripts position="head" />
         {customHead && <CustomHeadHtml html={customHead} />}

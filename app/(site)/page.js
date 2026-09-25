@@ -182,7 +182,7 @@ export default async function PreviewPage() {
           <div className="sp-wrap">
             <div className="sp-band-stats">
               {STATS.map((s, i) => (
-                <Reveal className="sp-stat" key={s.l} delay={i * 90}>
+                <Reveal className="sp-stat" key={s.l} delay={i * 90} variant="flip">
                   <b className="sp-display">
                     <CountUp to={s.to} prefix={s.prefix} suffix={s.suffix} decimals={s.decimals || 0} />
                   </b>
@@ -250,7 +250,7 @@ export default async function PreviewPage() {
         {/* ── Drivers teaser — drawn, like everything else here ── */}
         <section className="sp-sec sp-drive" id="drive">
           <div className="sp-wrap sp-drive-g">
-            <Reveal className="sp-drive-art">
+            <Reveal className="sp-drive-art" variant="zoom">
               <div className="sp-dt-week">
                 <span className="sp-dt-k">This week</span>
                 <b className="sp-display sp-dt-big">$1,204</b>

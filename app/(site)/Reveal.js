@@ -30,14 +30,18 @@ function useInView(ref, { once = true, threshold = 0.2 } = {}) {
   return inView
 }
 
-/** Slides up into place, with an optional stagger index. */
-export function Reveal({ children, delay = 0, as: Tag = 'div', className = '', ...rest }) {
+/** Slides up into place, with an optional stagger index.
+ *  `variant` picks the entrance: 'up' (default), 'flip' (stands up out of
+ *  the page in 3D), 'left' / 'right' (slides in from that side), 'zoom'
+ *  (rises out of depth). All of them land on the same resting state. */
+export function Reveal({ children, delay = 0, as: Tag = 'div', className = '', variant = 'up', ...rest }) {
   const ref = useRef(null)
   const inView = useInView(ref)
+  const kind = variant === 'up' ? '' : ` sp-rv-${variant}`
   return (
     <Tag
       ref={ref}
-      className={`sp-rv${inView ? ' in' : ''} ${className}`.trim()}
+      className={`sp-rv${kind}${inView ? ' in' : ''} ${className}`.trim()}
       style={{ '--rv-delay': `${delay}ms` }}
       {...rest}
     >

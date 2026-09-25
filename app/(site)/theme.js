@@ -214,7 +214,7 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 /* the wrapper does the tracking (no transition, so it follows the phone
    exactly); the sticker itself only does its own entrance */
 .sp-fan-tagwrap{position:absolute;z-index:6;left:50%;top:0;
-  transform:translate(calc(var(--fan-pw) * (var(--tag-x,1) + .18)),calc(var(--tag-y,26) * 1px - 22px))}
+  transform:translate(calc(var(--fan-pw) * (var(--tag-x,1) + .18)),calc(var(--tag-y,26) * 1px - 22px)) translateZ(70px)}
 .sp-fan-tag{display:inline-block;white-space:nowrap;
   background:var(--sun);color:var(--ink);border:2px solid var(--ink);
   border-radius:999px;padding:9px 16px;font-size:15px;letter-spacing:.03em;box-shadow:4px 4px 0 var(--ink);
@@ -271,7 +271,7 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-fs-bars i{flex:1;background:var(--red);border:1.5px solid var(--ink);border-radius:3px 3px 0 0}
 @media(max-width:700px){
   /* no room beside the phones down here — the sticker sits above them */
-  .sp-fan-tagwrap{transform:translate(calc(var(--fan-pw) * (var(--tag-x,1) + .02)),calc(var(--tag-y,26) * 1px - 30px))}
+  .sp-fan-tagwrap{transform:translate(calc(var(--fan-pw) * (var(--tag-x,1) + .02)),calc(var(--tag-y,26) * 1px - 30px)) translateZ(70px)}
   .sp-fan-tag{font-size:12.5px;padding:7px 12px}
 }
 @media(prefers-reduced-motion:reduce){
@@ -493,7 +493,7 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-drive-art{position:relative;min-height:340px}
 .sp-dt-week{position:relative;z-index:1;width:min(400px,92%);background:var(--paper-50);
   border:2px solid var(--ink);border-radius:20px;padding:22px 24px;box-shadow:var(--hard-lg);
-  transform:rotate(-2deg)}
+  rotate:-2deg}
 .sp-dt-k{display:block;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-5)}
 .sp-dt-big{display:block;font-size:clamp(44px,4.6vw,62px);line-height:.9;margin:6px 0 14px}
 .sp-dt-bars{display:flex;align-items:flex-end;gap:7px;height:86px}
@@ -506,11 +506,11 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 .sp-dt-row b{margin-left:auto;font-family:var(--sp-display),sans-serif;font-weight:400;color:var(--ink)}
 .sp-dt-offer{position:absolute;z-index:2;right:clamp(0px,4vw,30px);top:-16px;background:var(--sun);
   border:2px solid var(--ink);border-radius:16px;padding:12px 16px;box-shadow:var(--hard-sm);
-  transform:rotate(4deg)}
+  rotate:4deg;transform:translateZ(46px)}
 .sp-dt-offer b{display:block;font-size:26px;line-height:.95;margin-top:3px}
 .sp-dt-stamp{position:absolute;z-index:2;left:clamp(8px,3vw,34px);bottom:-14px;background:var(--red);
   color:#fff;border:2px solid var(--ink);border-radius:999px;padding:10px 18px;font-size:16px;
-  letter-spacing:.03em;box-shadow:4px 4px 0 var(--ink);transform:rotate(-5deg)}
+  letter-spacing:.03em;box-shadow:4px 4px 0 var(--ink);rotate:-5deg;transform:translateZ(70px)}
 @media(prefers-reduced-motion:reduce){.sp-dt-bars i{transform:scaleY(1);transition:none}}
 .sp-ticks{list-style:none;margin:0 0 clamp(26px,3vw,34px);padding:0;display:flex;flex-direction:column;gap:12px}
 .sp-ticks li{position:relative;padding-left:32px;font-size:15.5px;font-weight:600;line-height:1.45;color:var(--ink-6)}
@@ -597,8 +597,8 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
 
 /* ── letter-by-letter headline reveal; words stay whole so lines wrap ── */
 .sp-split{display:inline;line-height:1.05}
-.sp-split-w{display:inline-block;white-space:nowrap}
-.sp-split-c{display:inline-block;transform:translateY(26px);opacity:.001;
+.sp-split-w{display:inline-block;white-space:nowrap;perspective:420px}
+.sp-split-c{display:inline-block;transform:translateY(26px) rotateX(-68deg);transform-origin:50% 100%;opacity:.001;
   transition:transform .66s var(--spring) var(--c-delay,0ms),opacity .36s ease var(--c-delay,0ms)}
 .sp-split.in .sp-split-c{transform:none;opacity:1}
 @media(prefers-reduced-motion:reduce){
@@ -1021,8 +1021,10 @@ body:has([data-chat="open"]) .sp-dock{opacity:0;pointer-events:none}
   max-width:900px}
 .sp-cmp-card{position:relative;background:#fff;border:2px solid var(--ink);border-radius:18px;
   padding:clamp(18px,2.4vw,28px);box-shadow:var(--hard)}
-.sp-cmp-them{transform:rotate(-1.2deg);opacity:.92}
-.sp-cmp-us{transform:rotate(1deg);background:var(--paper-50)}
+/* 'rotate', not transform: a Reveal's .sp-rv.in{transform:none} outranks a
+   single class and was silently flattening both cards */
+.sp-cmp-them{rotate:-1.2deg;opacity:.92}
+.sp-cmp-us{rotate:1deg;background:var(--paper-50)}
 .sp-cmp-card h3{margin:0 0 14px;font-size:clamp(19px,1.9vw,24px);padding-bottom:10px;border-bottom:2px solid var(--ink)}
 .sp-cmp-row{display:flex;align-items:baseline;gap:10px;padding:7px 0;font-size:14px;font-weight:600;color:var(--ink-6)}
 .sp-cmp-row b{margin-left:auto;font-size:18px;font-weight:400;color:var(--ink)}
@@ -1598,4 +1600,92 @@ a.sp-help-contact-card:hover{transform:translate(-2px,2px);box-shadow:1px 1px 0 
 
 .sp-steps-cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;margin-top:clamp(26px,3.4vw,38px)}
 .sp-steps-cta span{font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.72);max-width:38ch}
+/* ════════════════════════════════════════════════════════════════════
+   Depth & motion layer — driven by Depth.js and template.js.
+   Every rule below only adds movement; content is identical without it,
+   and all of it is switched off under prefers-reduced-motion at the end.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* smooth in-page anchors (#how, #faq, the dock's #ai). Route changes still
+   jump straight to the top: the root <html> carries data-scroll-behavior */
+@media(prefers-reduced-motion:no-preference){html:has(.sp){scroll-behavior:smooth}}
+
+/* ── route transitions: a red panel with a yellow one close behind wipes
+      up off the screen, and the new page settles in underneath ── */
+.sp-curtain{position:fixed;inset:0;z-index:85;pointer-events:none;overflow:hidden}
+.sp-curtain i{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;will-change:transform}
+.sp-curtain-red{background:var(--red);border-bottom:3px solid var(--ink);
+  animation:sp-wipe .72s cubic-bezier(.76,0,.24,1) .06s both}
+.sp-curtain-sun{background:var(--sun);border-bottom:3px solid var(--ink);
+  animation:sp-wipe .72s cubic-bezier(.76,0,.24,1) .16s both}
+.sp-curtain span{font-size:clamp(46px,9vw,120px);color:#fff;-webkit-text-stroke:2px var(--ink);
+  text-shadow:6px 6px 0 var(--ink);animation:sp-wipe-word .5s var(--spring) both}
+@keyframes sp-wipe{from{transform:translateY(0)}to{transform:translateY(-102%);visibility:hidden}}
+@keyframes sp-wipe-word{from{transform:scale(.7) rotate(-6deg);opacity:0}to{transform:none;opacity:1}}
+.sp-page.is-enter{animation:sp-pagein .9s var(--spring) .2s backwards;transform-origin:50% 0}
+@keyframes sp-pagein{from{opacity:.001;transform:perspective(1400px) translateY(60px) rotateX(5deg)}to{opacity:1;transform:none}}
+
+/* ── nav tightens once the page is moving ── */
+.sp-nav{transition:box-shadow .3s ease,background-color .3s ease,padding .3s var(--spring)}
+:root[data-sp-scrolled] .sp-nav{background:rgba(251,249,243,.95);box-shadow:var(--hard);
+  padding-top:6px;padding-bottom:6px}
+
+/* ── Reveal variants (Reveal.js variant prop) ── */
+.sp-rv-flip{transform:perspective(1000px) translateY(46px) rotateX(26deg);transform-origin:50% 100%}
+.sp-rv-left{transform:translateX(-56px) rotate(-2deg)}
+.sp-rv-right{transform:translateX(56px) rotate(2deg)}
+.sp-rv-zoom{transform:perspective(1000px) translateZ(-160px) translateY(30px)}
+
+/* ── hero parallax: the backdrop drifts slower than the page and leans
+      away from the pointer; the copy lifts off a little faster ──
+   Individual 'translate' rather than transform, so none of this fights the
+   existing positioning transforms (the map is centred with one). */
+.sp-canmap{translate:calc(var(--mx,0) * -18px) calc(var(--hero-p,0) * 140px + var(--my,0) * -12px)}
+.sp-rroute{translate:calc(var(--mx,0) * -14px) calc(var(--hero-p,0) * 110px + var(--my,0) * -10px)}
+.sp-hero-copy,.sp-rhero > .sp-wrap,.sp-ahero > .sp-wrap,.sp-sfhero > .sp-wrap{
+  translate:0 calc(var(--hero-p,0) * -70px)}
+
+/* ── the phone fan is a 3D group that turns toward the pointer ── */
+.sp-fan{transform-style:preserve-3d;
+  transform:perspective(1400px) rotateX(calc(var(--my,0) * -8deg)) rotateY(calc(var(--mx,0) * 12deg))}
+
+/* ── "Why Spinr" stack: a card being covered sinks back into the page
+      instead of just being painted over (--cover from Depth.js) ── */
+.sp-rcard{transform-origin:50% 0;
+  transform:perspective(1400px) translateZ(calc(var(--cover,0) * -70px)) rotateX(calc(var(--cover,0) * 8deg))}
+.sp-rcard::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:var(--ink);opacity:calc(var(--cover,0) * .28)}
+
+/* ── 3D card tilt (Depth.js adds .sp-tilting while the pointer is on it) ── */
+.sp-tilting{will-change:transform;position:relative;z-index:2}
+.sp-tickets,.sp-drive-art{transform-style:preserve-3d}
+.sp-ticket{transform:translateZ(22px)}
+.sp-ticket-win{transform:translateZ(44px)}
+
+/* ── the ticker leans into fast scrolling ── */
+.sp-mq-track span{transform:skewX(var(--mq-skew,0deg))}
+
+/* ── FAQ answers open and close instead of snapping. Browsers without
+      ::details-content ignore the whole rule and keep the instant toggle ── */
+.sp-faq details{interpolate-size:allow-keywords}
+.sp-faq details::details-content{block-size:0;overflow-y:clip;
+  transition:block-size .42s var(--spring),content-visibility .42s allow-discrete}
+.sp-faq details[open]::details-content{block-size:auto}
+.sp-faq details[open] .sp-faq-a{animation:sp-faq-in .45s ease both .05s}
+@keyframes sp-faq-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
+@media(prefers-reduced-motion:reduce){
+  html:has(.sp){scroll-behavior:auto}
+  .sp-curtain{display:none}
+  .sp-page.is-enter{animation:none}
+  .sp-nav{transition:none}
+  .sp-rv-flip,.sp-rv-left,.sp-rv-right,.sp-rv-zoom{transform:none}
+  .sp-canmap,.sp-rroute,.sp-hero-copy,.sp-rhero > .sp-wrap,.sp-ahero > .sp-wrap,.sp-sfhero > .sp-wrap{translate:none}
+  .sp-fan{transform:none}
+  .sp-rcard{transform:none}
+  .sp-rcard::after{display:none}
+  .sp-mq-track span{transform:none}
+  .sp-faq details::details-content{transition:none}
+  .sp-faq details[open] .sp-faq-a{animation:none}
+}
 `
