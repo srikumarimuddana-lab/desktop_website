@@ -37,9 +37,10 @@
 > remain on `/preview/drive`.
 >
 > "Unlimited" is a promise. If a cap or fair-use rule is ever introduced it
-> must change in four places at once: the Pass card, the home FAQ, the help
-> FAQ, and `app/drive/DrivePageClient.js` — the FAQs also feed the AI
-> assistant through `lib/kb-sync.js`.
+> must change in four places at once: the Pass card
+> (`app/(site)/drive/SpinrPass.js`), the home FAQ, the help FAQ, and
+> `lib/faq-fallback.js` (the hardcoded fallback FAQ copy) — the FAQs also
+> feed the AI assistant through `lib/kb-sync.js`.
 >
 > The Part-time cap is a HARD stop: at 4 rides the driver is offered no more
 > that day, resetting the next day. Stated on the Pass card itself, not buried
