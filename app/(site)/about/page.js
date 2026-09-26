@@ -1,10 +1,11 @@
-import { previewMetadata } from '@/lib/preview-content'
+import { previewMetadata, SITE_URL } from '@/lib/preview-content'
 import { FinalCta } from '../Chrome'
 import { Reveal, SplitText, Marquee } from '../Reveal'
 import CanadaDots from '../CanadaDots'
 import Manifesto from './Manifesto'
 import RefuseRail from './RefuseRail'
 import DollarSplit from './DollarSplit'
+import JsonLdInjector from '@/components/seo/JsonLdInjector'
 
 /*
  * /about
@@ -13,6 +14,30 @@ import DollarSplit from './DollarSplit'
  * things the product refuses to become. No invented dates, headcounts or
  * ride totals — everything here is a stated position, not a claimed fact.
  */
+
+// Every field here mirrors what's already published on the home page's own
+// Organization JSON-LD (app/(site)/page.js) — nothing invented for this page.
+// AboutPage.mainEntity is the standard schema.org way to point an about page
+// at the entity it describes.
+const ABOUT_JSONLD = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'About Spinr',
+  url: `${SITE_URL}/about`,
+  description: 'Spinr is a proudly Canadian rideshare platform: no commission on a driver’s fare, a flat $1 rider fee, and no surge pricing.',
+  mainEntity: {
+    '@type': 'Organization',
+    name: 'Spinr',
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
+    description: 'A Canadian rideshare platform. Drivers keep 100% of the net fare, riders pay a flat $1 fee, and there is no surge pricing.',
+    areaServed: {
+      '@type': 'City',
+      name: 'Saskatoon',
+      containedInPlace: { '@type': 'AdministrativeArea', name: 'Saskatchewan' },
+    },
+  },
+}
 
 export const revalidate = 0
 
@@ -32,6 +57,8 @@ const HOME = [
 export default function AboutPage() {
   return (
     <>
+      <JsonLdInjector data={ABOUT_JSONLD} />
+
       {/* ── hero ── */}
       <header className="sp-ahero" id="top">
         <CanadaDots />
