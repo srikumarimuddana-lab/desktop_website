@@ -16,6 +16,31 @@ export default function ChatWidget() {
     const [isLoading, setIsLoading] = useState(false)
     const messagesEndRef = useRef(null)
     const shellRef = useRef(null)
+    const triggerRef = useRef(null)
+    const panelRef = useRef(null)
+    const wasOpenRef = useRef(false)
+
+    /* Opening moves focus into the panel (so keyboard/screen-reader users know
+     * it appeared) and closing returns it to the button that opened it — the
+     * same pattern SiteNav's mobile menu already uses in Chrome.js. Escape
+     * closes it from anywhere, matching that same menu. */
+    useEffect(() => {
+        if (isOpen) {
+            panelRef.current?.focus()
+        } else if (wasOpenRef.current) {
+            triggerRef.current?.focus()
+        }
+        wasOpenRef.current = isOpen
+    }, [isOpen])
+
+    useEffect(() => {
+        if (!isOpen) return
+        const onKey = (e) => {
+            if (e.key === 'Escape') setIsOpen(false)
+        }
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+    }, [isOpen])
 
     /* Three things park on the bottom edge of a phone: this widget, the cookie
      * banner, and (on the /preview pages) the app-download CTA. The banner and
@@ -164,6 +189,7 @@ export default function ChatWidget() {
         return (
             <div {...shell}>
                 <Button
+                    ref={triggerRef}
                     onClick={() => setIsOpen(true)}
                     className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90"
                     size="icon"
@@ -181,7 +207,11 @@ export default function ChatWidget() {
                 never wider than the screen — a fixed 500px box overflowed both
                 on a short phone. */}
             <Card
-                className={`flex flex-col w-[min(20rem,calc(100vw-2rem))] md:w-96 shadow-xl transition-all duration-300 ${isMinimized ? 'h-14' : ''}`}
+                ref={panelRef}
+                role="dialog"
+                aria-label="Spinr AI Assistant"
+                tabIndex={-1}
+                className={`flex flex-col w-[min(20rem,calc(100vw-2rem))] md:w-96 shadow-xl transition-all duration-300 outline-none ${isMinimized ? 'h-14' : ''}`}
                 style={isMinimized ? undefined : { height: 'min(500px, calc(100dvh - var(--chat-lift, 0px) - 7rem))' }}
             >
                 <CardHeader className="p-3 border-b flex flex-row items-center justify-between space-y-0">
